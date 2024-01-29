@@ -1,5 +1,6 @@
+# Django
 VirtualEnv
 db.sqlite3
 migrations
 
-node_modules
+.DS_Store
