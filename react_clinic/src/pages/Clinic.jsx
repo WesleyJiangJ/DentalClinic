@@ -1,10 +1,10 @@
 import { Element } from "react-scroll";
-import NavBar from '../components/NavBar.jsx';
-import Speciality from '../components/Speciality.jsx';
-import AboutUs from "../components/AboutUs.jsx";
-import ContactUs from "../components/ContactUs.jsx";
-import FindUs from "../components/FindUs.jsx";
-import Footer from "../components/Footer.jsx";
+import NavBar from '../components/clinic/NavBar.jsx';
+import Speciality from '../components/clinic/Speciality.jsx';
+import AboutUs from "../components/clinic/AboutUs.jsx";
+import ContactUs from "../components/clinic/ContactUs.jsx";
+import FindUs from "../components/clinic/FindUs.jsx";
+import Footer from "../components/clinic/Footer.jsx";
 
 export default function Clinic() {
     return (
