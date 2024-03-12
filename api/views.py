@@ -40,7 +40,7 @@ class Medical_HistoryViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class AppoitmentViewSet(viewsets.ModelViewSet):
-    queryset = Appoitment.objects.all()
-    serializer_class = AppoitmentSerializer
+class AppointmentViewSet(viewsets.ModelViewSet):
+    queryset = Appointment.objects.all()
+    serializer_class = AppointmentSerializer
     permission_classes = [permissions.IsAuthenticated]

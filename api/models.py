@@ -116,7 +116,7 @@ class Medical_History(models.Model):
 
 
 # Appointment
-class Appoitment(models.Model):
+class Appointment(models.Model):
     id_patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     id_personal = models.ForeignKey(Personal, on_delete=models.CASCADE)
     date_time = models.DateTimeField()

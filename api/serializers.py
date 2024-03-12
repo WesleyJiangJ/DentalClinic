@@ -32,7 +32,7 @@ class Medical_HistorySerializer(serializers.HyperlinkedModelSerializer):
         model = Medical_History
         fields = '__all__'
         
-class AppoitmentSerializer(serializers.HyperlinkedModelSerializer):
+class AppointmentSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Appoitment
+        model = Appointment
         fields = '__all__'
