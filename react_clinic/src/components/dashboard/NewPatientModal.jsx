@@ -7,12 +7,12 @@ export default function NewPatientModal({ isOpen, onOpenChange }) {
     const [firstLastName, setFirstLastName] = React.useState('');
     const [secondLastName, setSecondLastName] = React.useState('');
     const [birthdate, setBirthdate] = React.useState('');
-    const [gender, setGender] = React.useState('');
+    const [gender, setGender] = React.useState('F');
     const [email, setEmail] = React.useState('');
     const [phonenumber1, setPhoneNumber1] = React.useState('');
-    const [states, setStates] = React.useState('');
+    const [states, setStates] = React.useState('BOA');
     const [address, setAddress] = React.useState('');
-    const [maritalstatus, setMaritalStatus] = React.useState('');
+    const [maritalstatus, setMaritalStatus] = React.useState('single');
     const [occupation, setOccupation] = React.useState('');
     const [emergencyContactName, setEmergencyContactName] = React.useState('');
     const [phonenumber2, setPhoneNumber2] = React.useState('');
@@ -99,12 +99,33 @@ export default function NewPatientModal({ isOpen, onOpenChange }) {
         { label: "Hábito", value: "habito" },
     ];
 
+    const resetForm = () => {
+        setFirstName("");
+        setSecondName("");
+        setFirstLastName("");
+        setSecondLastName("");
+        setBirthdate("");
+        setGender("F");
+        setEmail("");
+        setPhoneNumber1("");
+        setStates("BOA");
+        setAddress("");
+        setMaritalStatus("single");
+        setOccupation("");
+        setEmergencyContactName("");
+        setPhoneNumber2("");
+        setRecord([]);
+        setObservations("");
+    };
 
     return (
         <>
             <Modal
                 isOpen={isOpen}
-                onOpenChange={onOpenChange}
+                onOpenChange={() => {
+                    onOpenChange(true);
+                    resetForm();
+                }}
                 placement="top-center"
                 size="5xl"
                 radius="sm"
@@ -166,7 +187,8 @@ export default function NewPatientModal({ isOpen, onOpenChange }) {
                                         label="Género"
                                         variant="underlined"
                                         value={gender}
-                                        onChange={(e) => handleInputChangeInfo(e, setGender)}>
+                                        onChange={(e) => handleInputChangeInfo(e, setGender)}
+                                        defaultSelectedKeys={[gender]}>
                                         {genders.map((gender) => (
                                             <SelectItem key={gender.value} value={gender.value}>
                                                 {gender.label}
@@ -195,7 +217,8 @@ export default function NewPatientModal({ isOpen, onOpenChange }) {
                                         label="Departamentos"
                                         variant="underlined"
                                         value={states}
-                                        onChange={(e) => handleInputChangeInfo(e, setStates)}>
+                                        onChange={(e) => handleInputChangeInfo(e, setStates)}
+                                        defaultSelectedKeys={[states]}>
                                         {departamentosNicaragua.map((nic) => (
                                             <SelectItem key={nic.value} value={nic.value}>
                                                 {nic.label}
@@ -215,7 +238,8 @@ export default function NewPatientModal({ isOpen, onOpenChange }) {
                                         label="Estado Civil"
                                         variant="underlined"
                                         value={maritalstatus}
-                                        onChange={(e) => handleInputChangeInfo(e, setMaritalStatus)}>
+                                        onChange={(e) => handleInputChangeInfo(e, setMaritalStatus)}
+                                        defaultSelectedKeys={[maritalstatus]}>
                                         {maritalStatus.map((statusM) => (
                                             <SelectItem key={statusM.value} value={statusM.value}>
                                                 {statusM.label}
@@ -261,7 +285,10 @@ export default function NewPatientModal({ isOpen, onOpenChange }) {
 
             <Modal
                 isOpen={isSecondModalOpen}
-                onOpenChange={closeSecondModal}
+                onOpenChange={() => {
+                    closeSecondModal();
+                    resetForm();
+                }}
                 placement="top-center"
                 size="5xl"
                 radius="sm"

@@ -4,6 +4,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Route, Routes } from 'react-router-dom';
 import Board from '../components/dashboard/Board.jsx';
 import Patient from '../components/dashboard/Patient.jsx';
+import Appointment from '../components/dashboard/Appointment.jsx';
 
 export default function Dashboard() {
     const [isToggled, setToggled] = React.useState(true);
@@ -37,6 +38,7 @@ export default function Dashboard() {
                         <Routes>
                             <Route path='' element={<Board />} />
                             <Route path='patient/*' element={<Patient />} />
+                            <Route path='appointment/*' element={<Appointment />} />
                         </Routes>
                     </div>
                 </div>

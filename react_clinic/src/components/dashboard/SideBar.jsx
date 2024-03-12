@@ -16,7 +16,6 @@ import {
 } from "@heroicons/react/24/solid";
 
 export default function SideBar({ collapsed, onTitleChange }) {
-    const [activeTitle, setActiveTitle] = React.useState('Dashboard');
     const menuItemStyles = {
         button: {
             "&:hover": {
@@ -32,7 +31,6 @@ export default function SideBar({ collapsed, onTitleChange }) {
     });
 
     const handleTitleChange = (title) => {
-        setActiveTitle(title);
         onTitleChange(title);
     };
 
@@ -58,7 +56,11 @@ export default function SideBar({ collapsed, onTitleChange }) {
                             <NavLink to="patient" style={getActiveStyles} onClick={() => handleTitleChange('Pacientes')} />}>
                         Pacientes
                     </MenuItem>
-                    <MenuItem icon={<CalendarDaysIcon className="h-5 w-5" />}> Citas </MenuItem>
+                    <MenuItem icon={<CalendarDaysIcon className="h-5 w-5" />}
+                        component={
+                            <NavLink to="appointment" end style={getActiveStyles} onClick={() => handleTitleChange('Citas')} />}>
+                        Citas
+                    </MenuItem>
                     <MenuItem icon={<BanknotesIcon className="h-5 w-5" />}> Pagos </MenuItem>
                 </Menu>
                 <Menu menuItemStyles={menuItemStyles}>
