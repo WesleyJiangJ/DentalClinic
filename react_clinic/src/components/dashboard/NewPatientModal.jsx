@@ -133,7 +133,7 @@ export default function NewPatientModal({ isOpen, onOpenChange }) {
                 <ModalContent>
                     {(onClose) => (
                         <>
-                            <ModalHeader className="flex flex-col gap-1">Agregar Nuevo Paciente</ModalHeader>
+                            <ModalHeader className="flex flex-col gap-1">Nuevo Paciente</ModalHeader>
                             <ModalBody>
                                 <div className="flex flex-col gap-2 md:flex-row">
                                     <Input

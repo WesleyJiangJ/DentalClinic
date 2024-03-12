@@ -2,11 +2,13 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import listPlugin from '@fullcalendar/list';
 import timeGridPlugin from '@fullcalendar/timegrid'
-import { Input, Button } from '@nextui-org/react'
+import { Input, Button, useDisclosure } from '@nextui-org/react'
 import { PlusIcon } from "@heroicons/react/24/solid";
 import AppointmentCard from './AppointmentCard';
+import NewAppointmentModal from './NewAppointmentModal';
 
 export default function Appointment() {
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
     return (
         <>
             <div className="flex flex-col">
@@ -23,9 +25,11 @@ export default function Appointment() {
                             radius='sm'
                             className='mx-2 h-full w-full bg-[#1E1E1E] text-white'
                             isIconOnly
+                            onPress={onOpen}
                         >
                             <PlusIcon className="h-7 w-7" />
                         </Button>
+                        <NewAppointmentModal isOpen={isOpen} onOpenChange={onOpenChange} />
                     </div>
                 </div>
                 <div className='flex flex-row'>
