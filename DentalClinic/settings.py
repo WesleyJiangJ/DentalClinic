@@ -127,8 +127,12 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# CORS Authorization
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
 
 # API Documentation
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
 }
+
+AUTH_USER_MODEL = "api.User"
