@@ -1,5 +1,5 @@
 # Django
-VirtualEnv
+.venv
 db.sqlite3
 migrations
 
