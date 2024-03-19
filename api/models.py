@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 GENDER = [
     ("F", "Femenino"),
@@ -73,7 +74,7 @@ class Patient(models.Model):
     birthdate = models.DateField()
     gender = models.CharField(max_length=1, choices=GENDER)
     phone_number = models.CharField(max_length=8)
-    email = models.EmailField()
+    email = models.EmailField(max_length=255, unique=True)
     address = models.CharField(max_length=256)
     origin = models.CharField(max_length=2, choices=DEPARTMENTS)
     marital_status = models.CharField(max_length=1, choices=MARITAL_STATUS)
@@ -98,6 +99,72 @@ class Personal(models.Model):
     status = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+class UserManager(BaseUserManager):
+    def create_user(self, email, password=None):
+        """
+        Creates and saves a User with the given email, date of
+        birth and password.
+        """
+        if not email:
+            raise ValueError("Users must have an email address")
+
+        user = self.model(
+            email=self.normalize_email(email),
+        )
+
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None):
+        """
+        Creates and saves a superuser with the given email, date of
+        birth and password.
+        """
+        user = self.create_user(
+            email,
+            password=password,
+        )
+        user.is_admin = True
+        user.save(using=self._db)
+        return user
+
+
+class User(AbstractBaseUser):
+    email = models.EmailField(
+        verbose_name="email address",
+        max_length=255,
+        unique=True,
+    )
+    idPatient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True)
+    idPersonal = models.ForeignKey(Personal, on_delete=models.CASCADE, null=True)
+    is_active = models.BooleanField(default=True)
+    is_admin = models.BooleanField(default=False)
+
+    objects = UserManager()
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
+
+    def __str__(self):
+        return self.email
+
+    def has_perm(self, perm, obj=None):
+        "Does the user have a specific permission?"
+        # Simplest possible answer: Yes, always
+        return True
+
+    def has_module_perms(self, app_label):
+        "Does the user have permissions to view the app `app_label`?"
+        # Simplest possible answer: Yes, always
+        return True
+
+    @property
+    def is_staff(self):
+        "Is the user a member of staff?"
+        # Simplest possible answer: All admins are staff
+        return self.is_admin
+
 
 # Medical History
 class Medical_History(models.Model):
@@ -116,71 +183,71 @@ class Medical_History(models.Model):
 
 
 # Appointment
-class Appointment(models.Model):
-    id_patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    id_personal = models.ForeignKey(Personal, on_delete=models.CASCADE)
-    date_time = models.DateTimeField()
-    status = models.CharField(max_length=1)
-    observation = models.TextField(null=True)
-    notes = models.TextField(null=True)
+# class Appointment(models.Model):
+#     id_patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+#     id_personal = models.ForeignKey(Personal, on_delete=models.CASCADE)
+#     date_time = models.DateTimeField()
+#     status = models.CharField(max_length=1)
+#     observation = models.TextField(null=True)
+#     notes = models.TextField(null=True)
 
 
 # Budget & Payments
-class Budget(models.Model):
-    id_patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    status = models.CharField(max_length=1)
-    created_at = models.DateTimeField(auto_now_add=True)
+# class Budget(models.Model):
+#     id_patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+#     status = models.CharField(max_length=1)
+#     created_at = models.DateTimeField(auto_now_add=True)
 
 
-class Budget_Detail(models.Model):
-    id_budget = models.ForeignKey(Budget, on_delete=models.CASCADE)
-    treatment = models.CharField(max_length=60)
-    cost = models.DecimalField(max_digits=10, decimal_places=2)
-    quantity = models.IntegerField()
-    created_at = models.DateTimeField(auto_now_add=True)
+# class Budget_Detail(models.Model):
+#     id_budget = models.ForeignKey(Budget, on_delete=models.CASCADE)
+#     treatment = models.CharField(max_length=60)
+#     cost = models.DecimalField(max_digits=10, decimal_places=2)
+#     quantity = models.IntegerField()
+#     created_at = models.DateTimeField(auto_now_add=True)
 
 
-class Payment_Control(models.Model):
-    id_budget = models.ForeignKey(Budget, on_delete=models.CASCADE)
-    total = models.DecimalField(max_digits=10, decimal_places=2)
-    paid = models.DecimalField(max_digits=10, decimal_places=2)
-    description = models.TextField(null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+# class Payment_Control(models.Model):
+#     id_budget = models.ForeignKey(Budget, on_delete=models.CASCADE)
+#     total = models.DecimalField(max_digits=10, decimal_places=2)
+#     paid = models.DecimalField(max_digits=10, decimal_places=2)
+#     description = models.TextField(null=True)
+#     created_at = models.DateTimeField(auto_now_add=True)
 
 
-class Payment_Control_History(models.Model):
-    id_budget = models.ForeignKey(Budget, on_delete=models.CASCADE)
-    modified_by = models.ForeignKey(Personal, on_delete=models.CASCADE)
-    description = models.TextField(null=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+# class Payment_Control_History(models.Model):
+#     id_budget = models.ForeignKey(Budget, on_delete=models.CASCADE)
+#     modified_by = models.ForeignKey(Personal, on_delete=models.CASCADE)
+#     description = models.TextField(null=False)
+#     created_at = models.DateTimeField(auto_now_add=True)
 
 
 # Odontogram
-class Odontogram(models.Model):
-    id_medical_history = models.ForeignKey(Medical_History, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
+# class Odontogram(models.Model):
+#     id_medical_history = models.ForeignKey(Medical_History, on_delete=models.CASCADE)
+#     created_at = models.DateTimeField(auto_now_add=True)
 
 
-class Odontogram_Area(models.Model):
-    area = models.IntegerField()
+# class Odontogram_Area(models.Model):
+#     area = models.IntegerField()
 
 
-class Odontogram_Teeth(models.Model):
-    teeth = models.IntegerField()
+# class Odontogram_Teeth(models.Model):
+#     teeth = models.IntegerField()
 
 
-class Odontogram_Face(models.Model):
-    face = models.CharField(max_length=10)
+# class Odontogram_Face(models.Model):
+#     face = models.CharField(max_length=10)
 
 
-class Odontogram_Status(models.Model):
-    description = models.CharField(max_length=50)
-    color = models.CharField(max_length=7)
+# class Odontogram_Status(models.Model):
+#     description = models.CharField(max_length=50)
+#     color = models.CharField(max_length=7)
 
 
-class Odontogram_Resume(models.Model):
-    id_odontogram = models.ForeignKey(Odontogram, on_delete=models.CASCADE)
-    id_area = models.ForeignKey(Odontogram_Area, on_delete=models.CASCADE)
-    id_teeth = models.ForeignKey(Odontogram_Teeth, on_delete=models.CASCADE)
-    id_face = models.ForeignKey(Odontogram_Face, on_delete=models.CASCADE)
-    id_status = models.ForeignKey(Odontogram_Status, on_delete=models.CASCADE)
+# class Odontogram_Resume(models.Model):
+#     id_odontogram = models.ForeignKey(Odontogram, on_delete=models.CASCADE)
+#     id_area = models.ForeignKey(Odontogram_Area, on_delete=models.CASCADE)
+#     id_teeth = models.ForeignKey(Odontogram_Teeth, on_delete=models.CASCADE)
+#     id_face = models.ForeignKey(Odontogram_Face, on_delete=models.CASCADE)
+#     id_status = models.ForeignKey(Odontogram_Status, on_delete=models.CASCADE)
