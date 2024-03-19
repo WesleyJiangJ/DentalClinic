@@ -1,59 +1,27 @@
 import React from "react";
+import { postNewPatient } from "../../api/patient_api";
+import PatientTable from "./PatientTable";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Select, SelectItem, CheckboxGroup, Checkbox, Textarea } from "@nextui-org/react";
+import { Alert } from "@material-tailwind/react";
 
-export default function NewPatientModal({ isOpen, onOpenChange }) {
-    const [firstName, setFirstName] = React.useState('');
-    const [secondName, setSecondName] = React.useState('');
-    const [firstLastName, setFirstLastName] = React.useState('');
-    const [secondLastName, setSecondLastName] = React.useState('');
+
+export default function NewPatientModal({ isOpen, onOpenChange, updateTable }) {
+    const [first_name, setFirstName] = React.useState('');
+    const [middle_name, setSecondName] = React.useState('');
+    const [first_lastname, setFirstLastName] = React.useState('');
+    const [second_lastname, setSecondLastName] = React.useState('');
     const [birthdate, setBirthdate] = React.useState('');
     const [gender, setGender] = React.useState('F');
     const [email, setEmail] = React.useState('');
-    const [phonenumber1, setPhoneNumber1] = React.useState('');
-    const [states, setStates] = React.useState('BOA');
+    const [phone_number, setPhoneNumber1] = React.useState('');
+    const [origin, setOrigin] = React.useState('BO');
     const [address, setAddress] = React.useState('');
-    const [maritalstatus, setMaritalStatus] = React.useState('single');
+    const [marital_status, setMaritalStatus] = React.useState('S');
     const [occupation, setOccupation] = React.useState('');
-    const [emergencyContactName, setEmergencyContactName] = React.useState('');
-    const [phonenumber2, setPhoneNumber2] = React.useState('');
-    const [isSecondModalOpen, setSecondModalOpen] = React.useState(false);
+    const [emergency_contact, setEmergencyContactName] = React.useState('');
+    const [emergency_number, setPhoneNumber2] = React.useState('');
     const [record, setRecord] = React.useState([]);
     const [observations, setObservations] = React.useState("");
-
-    const handleInputChangeInfo = (e, setInputFunction) => {
-        const input = e.target.value;
-        setInputFunction(input);
-        console.log(input)
-    }
-
-    const handleInputChange = (e, setInputFunction) => {
-        const input = e.target.value;
-        if (/^\d*$/.test(input)) {
-            if (input.length <= 8) {
-                setInputFunction(input);
-            }
-        }
-    };
-
-    const handleRecordChange = (selectedValues) => {
-        setRecord(selectedValues);
-        // console.log(selectedValues)
-    };
-
-    const openSecondModal = () => {
-        setSecondModalOpen(true);
-        onOpenChange(false);
-    };
-
-    const closeSecondModal = () => {
-        setSecondModalOpen(false);
-    };
-
-    const previousModal = () => {
-        onOpenChange(true);
-        closeSecondModal();
-    }
-
 
     const genders = [
         { label: "Femenino", value: "F" },
@@ -61,32 +29,44 @@ export default function NewPatientModal({ isOpen, onOpenChange }) {
     ]
 
     const departamentosNicaragua = [
-        { label: "Boaco", value: "BOA" },
-        { label: "Carazo", value: "CAR" },
-        { label: "Chinandega", value: "CHI" },
-        { label: "Chontales", value: "CHO" },
-        { label: "Estelí", value: "EST" },
-        { label: "Granada", value: "GRA" },
-        { label: "Jinotega", value: "JIN" },
-        { label: "León", value: "LEO" },
-        { label: "Madriz", value: "MAD" },
-        { label: "Managua", value: "MGA" },
-        { label: "Masaya", value: "MAS" },
-        { label: "Matagalpa", value: "MTA" },
-        { label: "Nueva Segovia", value: "NSE" },
-        { label: "Río San Juan", value: "RSJ" },
-        { label: "Rivas", value: "RIV" },
+        { label: "Boaco", value: "BO" },
+        { label: "Carazo", value: "CA" },
+        { label: "Chinandega", value: "CI" },
+        { label: "Chontales", value: "CO" },
+        { label: "Estelí", value: "ES" },
+        { label: "Granada", value: "GR" },
+        { label: "Jinotega", value: "JI" },
+        { label: "León", value: "LE" },
+        { label: "Madriz", value: "MD" },
+        { label: "Managua", value: "MN" },
+        { label: "Masaya", value: "MS" },
+        { label: "Matagalpa", value: "MT" },
+        { label: "Nueva Segovia", value: "NS" },
+        { label: "Río San Juan", value: "SJ" },
+        { label: "Rivas", value: "RV" },
+        { label: "Región Autónoma de la Costa Caribe Norte", value: "AN" },
+        { label: "Región Autónoma de la Costa Caribe Sur", value: "AS" },
     ];
 
     const maritalStatus = [
-        { label: "Soltero", value: "single" },
-        { label: "Casado", value: "married" },
-        { label: "Divorciado", value: "divorced" },
-        { label: "Viudo", value: "widowed" },
-        { label: "Unión Libre", value: "commonLaw" },
-        { label: "Separado", value: "separated" },
+        { label: "Soltero", value: "S" },
+        { label: "Casado", value: "C" },
+        { label: "Divorciado", value: "D" },
+        { label: "Viudo", value: "V" },
+        { label: "Unión Libre", value: "U" },
     ];
 
+    // const antecedentesDict = [
+    //     { label: "Alergias", value: false },
+    //     { label: "Patológico", value: false },
+    //     { label: "Farmacológico", value: false },
+    //     { label: "Hospitalización", value: false },
+    //     { label: "Cirugía", value: false },
+    //     { label: "Transfusión", value: false },
+    //     { label: "Radioterapia", value: false },
+    //     { label: "Quimioterapia", value: false },
+    //     { label: "Hábito", value: false },
+    // ];
     const antecedentesDict = [
         { label: "Alergias", value: "alergias" },
         { label: "Patológico", value: "patologico" },
@@ -99,6 +79,71 @@ export default function NewPatientModal({ isOpen, onOpenChange }) {
         { label: "Hábito", value: "habito" },
     ];
 
+    const formData = {
+        first_name,
+        middle_name,
+        first_lastname,
+        second_lastname,
+        birthdate,
+        gender,
+        email,
+        phone_number,
+        origin,
+        address,
+        marital_status,
+        occupation,
+        emergency_contact,
+        emergency_number,
+        record,
+        observations
+    }
+
+    const handleInputChangeInfo = (e, setInputFunction) => {
+        const input = e.target.value;
+        setInputFunction(input);
+    }
+
+    const handleInputChange = (e, setInputFunction) => {
+        const input = e.target.value;
+        if (/^\d*$/.test(input)) {
+            if (input.length <= 8) {
+                setInputFunction(input);
+            }
+        }
+    };
+
+    // const handleRecordChange = (selectedValues) => {
+    //     setRecord(selectedValues);
+    // };
+
+    const handleRecordChange = (selectedValues) => {
+        const updatedRecord = {};
+        // Assign true to all checkboxes
+        selectedValues.forEach((value) => {
+            updatedRecord[value] = true;
+        });
+        // Assign false to checkboxes that are not selected
+        Object.keys(record).forEach((key) => {
+            if (!selectedValues.includes(key)) {
+                updatedRecord[key] = false;
+            }
+        });
+        setRecord(updatedRecord);
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        try {
+            // const response = await postNewPatient(formData)
+            console.log(formData);
+            updateTable();
+            handlePreviousModal();
+            onOpenChange(false);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
     const resetForm = () => {
         setFirstName("");
         setSecondName("");
@@ -108,14 +153,25 @@ export default function NewPatientModal({ isOpen, onOpenChange }) {
         setGender("F");
         setEmail("");
         setPhoneNumber1("");
-        setStates("BOA");
+        setOrigin("BO");
         setAddress("");
-        setMaritalStatus("single");
+        setMaritalStatus("S");
         setOccupation("");
         setEmergencyContactName("");
         setPhoneNumber2("");
         setRecord([]);
         setObservations("");
+        handlePreviousModal();
+    };
+
+    // Show Second Modal and Previous Modal
+    const [modalOpen, setModalOpen] = React.useState(true);
+    const handleNextModal = () => {
+        setModalOpen(false);
+    };
+
+    const handlePreviousModal = () => {
+        setModalOpen(true);
     };
 
     return (
@@ -133,199 +189,192 @@ export default function NewPatientModal({ isOpen, onOpenChange }) {
                 <ModalContent>
                     {(onClose) => (
                         <>
-                            <ModalHeader className="flex flex-col gap-1">Nuevo Paciente</ModalHeader>
-                            <ModalBody>
-                                <div className="flex flex-col gap-2 md:flex-row">
-                                    <Input
-                                        autoFocus
-                                        type="text"
-                                        label="Primer Nombre"
-                                        variant="underlined"
-                                        value={firstName}
-                                        onChange={(e) => handleInputChangeInfo(e, setFirstName)}
-                                    />
-                                    <Input
-                                        type="text"
-                                        label="Segundo Nombre"
-                                        variant="underlined"
-                                        value={secondName}
-                                        onChange={(e) => handleInputChangeInfo(e, setSecondName)}
-                                    />
-                                </div>
-                                <div className="flex flex-col gap-2 md:flex-row">
-                                    <div className="w-full">
-                                        <Input
-                                            type="text"
-                                            label="Primer Apellido"
-                                            variant="underlined"
-                                            value={firstLastName}
-                                            onChange={(e) => handleInputChangeInfo(e, setFirstLastName)}
-                                        />
-                                    </div>
-                                    <div className="w-full">
-                                        <Input
-                                            type="text"
-                                            label="Segundo Apellido"
-                                            variant="underlined"
-                                            value={secondLastName}
-                                            onChange={(e) => handleInputChangeInfo(e, setSecondLastName)}
-                                        />
-                                    </div>
-                                </div>
-                                <div>
-                                    <Input
-                                        label="Fecha de Nacimiento"
-                                        placeholder="a"
-                                        type="date"
-                                        variant="underlined"
-                                        value={birthdate}
-                                        onChange={(e) => handleInputChangeInfo(e, setBirthdate)}
-                                    />
-                                </div>
-                                <div>
-                                    <Select
-                                        label="Género"
-                                        variant="underlined"
-                                        value={gender}
-                                        onChange={(e) => handleInputChangeInfo(e, setGender)}
-                                        defaultSelectedKeys={[gender]}>
-                                        {genders.map((gender) => (
-                                            <SelectItem key={gender.value} value={gender.value}>
-                                                {gender.label}
-                                            </SelectItem>
-                                        ))}
-                                    </Select>
-                                </div>
-                                <div className="flex flex-col gap-2 md:flex-row">
-                                    <Input
-                                        label="Correo"
-                                        variant="underlined"
-                                        type="email"
-                                        value={email}
-                                        onChange={(e) => handleInputChangeInfo(e, setEmail)}
-                                    />
-                                    <Input
-                                        label="Celular"
-                                        variant="underlined"
-                                        type="text"
-                                        value={phonenumber1}
-                                        onChange={(e) => handleInputChange(e, setPhoneNumber1)}
-                                    />
-                                </div>
-                                <div className="flex flex-col gap-2 md:flex-row">
-                                    <Select
-                                        label="Departamentos"
-                                        variant="underlined"
-                                        value={states}
-                                        onChange={(e) => handleInputChangeInfo(e, setStates)}
-                                        defaultSelectedKeys={[states]}>
-                                        {departamentosNicaragua.map((nic) => (
-                                            <SelectItem key={nic.value} value={nic.value}>
-                                                {nic.label}
-                                            </SelectItem>
-                                        ))}
-                                    </Select>
-                                    <Input
-                                        label="Dirección"
-                                        variant="underlined"
-                                        type="text"
-                                        value={address}
-                                        onChange={(e) => handleInputChangeInfo(e, setAddress)}
-                                    />
-                                </div>
-                                <div>
-                                    <Select
-                                        label="Estado Civil"
-                                        variant="underlined"
-                                        value={maritalstatus}
-                                        onChange={(e) => handleInputChangeInfo(e, setMaritalStatus)}
-                                        defaultSelectedKeys={[maritalstatus]}>
-                                        {maritalStatus.map((statusM) => (
-                                            <SelectItem key={statusM.value} value={statusM.value}>
-                                                {statusM.label}
-                                            </SelectItem>
-                                        ))}
-                                    </Select>
-                                </div>
-                                <div>
-                                    <Input
-                                        label="Ocupación"
-                                        variant="underlined"
-                                        type="text"
-                                        value={occupation}
-                                        onChange={(e) => handleInputChangeInfo(e, setOccupation)}
-                                    />
-                                </div>
-                                <div className="flex flex-col gap-2 md:flex-row">
-                                    <Input
-                                        label="Nombre de Contacto de Emergencia"
-                                        variant="underlined"
-                                        type="text"
-                                        value={emergencyContactName}
-                                        onChange={(e) => handleInputChangeInfo(e, setEmergencyContactName)}
-                                    />
-                                    <Input
-                                        label="Celular"
-                                        variant="underlined"
-                                        type="text"
-                                        value={phonenumber2}
-                                        onChange={(e) => handleInputChange(e, setPhoneNumber2)}
-                                    />
-                                </div>
-                            </ModalBody>
-                            <ModalFooter>
-                                <Button color="primary" onPress={openSecondModal} radius="sm">
-                                    Siguiente
-                                </Button>
-                            </ModalFooter>
-                        </>
-                    )}
-                </ModalContent>
-            </Modal>
+                            <form onSubmit={handleSubmit}>
+                                {modalOpen ? (
+                                    <>
+                                        <ModalHeader className="flex flex-col gap-1">Nuevo Paciente</ModalHeader>
+                                        <ModalBody>
+                                            <div className="flex flex-col gap-2 md:flex-row">
+                                                <Input
+                                                    autoFocus
+                                                    type="text"
+                                                    label="Primer Nombre"
+                                                    variant="underlined"
+                                                    value={first_name}
+                                                    onChange={(e) => handleInputChangeInfo(e, setFirstName)}
+                                                />
+                                                <Input
+                                                    type="text"
+                                                    label="Segundo Nombre"
+                                                    variant="underlined"
+                                                    value={middle_name}
+                                                    onChange={(e) => handleInputChangeInfo(e, setSecondName)}
+                                                />
+                                            </div>
+                                            <div className="flex flex-col gap-2 md:flex-row">
+                                                <div className="w-full">
+                                                    <Input
+                                                        type="text"
+                                                        label="Primer Apellido"
+                                                        variant="underlined"
+                                                        value={first_lastname}
+                                                        onChange={(e) => handleInputChangeInfo(e, setFirstLastName)}
+                                                    />
+                                                </div>
+                                                <div className="w-full">
+                                                    <Input
+                                                        type="text"
+                                                        label="Segundo Apellido"
+                                                        variant="underlined"
+                                                        value={second_lastname}
+                                                        onChange={(e) => handleInputChangeInfo(e, setSecondLastName)}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <Input
+                                                    label="Fecha de Nacimiento"
+                                                    placeholder="a"
+                                                    type="date"
+                                                    variant="underlined"
+                                                    value={birthdate}
+                                                    onChange={(e) => handleInputChangeInfo(e, setBirthdate)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <Select
+                                                    label="Género"
+                                                    variant="underlined"
+                                                    value={gender}
+                                                    onChange={(e) => handleInputChangeInfo(e, setGender)}
+                                                    defaultSelectedKeys={[gender]}>
+                                                    {genders.map((gender) => (
+                                                        <SelectItem key={gender.value} value={gender.value}>
+                                                            {gender.label}
+                                                        </SelectItem>
+                                                    ))}
+                                                </Select>
+                                            </div>
+                                            <div className="flex flex-col gap-2 md:flex-row">
+                                                <Input
+                                                    label="Correo"
+                                                    variant="underlined"
+                                                    type="email"
+                                                    value={email}
+                                                    onChange={(e) => handleInputChangeInfo(e, setEmail)}
+                                                />
+                                                <Input
+                                                    label="Celular"
+                                                    variant="underlined"
+                                                    type="text"
+                                                    value={phone_number}
+                                                    onChange={(e) => handleInputChange(e, setPhoneNumber1)}
+                                                />
+                                            </div>
+                                            <div className="flex flex-col gap-2 md:flex-row">
+                                                <Select
+                                                    label="Departamentos"
+                                                    variant="underlined"
+                                                    value={origin}
+                                                    onChange={(e) => handleInputChangeInfo(e, setOrigin)}
+                                                    defaultSelectedKeys={[origin]}>
+                                                    {departamentosNicaragua.map((nic) => (
+                                                        <SelectItem key={nic.value} value={nic.value}>
+                                                            {nic.label}
+                                                        </SelectItem>
+                                                    ))}
+                                                </Select>
+                                                <Input
+                                                    label="Dirección"
+                                                    variant="underlined"
+                                                    type="text"
+                                                    value={address}
+                                                    onChange={(e) => handleInputChangeInfo(e, setAddress)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <Select
+                                                    label="Estado Civil"
+                                                    variant="underlined"
+                                                    value={marital_status}
+                                                    onChange={(e) => handleInputChangeInfo(e, setMaritalStatus)}
+                                                    defaultSelectedKeys={[marital_status]}>
+                                                    {maritalStatus.map((statusM) => (
+                                                        <SelectItem key={statusM.value} value={statusM.value}>
+                                                            {statusM.label}
+                                                        </SelectItem>
+                                                    ))}
+                                                </Select>
+                                            </div>
+                                            <div>
+                                                <Input
+                                                    label="Ocupación"
+                                                    variant="underlined"
+                                                    type="text"
+                                                    value={occupation}
+                                                    onChange={(e) => handleInputChangeInfo(e, setOccupation)}
+                                                />
+                                            </div>
+                                            <div className="flex flex-col gap-2 md:flex-row">
+                                                <Input
+                                                    label="Nombre de Contacto de Emergencia"
+                                                    variant="underlined"
+                                                    type="text"
+                                                    value={emergency_contact}
+                                                    onChange={(e) => handleInputChangeInfo(e, setEmergencyContactName)}
+                                                />
+                                                <Input
+                                                    label="Celular"
+                                                    variant="underlined"
+                                                    type="text"
+                                                    value={emergency_number}
+                                                    onChange={(e) => handleInputChange(e, setPhoneNumber2)}
+                                                />
+                                            </div>
+                                        </ModalBody>
+                                        <ModalFooter>
+                                            <Button color="primary" onPress={handleNextModal} radius="sm">
+                                                Siguiente
+                                            </Button>
+                                        </ModalFooter>
+                                    </>
+                                ) : (
+                                    <>
+                                        <ModalHeader className="flex flex-col gap-1">Historial Médico</ModalHeader>
+                                        <ModalBody>
+                                            <CheckboxGroup
+                                                orientation="horizontal"
+                                                label="Antecedentes"
+                                                // value={record}
+                                                value={Object.keys(record).filter((key) => record[key])}
+                                                onChange={handleRecordChange}>
+                                                {antecedentesDict.map((antecedentes) => (
+                                                    <Checkbox key={antecedentes.value} value={antecedentes.value}>
+                                                        {antecedentes.label}
+                                                    </Checkbox>
+                                                ))}
+                                            </CheckboxGroup>
+                                            <Textarea
+                                                label="Observaciones"
+                                                placeholder="Escriba aquí . . ."
+                                                radius="sm"
+                                                className="w-full"
+                                                value={observations}
+                                                onChange={(e) => handleInputChangeInfo(e, setObservations)}
+                                            />
 
-            <Modal
-                isOpen={isSecondModalOpen}
-                onOpenChange={() => {
-                    closeSecondModal();
-                    resetForm();
-                }}
-                placement="top-center"
-                size="5xl"
-                radius="sm"
-                backdrop="blur">
-                <ModalContent>
-                    {(onClose) => (
-                        <>
-                            <ModalHeader className="flex flex-col gap-1">Historial Médico</ModalHeader>
-                            <ModalBody>
-                                <CheckboxGroup
-                                    orientation="horizontal"
-                                    label="Antecedentes"
-                                    value={record}
-                                    onChange={handleRecordChange}>
-                                    {antecedentesDict.map((antecedentes) => (
-                                        <Checkbox key={antecedentes.value} value={antecedentes.value}>
-                                            {antecedentes.label}
-                                        </Checkbox>
-                                    ))}
-                                </CheckboxGroup>
-                                <Textarea
-                                    label="Observaciones"
-                                    placeholder="Escriba aquí . . ."
-                                    radius="sm"
-                                    className="w-full"
-                                    value={observations}
-                                    onChange={(e) => handleInputChangeInfo(e, setObservations)}
-                                />
-                            </ModalBody>
-                            <ModalFooter>
-                                <Button color="warning" onPress={previousModal} radius="sm">
-                                    Anterior
-                                </Button>
-                                <Button color="primary" onPress={onClose} radius="sm">
-                                    Siguiente
-                                </Button>
-                            </ModalFooter>
+                                        </ModalBody>
+                                        <ModalFooter>
+                                            <Button color="warning" onPress={handlePreviousModal} radius="sm">
+                                                Anterior
+                                            </Button>
+                                            <Button color="primary" type="submit" radius="sm">
+                                                Guardar
+                                            </Button>
+                                        </ModalFooter>
+                                    </>
+                                )}
+                            </form>
                         </>
                     )}
                 </ModalContent>
