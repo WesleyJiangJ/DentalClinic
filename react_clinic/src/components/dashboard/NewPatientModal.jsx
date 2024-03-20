@@ -1,9 +1,6 @@
 import React from "react";
 import { postNewPatient } from "../../api/patient_api";
-import PatientTable from "./PatientTable";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Select, SelectItem, CheckboxGroup, Checkbox, Textarea } from "@nextui-org/react";
-import { Alert } from "@material-tailwind/react";
-
 
 export default function NewPatientModal({ isOpen, onOpenChange, updateTable }) {
     const [first_name, setFirstName] = React.useState('');
@@ -21,7 +18,7 @@ export default function NewPatientModal({ isOpen, onOpenChange, updateTable }) {
     const [emergency_contact, setEmergencyContactName] = React.useState('');
     const [emergency_number, setPhoneNumber2] = React.useState('');
     const [record, setRecord] = React.useState([]);
-    const [observations, setObservations] = React.useState("");
+    const [observation, setObservations] = React.useState("");
 
     const genders = [
         { label: "Femenino", value: "F" },
@@ -56,27 +53,16 @@ export default function NewPatientModal({ isOpen, onOpenChange, updateTable }) {
         { label: "Unión Libre", value: "U" },
     ];
 
-    // const antecedentesDict = [
-    //     { label: "Alergias", value: false },
-    //     { label: "Patológico", value: false },
-    //     { label: "Farmacológico", value: false },
-    //     { label: "Hospitalización", value: false },
-    //     { label: "Cirugía", value: false },
-    //     { label: "Transfusión", value: false },
-    //     { label: "Radioterapia", value: false },
-    //     { label: "Quimioterapia", value: false },
-    //     { label: "Hábito", value: false },
-    // ];
     const antecedentesDict = [
-        { label: "Alergias", value: "alergias" },
-        { label: "Patológico", value: "patologico" },
-        { label: "Farmacológico", value: "farmacologico" },
-        { label: "Hospitalización", value: "hospitalizacion" },
-        { label: "Cirugía", value: "cirugia" },
+        { label: "Alergias", value: "allergies" },
+        { label: "Patológico", value: "pathological" },
+        { label: "Farmacológico", value: "pharmacological" },
+        { label: "Hospitalización", value: "hospitalitazation" },
+        { label: "Cirugía", value: "surgical" },
         { label: "Transfusión", value: "transfusion" },
-        { label: "Radioterapia", value: "radioterapia" },
-        { label: "Quimioterapia", value: "quimioterapia" },
-        { label: "Hábito", value: "habito" },
+        { label: "Radioterapia", value: "radiotherapy" },
+        { label: "Quimioterapia", value: "chemotherapy" },
+        { label: "Hábito", value: "habit" },
     ];
 
     const formData = {
@@ -95,7 +81,7 @@ export default function NewPatientModal({ isOpen, onOpenChange, updateTable }) {
         emergency_contact,
         emergency_number,
         record,
-        observations
+        observation
     }
 
     const handleInputChangeInfo = (e, setInputFunction) => {
@@ -111,10 +97,6 @@ export default function NewPatientModal({ isOpen, onOpenChange, updateTable }) {
             }
         }
     };
-
-    // const handleRecordChange = (selectedValues) => {
-    //     setRecord(selectedValues);
-    // };
 
     const handleRecordChange = (selectedValues) => {
         const updatedRecord = {};
@@ -134,8 +116,7 @@ export default function NewPatientModal({ isOpen, onOpenChange, updateTable }) {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            // const response = await postNewPatient(formData)
-            console.log(formData);
+            const response = await postNewPatient(formData)
             updateTable();
             handlePreviousModal();
             onOpenChange(false);
@@ -359,10 +340,9 @@ export default function NewPatientModal({ isOpen, onOpenChange, updateTable }) {
                                                 placeholder="Escriba aquí . . ."
                                                 radius="sm"
                                                 className="w-full"
-                                                value={observations}
+                                                value={observation}
                                                 onChange={(e) => handleInputChangeInfo(e, setObservations)}
                                             />
-
                                         </ModalBody>
                                         <ModalFooter>
                                             <Button color="warning" onPress={handlePreviousModal} radius="sm">
