@@ -66,21 +66,23 @@ export default function NewPatientModal({ isOpen, onOpenChange, updateTable }) {
     ];
 
     const formData = {
-        first_name,
-        middle_name,
-        first_lastname,
-        second_lastname,
-        birthdate,
-        gender,
-        email,
-        phone_number,
-        origin,
-        address,
-        marital_status,
-        occupation,
-        emergency_contact,
-        emergency_number,
-        record,
+        patient_data: {
+            first_name,
+            middle_name,
+            first_lastname,
+            second_lastname,
+            birthdate,
+            gender,
+            email,
+            phone_number,
+            origin,
+            address,
+            marital_status,
+            occupation,
+            emergency_contact,
+            emergency_number,
+        },
+        ...record,
         observation
     }
 
@@ -99,16 +101,20 @@ export default function NewPatientModal({ isOpen, onOpenChange, updateTable }) {
     };
 
     const handleRecordChange = (selectedValues) => {
-        const updatedRecord = {};
+        const updatedRecord = {
+            allergies: false,
+            pathological: false,
+            pharmacological: false,
+            hospitalitazation: false,
+            surgical: false,
+            transfusion: false,
+            radiotherapy: false,
+            chemotherapy: false,
+            habit: false,
+        };
         // Assign true to all checkboxes
         selectedValues.forEach((value) => {
             updatedRecord[value] = true;
-        });
-        // Assign false to checkboxes that are not selected
-        Object.keys(record).forEach((key) => {
-            if (!selectedValues.includes(key)) {
-                updatedRecord[key] = false;
-            }
         });
         setRecord(updatedRecord);
     };
@@ -117,6 +123,8 @@ export default function NewPatientModal({ isOpen, onOpenChange, updateTable }) {
         event.preventDefault();
         try {
             const response = await postNewPatient(formData)
+            console.log(response)
+            console.log(formData)
             updateTable();
             handlePreviousModal();
             onOpenChange(false);
