@@ -9,7 +9,7 @@ router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
 router.register(r'patient', views.PatientViewSet)
 router.register(r'personal', views.PersonalViewSet)
-router.register(r'medical_history', views.Medical_HistoryViewSet)
+router.register(r'new_patient', views.NewPatientViewSet)
 # router.register(r'appointment', views.AppointmentViewSet)
 
 # Wire up our API using automatic URL routing.

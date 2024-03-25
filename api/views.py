@@ -36,9 +36,9 @@ class PersonalViewSet(viewsets.ModelViewSet):
     # permission_classes = [permissions.IsAuthenticated]
 
 
-class Medical_HistoryViewSet(viewsets.ModelViewSet):
+class NewPatientViewSet(viewsets.ModelViewSet):
     queryset = Medical_History.objects.all()
-    serializer_class = Medical_HistorySerializer
+    serializer_class = NewPatientSerializer
     # permission_classes = [permissions.IsAuthenticated]
 
 
