@@ -154,7 +154,7 @@ export default function PatientTable() {
                 return (
                     <div className="relative flex items-center gap-2">
                         <Tooltip content="Detalles">
-                            <Link to='detail' className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                            <Link to={`detail/${user.id}`} className="text-lg text-default-400 cursor-pointer active:opacity-50">
                                 <EyeIcon className="w-5 h-5" />
                             </Link>
                         </Tooltip>
