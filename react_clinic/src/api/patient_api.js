@@ -9,8 +9,11 @@ const addPatientAPI = axios.create({
 })
 
 export const getAllPatients = () => {
-    console.log(patientAPI.get('/'))
     return patientAPI.get('/')
+}
+
+export const getSpecificPatien = (id) => {
+    return patientAPI.get(`/${id}`)
 }
 
 export const postNewPatient = (patient) => {
