@@ -1,14 +1,52 @@
-import { Avatar, Button, Divider, Tabs, Tab, Card, CardBody, Textarea, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input } from "@nextui-org/react";
+import React from "react";
+import { getPatient } from "../../api/patient_api";
+import { useParams } from 'react-router-dom';
+import { Avatar, Chip, Button, Divider, Tabs, Tab, Card, CardBody, Textarea, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input } from "@nextui-org/react";
 import { Typography } from "@material-tailwind/react";
 
 export default function PatientDetail() {
+    const [user, setUser] = React.useState([])
+    const { id } = useParams();
+    const departamentosNicaragua = {
+        BO: "Boaco",
+        CA: "Carazo",
+        CI: "Chinandega",
+        CO: "Chontales",
+        ES: "Estelí",
+        GR: "Granada",
+        JI: "Jinotega",
+        LE: "León",
+        MD: "Madriz",
+        MN: "Managua",
+        MS: "Masaya",
+        MT: "Matagalpa",
+        NS: "Nueva Segovia",
+        SJ: "Río San Juan",
+        RV: "Rivas",
+        AN: "Región Autónoma de la Costa Caribe Norte",
+        AS: "Región Autónoma de la Costa Caribe Sur",
+    };
+    
+    function getStateName(abr) {
+        return departamentosNicaragua[abr] || "Desconocido";
+    }
+    React.useEffect(() => {
+        getPatient(id)
+            .then((response) => {
+                setUser(response.data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }, [id])
+
     return (
         <div className="h-[88vh] overflow-scroll">
             <div className="flex flex-col md:flex-row gap-2 mb-2">
                 <div className="flex flex-col bg-[#F2F5F8] p-5 rounded">
                     <Avatar src="https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?cs=srgb&dl=pexels-simon-robben-614810.jpg&fm=jpg" className="w-60 h-60 text-large mb-5 m-auto" />
-                    <Typography className="m-auto" variant="h4">Wesley Jiang</Typography>
-                    <Typography className="m-auto mb-5" variant="paragraph">wesley@gmail.com</Typography>
+                    <h1 className="text-2xl font-bold m-auto">{user.first_name} {user.first_lastname}</h1>
+                    <small className="text-base m-auto mb-5">{user.email}</small>
                     <Button
                         className="bg-[#1E1E1E] text-white"
                         radius="sm"
@@ -21,15 +59,15 @@ export default function PatientDetail() {
                     <div className="flex flex-row ">
                         <div className="flex-1">
                             <p className="text-small font-bold text-foreground/80 my-4">Género</p>
-                            <h3 className="font-semibold text-foreground/90 my-4">Másculino</h3>
+                            <h3 className="font-semibold text-foreground/90 my-4">{user.gender == "F" ? "Femenino" : "Masculino"}</h3>
                         </div>
                         <div className="flex-1">
                             <p className="text-small font-bold text-foreground/80 my-4">Fecha de Nacimiento</p>
-                            <h3 className="font-semibold text-foreground/90 my-4">01/01/2000</h3>
+                            <h3 className="font-semibold text-foreground/90 my-4">{user.birthdate}</h3>
                         </div>
                         <div className="flex-1">
                             <p className="text-small font-bold text-foreground/80 my-4">Celular</p>
-                            <h3 className="font-semibold text-foreground/90 my-4">+505 89765121</h3>
+                            <h3 className="font-semibold text-foreground/90 my-4">+505 {user.phone_number}</h3>
                         </div>
                     </div>
 
@@ -38,15 +76,15 @@ export default function PatientDetail() {
                     <div className="flex flex-row">
                         <div className="flex-1">
                             <p className="text-small font-bold text-foreground/80 my-4">Dirección</p>
-                            <h3 className="font-semibold text-foreground/90 my-4">5th Avenue</h3>
+                            <h3 className="font-semibold text-foreground/90 my-4">{user.address}</h3>
                         </div>
                         <div className="flex-1">
                             <p className="text-small font-bold text-foreground/80 my-4">Ciudad</p>
-                            <h3 className="font-semibold text-foreground/90 my-4">Manhattan</h3>
+                            <h3 className="font-semibold text-foreground/90 my-4">{getStateName(user.origin)}</h3>
                         </div>
                         <div className="flex-1">
                             <p className="text-small font-bold text-foreground/80 my-4">Ocupación</p>
-                            <h3 className="font-semibold text-foreground/90 my-4">Ingeniero</h3>
+                            <h3 className="font-semibold text-foreground/90 my-4">{user.occupation}</h3>
                         </div>
                     </div>
 
@@ -55,15 +93,15 @@ export default function PatientDetail() {
                     <div className="flex flex-row">
                         <div className="flex-1">
                             <p className="text-small font-bold text-foreground/80 my-4">Estado</p>
-                            <h3 className="font-semibold text-foreground/90 my-4">Activo</h3>
+                            <h3 className="font-semibold text-foreground/90 my-4">{user.status == true ? <Chip color="success">Activo</Chip> : <Chip color="danger">Inactivo</Chip>}</h3>
                         </div>
                         <div className="flex-1">
                             <p className="text-small font-bold text-foreground/80 my-4">Contacto de Emergencia</p>
-                            <h3 className="font-semibold text-foreground/90 my-4">Lucia Rodriugez</h3>
+                            <h3 className="font-semibold text-foreground/90 my-4">{user.emergency_contact}</h3>
                         </div>
                         <div className="flex-1">
                             <p className="text-small font-bold text-foreground/80 my-4">Celular</p>
-                            <h3 className="font-semibold text-foreground/90 my-4">+505 22337880</h3>
+                            <h3 className="font-semibold text-foreground/90 my-4">+505 {user.emergency_number}</h3>
                         </div>
                     </div>
                 </div>
