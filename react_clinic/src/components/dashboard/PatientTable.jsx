@@ -156,7 +156,6 @@ export default function PatientTable() {
                         <Tooltip content="Detalles">
                             <Link to='detail' className="text-lg text-default-400 cursor-pointer active:opacity-50">
                                 <EyeIcon className="w-5 h-5" />
-                                <h1>{user.id}</h1>
                             </Link>
                         </Tooltip>
                         <Tooltip content="Editar">
