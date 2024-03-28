@@ -1,5 +1,5 @@
 import React from "react";
-import { getPatient } from "../../api/patient_api";
+import { getSpecificPatient } from "../../api/patient_api";
 import { useParams } from 'react-router-dom';
 import { Avatar, Chip, Button, Divider, Tabs, Tab, Card, CardBody, Textarea, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input } from "@nextui-org/react";
 import { Typography } from "@material-tailwind/react";
@@ -31,7 +31,7 @@ export default function PatientDetail() {
         return departamentosNicaragua[abr] || "Desconocido";
     }
     React.useEffect(() => {
-        getPatient(id)
+        getSpecificPatient(id)
             .then((response) => {
                 setUser(response.data);
             })
