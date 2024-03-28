@@ -22,7 +22,14 @@ import {
     Tooltip,
     useDisclosure,
 } from "@nextui-org/react";
-import { PlusIcon, MagnifyingGlassIcon, ChevronDownIcon, EyeIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/solid'
+import {
+    PlusIcon,
+    MagnifyingGlassIcon,
+    ChevronDownIcon,
+    EyeIcon,
+    PencilIcon,
+    TrashIcon
+} from '@heroicons/react/24/solid'
 
 const statusColorMap = {
     true: "success",
@@ -71,7 +78,7 @@ export default function PatientTable() {
     const loadPatients = async () => {
         const res = await getAllPatients();
         setPatientData(res.data);
-        console.log("Loaded")
+        // console.log("Loaded")
     };
 
     React.useEffect(() => {
@@ -79,7 +86,7 @@ export default function PatientTable() {
     }, []);
 
     const updateTable = async () => {
-        console.log("Updated")
+        // console.log("Updated")
         await loadPatients();
     };
 
@@ -102,7 +109,6 @@ export default function PatientTable() {
     }, [users, filterValue, statusFilter]);
 
     const pages = Math.ceil(filteredItems.length / rowsPerPage) == 0 ? 1 : Math.ceil(filteredItems.length / rowsPerPage);
-    // console.log(pages)
 
     const items = React.useMemo(() => {
         const start = (page - 1) * rowsPerPage;
@@ -145,26 +151,10 @@ export default function PatientTable() {
                     </Chip>
                 );
             case "actions":
-                // return (
-                //     <div className="relative flex justify-end items-center gap-2">
-                //         <Dropdown>
-                //             <DropdownTrigger>
-                //                 <Button isIconOnly size="sm" variant="light">
-                //                     <EllipsisVerticalIcon className="w-5 h-5" />
-                //                 </Button>
-                //             </DropdownTrigger>
-                //             <DropdownMenu>
-                //                 <DropdownItem>Ver</DropdownItem>
-                //                 <DropdownItem>Editar</DropdownItem>
-                //                 <DropdownItem>Eliminar</DropdownItem>
-                //             </DropdownMenu>
-                //         </Dropdown>
-                //     </div>
-                // );
                 return (
                     <div className="relative flex items-center gap-2">
                         <Tooltip content="Detalles">
-                            <Link to='patient_detail' className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                            <Link to='detail' className="text-lg text-default-400 cursor-pointer active:opacity-50">
                                 <EyeIcon className="w-5 h-5" />
                                 <h1>{user.id}</h1>
                             </Link>
@@ -185,18 +175,6 @@ export default function PatientTable() {
                 return cellValue;
         }
     }, []);
-
-    // const onNextPage = React.useCallback(() => {
-    //     if (page < pages) {
-    //         setPage(page + 1);
-    //     }
-    // }, [page, pages]);
-
-    // const onPreviousPage = React.useCallback(() => {
-    //     if (page > 1) {
-    //         setPage(page - 1);
-    //     }
-    // }, [page]);
 
     const onRowsPerPageChange = React.useCallback((e) => {
         setRowsPerPage(Number(e.target.value));
@@ -244,8 +222,7 @@ export default function PatientTable() {
                                 closeOnSelect={false}
                                 selectedKeys={statusFilter}
                                 selectionMode="multiple"
-                                onSelectionChange={setStatusFilter}
-                            >
+                                onSelectionChange={setStatusFilter}>
                                 {statusOptions.map((status) => (
                                     <DropdownItem key={status.uid} className="capitalize">
                                         {capitalize(status.name)}
@@ -265,8 +242,7 @@ export default function PatientTable() {
                                 closeOnSelect={false}
                                 selectedKeys={visibleColumns}
                                 selectionMode="multiple"
-                                onSelectionChange={setVisibleColumns}
-                            >
+                                onSelectionChange={setVisibleColumns}>
                                 {columns.map((column) => (
                                     <DropdownItem key={column.uid} className="capitalize">
                                         {capitalize(column.name)}
@@ -274,7 +250,12 @@ export default function PatientTable() {
                                 ))}
                             </DropdownMenu>
                         </Dropdown>
-                        <Button onPress={onOpen} size="lg" className="bg-[#1E1E1E] text-white" radius="sm" endContent={<PlusIcon className="w-5 h-5" />}>
+                        <Button
+                            onPress={onOpen}
+                            size="lg"
+                            className="bg-[#1E1E1E] text-white"
+                            radius="sm"
+                            endContent={<PlusIcon className="w-5 h-5" />}>
                             Nuevo
                         </Button>
                     </div>
@@ -287,8 +268,7 @@ export default function PatientTable() {
                             onChange={onRowsPerPageChange}
                             defaultSelectedKeys={'5'}
                             className="w-20"
-                            radius="sm"
-                        >
+                            radius="sm">
                             <SelectItem key="5" value="5">5</SelectItem>
                             <SelectItem key="10" value="10">10</SelectItem>
                             <SelectItem key="15" value="15">15</SelectItem>
@@ -331,24 +311,18 @@ export default function PatientTable() {
                 isHeaderSticky
                 bottomContent={bottomContent}
                 bottomContentPlacement="outside"
-                classNames={{
-                    // wrapper: "max-h-[382px]",
-                    wrapper: "h-[66vh]",
-                }}
+                classNames={{ wrapper: "h-[66vh]" }}
                 selectedKeys={selectedKeys}
                 sortDescriptor={sortDescriptor}
                 topContent={topContent}
                 topContentPlacement="outside"
                 onSelectionChange={setSelectedKeys}
-                onSortChange={setSortDescriptor}
-            >
+                onSortChange={setSortDescriptor}>
                 <TableHeader columns={headerColumns}>
                     {(column) => (
                         <TableColumn
                             key={column.uid}
-                            // align={column.uid === "actions" ? "center" : "start"}
-                            allowsSorting={column.sortable}
-                        >
+                            allowsSorting={column.sortable}>
                             {column.name}
                         </TableColumn>
                     )}
