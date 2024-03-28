@@ -12,7 +12,7 @@ export const getAllPatients = () => {
     return patientAPI.get('/')
 }
 
-export const getSpecificPatien = (id) => {
+export const getSpecificPatient = (id) => {
     return patientAPI.get(`/${id}`)
 }
 
