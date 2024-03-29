@@ -16,6 +16,10 @@ export const getSpecificPatient = (id) => {
     return patientAPI.get(`/${id}`)
 }
 
+export const updatePatient = (id, data) => {
+    return patientAPI.put(`/${id}/`, data)
+}
+
 export const postNewPatient = (patient) => {
     return addPatientAPI.post('/', patient)
 }
