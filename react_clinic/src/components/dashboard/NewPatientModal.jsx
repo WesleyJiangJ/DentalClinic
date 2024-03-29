@@ -1,8 +1,9 @@
 import React from "react";
-import { postNewPatient } from "../../api/patient_api";
+import { postNewPatient, updatePatient, getSpecificPatient } from "../../api/patient_api";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Select, SelectItem, CheckboxGroup, Checkbox, Textarea } from "@nextui-org/react";
+import { useParams } from "react-router-dom";
 
-export default function NewPatientModal({ isOpen, onOpenChange, updateTable }) {
+export default function NewPatientModal({ isOpen, onOpenChange, updateTable, updateData }) {
     const [first_name, setFirstName] = React.useState('');
     const [middle_name, setSecondName] = React.useState('');
     const [first_lastname, setFirstLastName] = React.useState('');
@@ -122,12 +123,17 @@ export default function NewPatientModal({ isOpen, onOpenChange, updateTable }) {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            const response = await postNewPatient(formData)
-            console.log(response)
-            console.log(formData)
-            updateTable();
-            handlePreviousModal();
-            onOpenChange(false);
+            if (param.id) {
+                await updatePatient(param.id, formData.patient_data);
+                updateData();
+                onOpenChange(false);
+            }
+            else {
+                await postNewPatient(formData);
+                updateTable();
+                handlePreviousModal();
+                onOpenChange(false);
+            }
         } catch (error) {
             console.error('Error:', error);
         }
@@ -163,13 +169,37 @@ export default function NewPatientModal({ isOpen, onOpenChange, updateTable }) {
         setModalOpen(true);
     };
 
+    const param = useParams();
+    React.useEffect(() => {
+        async function loadData() {
+            if (param.id) {
+                const res = await getSpecificPatient(param.id)
+                setFirstName(res.data.first_name);
+                setSecondName(res.data.middle_name)
+                setFirstLastName(res.data.first_lastname)
+                setSecondLastName(res.data.second_lastname)
+                setBirthdate(res.data.birthdate)
+                setGender(res.data.gender)
+                setEmail(res.data.email)
+                setPhoneNumber1(res.data.phone_number)
+                setOrigin(res.data.origin)
+                setAddress(res.data.address)
+                setMaritalStatus(res.data.marital_status)
+                setOccupation(res.data.occupation)
+                setEmergencyContactName(res.data.emergency_contact)
+                setPhoneNumber2(res.data.emergency_number)
+            }
+        }
+        loadData();
+    }, []);
+
     return (
         <>
             <Modal
                 isOpen={isOpen}
                 onOpenChange={() => {
                     onOpenChange(true);
-                    resetForm();
+                    {!param.id && resetForm();}
                 }}
                 placement="top-center"
                 size="5xl"
@@ -181,7 +211,7 @@ export default function NewPatientModal({ isOpen, onOpenChange, updateTable }) {
                             <form onSubmit={handleSubmit}>
                                 {modalOpen ? (
                                     <>
-                                        <ModalHeader className="flex flex-col gap-1">Nuevo Paciente</ModalHeader>
+                                        <ModalHeader className="flex flex-col gap-1">{param.id ? 'Modificar Paciente' : 'Nuevo Paciente'}</ModalHeader>
                                         <ModalBody>
                                             <div className="flex flex-col gap-2 md:flex-row">
                                                 <Input
@@ -322,9 +352,16 @@ export default function NewPatientModal({ isOpen, onOpenChange, updateTable }) {
                                             </div>
                                         </ModalBody>
                                         <ModalFooter>
-                                            <Button color="primary" onPress={handleNextModal} radius="sm">
-                                                Siguiente
-                                            </Button>
+                                            {
+                                                param.id ?
+                                                    <Button className="bg-[#1E1E1E] text-white" radius="sm" type="submit">
+                                                        Actualizar
+                                                    </Button>
+                                                    :
+                                                    <Button className="bg-[#1E1E1E] text-white" radius="sm" onPress={handleNextModal}>
+                                                        Siguiente
+                                                    </Button>
+                                            }
                                         </ModalFooter>
                                     </>
                                 ) : (
