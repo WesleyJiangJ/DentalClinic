@@ -1,11 +1,13 @@
 import React from "react";
-import { getSpecificPatient } from "../../api/patient_api";
+import { getSpecificPatient, updatePatient } from "../../api/patient_api";
 import { useParams } from 'react-router-dom';
-import { Avatar, Button, Divider, Tabs, Tab, Card, CardBody, Textarea, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Badge, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
+import { Avatar, Button, Divider, Tabs, Tab, Card, CardBody, Textarea, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Badge, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, useDisclosure } from "@nextui-org/react";
 import { Typography } from "@material-tailwind/react";
-import { ChevronDownIcon, MinusCircleIcon, PencilSquareIcon } from "@heroicons/react/24/solid"
+import { CheckCircleIcon, ChevronDownIcon, MinusCircleIcon, PencilSquareIcon } from "@heroicons/react/24/solid"
+import NewPatientModal from "./NewPatientModal"
 
 export default function PatientDetail() {
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [user, setUser] = React.useState([])
     const { id } = useParams();
     const departamentosNicaragua = {
@@ -43,14 +45,17 @@ export default function PatientDetail() {
         return age;
     };
 
-    React.useEffect(() => {
-        getSpecificPatient(id)
+    async function loadData() {
+        await getSpecificPatient(id)
             .then((response) => {
                 setUser(response.data);
             })
             .catch((error) => {
                 console.error('Error:', error);
             });
+    }
+    React.useEffect(() => {
+        loadData();
     }, [id])
 
     return (
@@ -65,9 +70,24 @@ export default function PatientDetail() {
                             />
                         </DropdownTrigger>
                         <DropdownMenu aria-label="Actions">
-                            <DropdownItem key="edit" startContent={<PencilSquareIcon className="w-4 h-4" />}>Modificar</DropdownItem>
-                            <DropdownItem key="delete" className="text-danger" color="danger" startContent={<MinusCircleIcon className="w-5 h-5"/>}>
-                                Dar de baja
+                            <DropdownItem key="edit" startContent={<PencilSquareIcon className="w-4 h-4" />} onPress={onOpen}>Modificar</DropdownItem>
+                            <DropdownItem
+                                key="status"
+                                className={user.status === true ? 'text-danger' : 'text-success'}
+                                color={user.status === true ? 'danger' : 'success'}
+                                startContent={user.status === true ? <MinusCircleIcon className="w-5 h-5" /> : <CheckCircleIcon className="w-5 h-5" />}
+                                onPress={() => {
+                                    user.status = user.status === false ? true : false;
+                                    updatePatient(id, user)
+                                        .then(() => {
+                                            loadData();
+                                        })
+                                        .catch((error) => {
+                                            console.error('Error:', error);
+                                        });
+                                }}
+                            >
+                                {user.status === true ? 'Dar de baja' : 'Dar de alta'}
                             </DropdownItem>
                         </DropdownMenu>
                     </Dropdown>
@@ -267,6 +287,7 @@ export default function PatientDetail() {
 
                 </div>
             </div>
+            <NewPatientModal isOpen={isOpen} onOpenChange={onOpenChange} updateData={loadData} />
         </div>
     );
 }
