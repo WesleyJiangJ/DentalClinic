@@ -1,8 +1,9 @@
 import React from "react";
 import { getSpecificPatient } from "../../api/patient_api";
 import { useParams } from 'react-router-dom';
-import { Avatar, Chip, Button, Divider, Tabs, Tab, Card, CardBody, Textarea, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input } from "@nextui-org/react";
+import { Avatar, Button, Divider, Tabs, Tab, Card, CardBody, Textarea, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Badge, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
 import { Typography } from "@material-tailwind/react";
+import { ChevronDownIcon, MinusCircleIcon, PencilSquareIcon } from "@heroicons/react/24/solid"
 
 export default function PatientDetail() {
     const [user, setUser] = React.useState([])
@@ -26,10 +27,22 @@ export default function PatientDetail() {
         AN: "Región Autónoma de la Costa Caribe Norte",
         AS: "Región Autónoma de la Costa Caribe Sur",
     };
-    
+
     function getStateName(abr) {
-        return departamentosNicaragua[abr] || "Desconocido";
+        return departamentosNicaragua[abr] || "Unknown";
     }
+
+    const age = (birthdate) => {
+        const currentDate = new Date();
+        const fechaNacimientoDate = new Date(birthdate);
+        let age = currentDate.getFullYear() - fechaNacimientoDate.getFullYear();
+
+        if (fechaNacimientoDate.getMonth() > currentDate.getMonth() || (fechaNacimientoDate.getMonth() === currentDate.getMonth() && fechaNacimientoDate.getDate() > currentDate.getDate())) {
+            age--;
+        }
+        return age;
+    };
+
     React.useEffect(() => {
         getSpecificPatient(id)
             .then((response) => {
@@ -44,13 +57,35 @@ export default function PatientDetail() {
         <div className="h-[88vh] overflow-scroll">
             <div className="flex flex-col md:flex-row gap-2 mb-2">
                 <div className="flex flex-col bg-[#F2F5F8] p-5 rounded">
-                    <Avatar src="https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?cs=srgb&dl=pexels-simon-robben-614810.jpg&fm=jpg" className="w-60 h-60 text-large mb-5 m-auto" />
-                    <h1 className="text-2xl font-bold m-auto">{user.first_name} {user.first_lastname}</h1>
+                    <Dropdown radius="sm">
+                        <DropdownTrigger>
+                            <Avatar
+                                src={user.gender === 'M' ? "https://img.freepik.com/free-photo/young-bearded-man-with-striped-shirt_273609-5677.jpg" : "https://img.freepik.com/free-photo/young-beautiful-woman-pink-warm-sweater-natural-look-smiling-portrait-isolated-long-hair_285396-896.jpg"}
+                                className="w-60 h-60 text-large mb-5 m-auto cursor-pointer"
+                            />
+                        </DropdownTrigger>
+                        <DropdownMenu aria-label="Actions">
+                            <DropdownItem key="edit" startContent={<PencilSquareIcon className="w-4 h-4" />}>Modificar</DropdownItem>
+                            <DropdownItem key="delete" className="text-danger" color="danger" startContent={<MinusCircleIcon className="w-5 h-5"/>}>
+                                Dar de baja
+                            </DropdownItem>
+                        </DropdownMenu>
+                    </Dropdown>
+                    <Badge content="" size="lg" color={user.status === true ? "success" : "danger"}>
+                        <h1 className="text-2xl font-bold m-auto">
+                            {user.first_name} {user.first_lastname}
+                        </h1>
+                    </Badge>
                     <small className="text-base m-auto mb-5">{user.email}</small>
                     <Button
                         className="bg-[#1E1E1E] text-white"
                         radius="sm"
-                        size="lg">
+                        size="lg"
+                        startContent={
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-whatsapp" viewBox="0 0 16 16">
+                                <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232" />
+                            </svg>
+                        }>
                         Enviar Mensaje
                     </Button>
                 </div>
@@ -58,16 +93,16 @@ export default function PatientDetail() {
                 <div className="flex flex-col bg-[#F2F5F8] p-5 rounded w-full">
                     <div className="flex flex-row ">
                         <div className="flex-1">
+                            <p className="text-small font-bold text-foreground/80 my-4">Nombre Completo</p>
+                            <h3 className="font-semibold text-foreground/90 my-4 mr-3">{user.first_name} {user.middle_name} {user.first_lastname} {user.second_lastname}</h3>
+                        </div>
+                        <div className="flex-1">
                             <p className="text-small font-bold text-foreground/80 my-4">Género</p>
-                            <h3 className="font-semibold text-foreground/90 my-4">{user.gender == "F" ? "Femenino" : "Masculino"}</h3>
+                            <h3 className="font-semibold text-foreground/90 my-4">{user.gender === "F" ? "Femenino" : "Masculino"}</h3>
                         </div>
                         <div className="flex-1">
                             <p className="text-small font-bold text-foreground/80 my-4">Fecha de Nacimiento</p>
-                            <h3 className="font-semibold text-foreground/90 my-4">{user.birthdate}</h3>
-                        </div>
-                        <div className="flex-1">
-                            <p className="text-small font-bold text-foreground/80 my-4">Celular</p>
-                            <h3 className="font-semibold text-foreground/90 my-4">+505 {user.phone_number}</h3>
+                            <h3 className="font-semibold text-foreground/90 my-4">{user.birthdate} | {age(user.birthdate)} años</h3>
                         </div>
                     </div>
 
@@ -76,7 +111,7 @@ export default function PatientDetail() {
                     <div className="flex flex-row">
                         <div className="flex-1">
                             <p className="text-small font-bold text-foreground/80 my-4">Dirección</p>
-                            <h3 className="font-semibold text-foreground/90 my-4">{user.address}</h3>
+                            <h3 className="font-semibold text-foreground/90 my-4 mr-3">{user.address}</h3>
                         </div>
                         <div className="flex-1">
                             <p className="text-small font-bold text-foreground/80 my-4">Ciudad</p>
@@ -92,15 +127,15 @@ export default function PatientDetail() {
 
                     <div className="flex flex-row">
                         <div className="flex-1">
-                            <p className="text-small font-bold text-foreground/80 my-4">Estado</p>
-                            <h3 className="font-semibold text-foreground/90 my-4">{user.status == true ? <Chip color="success">Activo</Chip> : <Chip color="danger">Inactivo</Chip>}</h3>
+                            <p className="text-small font-bold text-foreground/80 my-4">Celular</p>
+                            <h3 className="font-semibold text-foreground/90 my-4">+505 {user.phone_number}</h3>
                         </div>
                         <div className="flex-1">
                             <p className="text-small font-bold text-foreground/80 my-4">Contacto de Emergencia</p>
                             <h3 className="font-semibold text-foreground/90 my-4">{user.emergency_contact}</h3>
                         </div>
                         <div className="flex-1">
-                            <p className="text-small font-bold text-foreground/80 my-4">Celular</p>
+                            <p className="text-small font-bold text-foreground/80 my-4">Celular de Emergencia</p>
                             <h3 className="font-semibold text-foreground/90 my-4">+505 {user.emergency_number}</h3>
                         </div>
                     </div>
@@ -108,7 +143,9 @@ export default function PatientDetail() {
                 <div className="flex flex-col bg-[#F2F5F8] p-5 rounded w-full md:w-1/2">
                     <div className="flex justify-between">
                         <Typography className="mb-2" variant="h5">Notas</Typography>
-                        <Typography className="mb-2" variant="paragraph">Ver todo</Typography>
+                        <Typography className="mb-2" variant="paragraph">
+                            <ChevronDownIcon className="w-5 h-5 cursor-pointer" />
+                        </Typography>
                     </div>
                     <Textarea
                         size="md"
