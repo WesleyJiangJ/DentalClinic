@@ -1,4 +1,5 @@
 import React from "react";
+import { sweetToast } from './Alerts'
 import { postNewPatient, updatePatient, getSpecificPatient } from "../../api/patient_api";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Select, SelectItem, CheckboxGroup, Checkbox, Textarea } from "@nextui-org/react";
 import { useParams } from "react-router-dom";
@@ -199,7 +200,7 @@ export default function NewPatientModal({ isOpen, onOpenChange, updateTable, upd
                 isOpen={isOpen}
                 onOpenChange={() => {
                     onOpenChange(true);
-                    {!param.id && resetForm();}
+                    { !param.id && resetForm(); }
                 }}
                 placement="top-center"
                 size="5xl"
@@ -354,7 +355,7 @@ export default function NewPatientModal({ isOpen, onOpenChange, updateTable, upd
                                         <ModalFooter>
                                             {
                                                 param.id ?
-                                                    <Button className="bg-[#1E1E1E] text-white" radius="sm" type="submit">
+                                                    <Button className="bg-[#1E1E1E] text-white" radius="sm" type="submit" onPress={() => sweetToast("success", "Actualizado")}>
                                                         Actualizar
                                                     </Button>
                                                     :
