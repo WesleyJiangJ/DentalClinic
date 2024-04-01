@@ -128,12 +128,14 @@ export default function NewPatientModal({ isOpen, onOpenChange, updateTable, upd
                 await updatePatient(param.id, formData.patient_data);
                 updateData();
                 onOpenChange(false);
+                sweetToast("success", "Actualizado")
             }
             else {
                 await postNewPatient(formData);
                 updateTable();
                 handlePreviousModal();
                 onOpenChange(false);
+                sweetToast("success", `Se ha agregado a ${formData.patient_data.first_name} ${formData.patient_data.first_lastname}`)
             }
         } catch (error) {
             console.error('Error:', error);
@@ -355,7 +357,8 @@ export default function NewPatientModal({ isOpen, onOpenChange, updateTable, upd
                                         <ModalFooter>
                                             {
                                                 param.id ?
-                                                    <Button className="bg-[#1E1E1E] text-white" radius="sm" type="submit" onPress={() => sweetToast("success", "Actualizado")}>
+                                                    // <Button className="bg-[#1E1E1E] text-white" radius="sm" type="submit" onPress={() => sweetToast("success", "Actualizado")}>
+                                                    <Button className="bg-[#1E1E1E] text-white" radius="sm" type="submit">
                                                         Actualizar
                                                     </Button>
                                                     :
