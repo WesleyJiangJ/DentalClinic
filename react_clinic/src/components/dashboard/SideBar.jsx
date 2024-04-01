@@ -66,7 +66,10 @@ export default function SideBar({ collapsed, onTitleChange }) {
                 </Menu>
                 <Menu menuItemStyles={menuItemStyles}>
                     <SubMenu label="Usuarios" icon={<UserGroupIcon className="h-5 w-5" />}>
-                        <MenuItem> Doctores </MenuItem>
+                        <MenuItem
+                            component={<NavLink to="personal" end style={getActiveStyles} onClick={() => handleTitleChange('Personal')} />}>
+                            Doctores
+                        </MenuItem>
                         <MenuItem> Personal </MenuItem>
                     </SubMenu>
                     <MenuItem icon={<CogIcon className="h-5 w-5" />}> Ajustes </MenuItem>
