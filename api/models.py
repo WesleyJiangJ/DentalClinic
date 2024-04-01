@@ -64,6 +64,13 @@ ODONTOGRAM = [
     (27, "Amelogénesis imperfecta", "#FFDAB9"),  # Melocotón
 ]
 
+ROL = [
+    (1, "admin"),
+    (2, "doctor"),
+    (3, "assistant"),
+    (4, "patient"),
+]
+
 
 # People
 class Patient(models.Model):
@@ -93,9 +100,10 @@ class Personal(models.Model):
     birthdate = models.DateField()
     gender = models.CharField(max_length=1, choices=GENDER)
     phone_number = models.CharField(max_length=8)
+    origin = models.CharField(max_length=2, choices=DEPARTMENTS)
     email = models.EmailField()
     address = models.CharField(max_length=256)
-    role = models.CharField(max_length=1)
+    role = models.CharField(max_length=1, choices=ROL)
     status = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
