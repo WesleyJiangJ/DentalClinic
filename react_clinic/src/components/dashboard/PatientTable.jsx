@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { getAllPatients } from '../../api/patient_api.js'
 import NewPatientModal from "./NewPatientModal.jsx";
 import {
@@ -19,16 +19,12 @@ import {
     Pagination,
     Select,
     SelectItem,
-    Tooltip,
     useDisclosure,
 } from "@nextui-org/react";
 import {
     PlusIcon,
     MagnifyingGlassIcon,
     ChevronDownIcon,
-    EyeIcon,
-    PencilIcon,
-    TrashIcon
 } from '@heroicons/react/24/solid'
 
 const statusColorMap = {
@@ -36,13 +32,12 @@ const statusColorMap = {
     false: "danger",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["full_name", "phone_number", "status", "actions"];
+const INITIAL_VISIBLE_COLUMNS = ["full_name", "status"];
 
 const columns = [
     { name: "Nombres", uid: "full_name", sortable: true },
     { name: "Celular", uid: "phone_number", sortable: true },
-    { name: "Estado", uid: "status", sortable: true },
-    { name: "Acciones", uid: "actions" },
+    { name: "Estado", uid: "status", sortable: false },
 ];
 
 const statusOptions = [
@@ -55,6 +50,7 @@ function capitalize(str) {
 }
 
 export default function PatientTable() {
+    const navigate = useNavigate();
     const [filterValue, setFilterValue] = React.useState("");
     const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
     const [visibleColumns, setVisibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
@@ -78,7 +74,6 @@ export default function PatientTable() {
     const loadPatients = async () => {
         const res = await getAllPatients();
         setPatientData(res.data);
-        // console.log("Loaded")
     };
 
     React.useEffect(() => {
@@ -86,7 +81,6 @@ export default function PatientTable() {
     }, []);
 
     const updateTable = async () => {
-        // console.log("Updated")
         await loadPatients();
     };
 
@@ -132,43 +126,23 @@ export default function PatientTable() {
         switch (columnKey) {
             case "full_name":
                 return (
-                    <div className="flex flex-col">
+                    <div className="flex flex-col my-2">
                         <p className="text-bold text-small capitalize">{user.first_name} {user.middle_name} {user.first_lastname} {user.second_lastname}</p>
-                        <p className="text-bold text-tiny text-default-400">{user.email}</p>
+                        <p className="text-bold text-tiny text-default-500">{user.email}</p>
                     </div>
                 );
             case "phone_number":
                 return (
-                    <div className="flex flex-col">
+                    <div className="flex flex-col my-2">
                         <p className="text-bold text-small capitalize">+505 {cellValue}</p>
                     </div>
                 );
             case "status":
                 const statusText = cellValue ? "Activo" : "Inactivo";
                 return (
-                    <Chip className="capitalize" color={statusColorMap[user.status]} size="sm" variant="flat">
+                    <Chip className="capitalize my-2" color={statusColorMap[user.status]} size="sm" variant="flat">
                         {statusText}
                     </Chip>
-                );
-            case "actions":
-                return (
-                    <div className="relative flex items-center gap-2">
-                        <Tooltip content="Detalles">
-                            <Link to={`detail/${user.id}`} className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                                <EyeIcon className="w-5 h-5" />
-                            </Link>
-                        </Tooltip>
-                        <Tooltip content="Editar">
-                            <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                                <PencilIcon className="w-5 h-5" />
-                            </span>
-                        </Tooltip>
-                        <Tooltip color="danger" content="Eliminar">
-                            <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                                <TrashIcon className="w-5 h-5" />
-                            </span>
-                        </Tooltip>
-                    </div>
                 );
             default:
                 return cellValue;
@@ -260,7 +234,7 @@ export default function PatientTable() {
                     </div>
                 </div>
                 <div className="flex justify-between items-center">
-                    <span className="text-default-400 text-small">Usuarios: {users.length}</span>
+                    <span className="text-default-500 text-small">Usuarios: {users.length}</span>
                     <label className="flex items-center text-default-400 text-small">
                         <Select
                             label="Filas"
@@ -305,6 +279,7 @@ export default function PatientTable() {
     return (
         <>
             <Table
+                shadow="none"
                 radius="sm"
                 aria-label="Patient Table"
                 isHeaderSticky
@@ -316,7 +291,9 @@ export default function PatientTable() {
                 topContent={topContent}
                 topContentPlacement="outside"
                 onSelectionChange={setSelectedKeys}
-                onSortChange={setSortDescriptor}>
+                onSortChange={setSortDescriptor}
+                selectionMode="single"
+                onRowAction={(key) => navigate(`detail/${key}`)}>
                 <TableHeader columns={headerColumns}>
                     {(column) => (
                         <TableColumn
@@ -326,10 +303,14 @@ export default function PatientTable() {
                         </TableColumn>
                     )}
                 </TableHeader>
-                <TableBody emptyContent={"No se encontraron pacientes"} items={sortedItems}>
+                <TableBody emptyContent={"No hubieron resultados"} items={sortedItems}>
                     {(item) => (
-                        <TableRow key={item.email}>
-                            {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+                        <TableRow key={item.id}>
+                            {(columnKey) =>
+                                <TableCell className="cursor-pointer">
+                                    {renderCell(item, columnKey)}
+                                </TableCell>
+                            }
                         </TableRow>
                     )}
                 </TableBody>
