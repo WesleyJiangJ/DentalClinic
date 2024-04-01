@@ -22,7 +22,7 @@ class PatientSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class PersonalSerializer(serializers.HyperlinkedModelSerializer):
+class PersonalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Personal
         fields = "__all__"
