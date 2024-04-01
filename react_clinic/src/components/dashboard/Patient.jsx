@@ -1,10 +1,9 @@
-import React from "react";
-import PatientTable from "./PatientTable";
+import Table from "./Table";
 
 export default function Patient() {
     return (
         <>
-            <PatientTable />
+            <Table value={"Paciente"}/>
         </>
     );
 }
