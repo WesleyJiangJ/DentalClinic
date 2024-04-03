@@ -4,7 +4,6 @@ import {
     Sidebar,
     Menu,
     MenuItem,
-    SubMenu,
 } from 'react-pro-sidebar';
 import {
     HomeIcon,
@@ -65,13 +64,10 @@ export default function SideBar({ collapsed, onTitleChange }) {
                     <MenuItem icon={<BanknotesIcon className="h-5 w-5" />}> Pagos </MenuItem>
                 </Menu>
                 <Menu menuItemStyles={menuItemStyles}>
-                    <SubMenu label="Usuarios" icon={<UserGroupIcon className="h-5 w-5" />}>
-                        <MenuItem
-                            component={<NavLink to="personal" end style={getActiveStyles} onClick={() => handleTitleChange('Personal')} />}>
-                            Doctores
-                        </MenuItem>
-                        <MenuItem> Personal </MenuItem>
-                    </SubMenu>
+                    <MenuItem icon={<UserGroupIcon className="h-5 w-5" />}
+                        component={<NavLink to="personal" end style={getActiveStyles} onClick={() => handleTitleChange('Personal')} />}>
+                        Personal
+                    </MenuItem>
                     <MenuItem icon={<CogIcon className="h-5 w-5" />}> Ajustes </MenuItem>
                     <MenuItem icon={<ArrowLeftStartOnRectangleIcon className="h-5 w-5" />}> Logout </MenuItem>
                 </Menu>
