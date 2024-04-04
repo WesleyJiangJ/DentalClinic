@@ -72,14 +72,8 @@ export default function PatientTable({ value }) {
 
     const [users, setData] = React.useState([])
     const loadData = async () => {
-        if (value === "Paciente") {
-            const res = await getAllPatients();
-            setData(res.data);
-        }
-        else if (value === "Personal") {
-            const res = await getAllPersonal();
-            setData(res.data);
-        }
+        const res = value === "Paciente" ? await getAllPatients() : await getAllPersonal();
+        setData(res.data)
     };
 
     React.useEffect(() => {
@@ -101,7 +95,6 @@ export default function PatientTable({ value }) {
         if (statusFilter !== "all" && Array.from(statusFilter).length !== statusOptions.length) {
             filteredUsers = filteredUsers.filter((user) =>
                 Array.from(statusFilter).includes(user.status.toString()),
-                console.log(statusFilter)
             );
         }
 
