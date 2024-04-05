@@ -1,15 +1,17 @@
 import React from "react";
-import { getAllPatients, getAllPersonal } from "../../api/apiFunctions";
+import { useParams } from "react-router-dom";
+import { getAllPatients, getAllPersonal, postAppointment } from "../../api/apiFunctions";
 import { Input, Select, SelectItem, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Textarea } from "@nextui-org/react";
 
-export default function NewAppointmentModal({ isOpen, onOpenChange }) {
+export default function AppointmentModal({ isOpen, onOpenChange }) {
     const [patientData, setPatientData] = React.useState([]);
     const [id_patient, setIdPatient] = React.useState('');
     const [personalData, setPersonalData] = React.useState([]);
     const [id_personal, setIdPersonal] = React.useState('');
-    const [dateValue, setDateValue] = React.useState(new Date());
+    const [dateValue, setDateValue] = React.useState('');
     const [timeValue, setTimeValue] = React.useState('');
-    const [observations, setObservations] = React.useState('');
+    const [observation, setObservation] = React.useState('');
+    const param = useParams();
 
     const loadData = async () => {
         const patientRes = await getAllPatients();
@@ -31,12 +33,33 @@ export default function NewAppointmentModal({ isOpen, onOpenChange }) {
         id_patient,
         id_personal,
         datetime: dateValue + ' ' + timeValue,
-        observations,
+        observation,
+    }
+
+    const resetForm = () => {
+        setIdPatient("");
+        setIdPersonal("");
+        setDateValue("");
+        setTimeValue("");
+        setObservation("");
     }
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log(formData)
+        console.log(formData);
+        try {
+            if (param.id) {
+                console.log("Editing");
+            }
+            else {
+                await postAppointment(formData);
+                console.log("Creating");
+            }
+            resetForm();
+            onOpenChange(false)
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     return (
@@ -102,8 +125,8 @@ export default function NewAppointmentModal({ isOpen, onOpenChange }) {
                                             placeholder="Escriba aquí . . ."
                                             size="lg"
                                             radius="sm"
-                                            value={observations}
-                                            onChange={(e) => handleInputChange(e, setObservations)}
+                                            value={observation}
+                                            onChange={(e) => handleInputChange(e, setObservation)}
                                         />
                                     </div>
                                 </ModalBody>
