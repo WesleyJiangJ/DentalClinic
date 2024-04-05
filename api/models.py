@@ -64,11 +64,17 @@ ODONTOGRAM = [
     (27, "Amelogénesis imperfecta", "#FFDAB9"),  # Melocotón
 ]
 
-ROL = [
-    (1, "admin"),
-    (2, "doctor"),
-    (3, "assistant"),
-    (4, "patient"),
+ROLE = [
+    (1, "Admin"),
+    (2, "Doctor"),
+    (3, "Asistente"),
+    (4, "Paciente"),
+]
+
+APPOINTMENTSTATUS = [
+    (1, "Activa"),
+    (2, "Cancelada"),
+    (3, "Realizada"),
 ]
 
 
@@ -103,7 +109,7 @@ class Personal(models.Model):
     origin = models.CharField(max_length=2, choices=DEPARTMENTS)
     email = models.EmailField()
     address = models.CharField(max_length=256)
-    role = models.CharField(max_length=1, choices=ROL)
+    role = models.CharField(max_length=1, choices=ROLE)
     status = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -191,13 +197,13 @@ class Medical_History(models.Model):
 
 
 # Appointment
-# class Appointment(models.Model):
-#     id_patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-#     id_personal = models.ForeignKey(Personal, on_delete=models.CASCADE)
-#     date_time = models.DateTimeField()
-#     status = models.CharField(max_length=1)
-#     observation = models.TextField(null=True)
-#     notes = models.TextField(null=True)
+class Appointment(models.Model):
+    id_patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    id_personal = models.ForeignKey(Personal, on_delete=models.CASCADE)
+    datetime = models.DateTimeField()
+    status = models.CharField(max_length=1, default=1, choices=APPOINTMENTSTATUS)
+    observation = models.TextField(null=True)
+    # notes = models.TextField(null=True)
 
 
 # Budget & Payments

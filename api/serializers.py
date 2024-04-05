@@ -52,7 +52,7 @@ class NewPatientSerializer(serializers.ModelSerializer):
         representation['patient_data'] = patient_representation
         return representation
 
-# class AppointmentSerializer(serializers.HyperlinkedModelSerializer):
-#     class Meta:
-#         model = Appointment
-#         fields = '__all__'
+class AppointmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Appointment
+        fields = '__all__'
