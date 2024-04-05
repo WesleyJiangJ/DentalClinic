@@ -8,8 +8,12 @@ const addPatientAPI = axios.create({
     baseURL: 'http://localhost:8000/new_patient/'
 })
 
-const addPersonalAPI = axios.create({
+const personalAPI = axios.create({
     baseURL: 'http://localhost:8000/personal/'
+})
+
+const appointmentAPI = axios.create({
+    baseURL: 'http://localhost:8000/appointment/'
 })
 
 // Patient
@@ -21,27 +25,27 @@ export const getSpecificPatient = (id) => {
     return patientAPI.get(`/${id}`)
 }
 
-export const updatePatient = (id, data) => {
+export const putPatient = (id, data) => {
     return patientAPI.put(`/${id}/`, data)
 }
 
-export const postNewPatient = (data) => {
+export const postPatient = (data) => {
     return addPatientAPI.post('/', data)
 }
 
 // Personal
 export const getAllPersonal = () => {
-    return addPersonalAPI.get('/')
+    return personalAPI.get('/')
 }
 
 export const getSpecificPersonal = (id) => {
-    return addPersonalAPI.get(`/${id}`)
+    return personalAPI.get(`/${id}`)
 }
 
-export const updatePersonal = (id, data) => {
-    return addPersonalAPI.put(`/${id}/`, data)
+export const putPersonal = (id, data) => {
+    return personalAPI.put(`/${id}/`, data)
 }
 
-export const postNewPersonal = (data) => {
-    return addPersonalAPI.post('/', data)
+export const postPersonal = (data) => {
+    return personalAPI.post('/', data)
 }
