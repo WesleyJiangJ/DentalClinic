@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from 'react-router-dom'
 import { getAllPatients, getAllPersonal } from '../../api/apiFunctions.js'
-import NewUserModal from "./NewUserModal.jsx";
+import UserModal from "./UserModal.jsx";
 import {
     Table,
     TableHeader,
@@ -314,7 +314,7 @@ export default function PatientTable({ value }) {
                     )}
                 </TableBody>
             </Table>
-            <NewUserModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} value={value} />
+            <UserModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} value={value} />
         </>
     );
 }

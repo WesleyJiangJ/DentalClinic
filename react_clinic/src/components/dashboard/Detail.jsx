@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import { Avatar, Button, Divider, Tabs, Tab, Card, CardBody, Textarea, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Badge, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, useDisclosure } from "@nextui-org/react";
 import { Typography } from "@material-tailwind/react";
 import { CheckCircleIcon, ChevronDownIcon, MinusCircleIcon, PencilSquareIcon } from "@heroicons/react/24/solid"
-import NewUserModal from "./NewUserModal"
+import UserModal from "./UserModal"
 
 export default function Detail({ value }) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -322,7 +322,7 @@ export default function Detail({ value }) {
 
                     </div>
                 </div>
-                <NewUserModal isOpen={isOpen} onOpenChange={onOpenChange} updateData={loadData} value={value} />
+                <UserModal isOpen={isOpen} onOpenChange={onOpenChange} updateData={loadData} value={value} />
             </div>
         </>
     );
