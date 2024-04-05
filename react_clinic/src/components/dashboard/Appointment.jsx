@@ -70,6 +70,32 @@ export default function Appointment() {
                             initialView="dayGridMonth"
                             height={"82vh"}
                             nowIndicator={true}
+                            eventSources={[
+                                {
+                                    events: data.map((info) => ({
+                                        title: info.observation,
+                                        start: info.datetime,
+                                        end: info.datetime
+                                    })),
+                                    color: '#1E1E1E',
+                                    textColor: 'white'
+                                }
+                            ]}
+                            businessHours={
+                                [
+                                    {
+                                        daysOfWeek: [1, 2, 3, 4, 5], // Monday - Friday
+                                        startTime: '08:00', // a start time (8am in this example)
+                                        endTime: '17:30', // an end time (5:30pm in this example)
+                                    },
+                                    {
+                                        daysOfWeek: [6], // Saturday
+                                        startTime: '08:00', // a start time (8am in this example)
+                                        endTime: '12:00', // an end time (12:00pm in this example)
+                                    }
+                                ]
+
+                            }
                         />
                     </div>
                     <div className='flex flex-col w-full md:w-1/3 h-[82vh] overflow-scroll'>
