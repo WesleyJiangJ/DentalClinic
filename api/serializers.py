@@ -56,3 +56,11 @@ class AppointmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appointment
         fields = '__all__'
+    
+    def to_representation(self, instance):
+        representation = super(AppointmentSerializer, self).to_representation(instance)
+        patient_representation = PatientSerializer(instance.id_patient).data
+        personal_representation = PersonalSerializer(instance.id_personal).data
+        representation['patient_data'] = patient_representation
+        representation['personal_data'] = personal_representation
+        return representation
