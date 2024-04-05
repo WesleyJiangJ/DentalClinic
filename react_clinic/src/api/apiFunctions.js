@@ -49,3 +49,20 @@ export const putPersonal = (id, data) => {
 export const postPersonal = (data) => {
     return personalAPI.post('/', data)
 }
+
+// Appointment
+export const getAllAppointments = () => {
+    return appointmentAPI.get('/')
+}
+
+export const getSpecificAppointment = (id) => {
+    return appointmentAPI.get(`/${id}`)
+}
+
+export const putAppointment = (id, data) => {
+    return appointmentAPI.put(`/${id}/`, data)
+}
+
+export const postAppointment = (data) => {
+    return appointmentAPI.post('/', data)
+}
