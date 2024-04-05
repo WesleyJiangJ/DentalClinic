@@ -1,6 +1,6 @@
 import React from "react";
 import { sweetAlert } from './Alerts'
-import { getSpecificPatient, updatePatient, getSpecificPersonal, updatePersonal } from "../../api/patient_api";
+import { getSpecificPatient, putPatient, getSpecificPersonal, putPersonal } from "../../api/apiFunctions";
 import { useParams } from 'react-router-dom';
 import { Avatar, Button, Divider, Tabs, Tab, Card, CardBody, Textarea, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Badge, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, useDisclosure } from "@nextui-org/react";
 import { Typography } from "@material-tailwind/react";
@@ -102,7 +102,7 @@ export default function Detail({ value }) {
                                     onPress={async () => {
                                         await sweetAlert("¿Estás seguro?", `${user.first_name} ${user.first_lastname} será dado de ${user.status === true ? "baja" : "alta"}`, "warning", "success", `${user.first_name} ${user.first_lastname} fue dado de ${user.status === true ? "baja" : "alta"}`);
                                         user.status = user.status === false ? true : false;
-                                        value === "Paciente" ? updatePatient(id, user) : updatePersonal(id, user)
+                                        value === "Paciente" ? putPatient(id, user) : putPersonal(id, user)
                                             .then(() => {
                                                 loadData();
                                             })

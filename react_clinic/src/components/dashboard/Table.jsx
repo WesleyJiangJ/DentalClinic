@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from 'react-router-dom'
-import { getAllPatients, getAllPersonal } from '../../api/patient_api.js'
+import { getAllPatients, getAllPersonal } from '../../api/apiFunctions.js'
 import NewUserModal from "./NewUserModal.jsx";
 import {
     Table,

@@ -1,6 +1,6 @@
 import React from "react";
 import { sweetToast } from './Alerts'
-import { postNewPatient, updatePatient, getSpecificPatient, postNewPersonal, updatePersonal, getSpecificPersonal } from "../../api/patient_api";
+import { postPatient, putPatient, getSpecificPatient, postPersonal, putPersonal, getSpecificPersonal } from "../../api/apiFunctions";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Select, SelectItem, CheckboxGroup, Checkbox, Textarea } from "@nextui-org/react";
 import { useParams } from "react-router-dom";
 
@@ -135,13 +135,13 @@ export default function NewPatientModal({ isOpen, onOpenChange, updateTable, upd
         try {
             if (param.id) {
                 if (value === "Paciente") {
-                    await updatePatient(param.id, formData.data);
+                    await putPatient(param.id, formData.data);
                     updateData();
                     onOpenChange(false);
                     sweetToast("success", "Actualizado")
                 }
                 else if (value === "Personal") {
-                    await updatePersonal(param.id, formData.data);
+                    await putPersonal(param.id, formData.data);
                     updateData();
                     onOpenChange(false);
                     sweetToast("success", "Actualizado")
@@ -149,10 +149,10 @@ export default function NewPatientModal({ isOpen, onOpenChange, updateTable, upd
             }
             else {
                 if (value === "Paciente") {
-                    await postNewPatient(formData);
+                    await postPatient(formData);
                 }
                 else {
-                    await postNewPersonal(formData.data);
+                    await postPersonal(formData.data);
                     console.log(formData)
                 }
                 resetForm();
