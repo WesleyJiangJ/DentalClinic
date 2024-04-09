@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { getAllAppointments } from '../../api/apiFunctions';
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -11,17 +11,32 @@ import AppointmentCard from './AppointmentCard';
 import AppointmentModal from './AppointmentModal';
 
 export default function Appointment() {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const param = useParams();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
-    // const param = useParams();
     const [data, setData] = React.useState([]);
 
     const loadData = async () => {
         const res = await getAllAppointments();
         setData(res.data);
-        console.log(data);
     }
+
+    const reloadData = async () => {
+        await loadData();
+    }
+
+    const modifyURL = () => {
+        const currentPath = location.pathname;
+        const newPath = currentPath.split('/').filter((segment) => segment !== param.id).join('/');
+        navigate(newPath);
+    }
+    
     React.useEffect(() => {
         loadData();
+        if (param.id) {
+            modifyURL();
+        }
     }, []);
 
     return (
@@ -44,7 +59,15 @@ export default function Appointment() {
                         >
                             <PlusIcon className="h-7 w-7" />
                         </Button>
-                        <AppointmentModal isOpen={isOpen} onOpenChange={onOpenChange} />
+                        <AppointmentModal
+                            isOpen={isOpen}
+                            onOpenChange={onOpenChange}
+                            reloadData={reloadData}
+                            location={location}
+                            navigate={navigate}
+                            param={param}
+                            modifyURL={modifyURL}
+                        />
                     </div>
                 </div>
                 <div className='flex flex-row'>
@@ -74,7 +97,7 @@ export default function Appointment() {
                                 {
                                     events: data.map((info) => ({
                                         title: info.observation,
-                                        start: info.datetime,
+                                        start: info.datetime.slice(0, -1),
                                         end: info.datetime
                                     })),
                                     color: '#1E1E1E',
@@ -84,14 +107,14 @@ export default function Appointment() {
                             businessHours={
                                 [
                                     {
-                                        daysOfWeek: [1, 2, 3, 4, 5], // Monday - Friday
-                                        startTime: '08:00', // a start time (8am in this example)
-                                        endTime: '17:30', // an end time (5:30pm in this example)
+                                        daysOfWeek: [1, 2, 3, 4, 5], // Monday to Friday
+                                        startTime: '08:00', // a start time (8:00 am)
+                                        endTime: '17:30', // an end time (5:30 pm)
                                     },
                                     {
                                         daysOfWeek: [6], // Saturday
-                                        startTime: '08:00', // a start time (8am in this example)
-                                        endTime: '12:00', // an end time (12:00pm in this example)
+                                        startTime: '08:00', // a start time (8:00 am)
+                                        endTime: '12:00', // an end time (12:00 pm)
                                     }
                                 ]
 
@@ -99,15 +122,20 @@ export default function Appointment() {
                         />
                     </div>
                     <div className='flex flex-col w-full md:w-1/3 h-[82vh] overflow-scroll'>
-                        {data.map((info) => (
-                            <AppointmentCard
-                                key={info.id}
-                                observation={info.observation}
-                                patient={info['patient_data'].first_name + ' ' + info['patient_data'].middle_name + ' ' + info['patient_data'].first_lastname + ' ' + info['patient_data'].second_lastname}
-                                personal={'Dr. ' + info['personal_data'].first_name + ' ' + info['personal_data'].middle_name + ' ' + info['personal_data'].first_lastname + ' ' + info['personal_data'].second_lastname}
-                                date={info.datetime}
-                            />
-                        ))}
+                        {data
+                            .sort((a, b) => new Date(a.datetime) - new Date(b.datetime))
+                            .map((info) => (
+                                <AppointmentCard
+                                    key={info.id}
+                                    id={info.id}
+                                    observation={info.observation}
+                                    patient={`${info['patient_data'].first_name} ${info['patient_data'].middle_name} ${info['patient_data'].first_lastname} ${info['patient_data'].second_lastname}`}
+                                    personal={`Dr. ${info['personal_data'].first_name} ${info['personal_data'].middle_name} ${info['personal_data'].first_lastname} ${info['personal_data'].second_lastname}`}
+                                    date={info.datetime}
+                                    onOpen={onOpen}
+                                    navigate={navigate}
+                                />
+                            ))}
                     </div>
                 </div>
             </div>
