@@ -1,7 +1,10 @@
+import React from 'react';
 import { Button, Card, CardHeader, CardBody, CardFooter } from '@nextui-org/react'
-import { PencilIcon, CheckIcon } from "@heroicons/react/24/solid";
+import { PencilIcon, CheckIcon, CalendarDaysIcon, ClockIcon } from "@heroicons/react/24/solid";
 
-export default function AppointmentCard({ observation, patient, personal, date }) {
+export default function AppointmentCard({ id, observation, patient, personal, date, onOpen, navigate }) {
+    const formattedDate = new Date(date).toISOString().split('T')[0];
+    const formattedTime = new Date(date).toISOString().split('T')[1].slice(0, 5);
     return (
         <>
             <div className='m-2'>
@@ -12,14 +15,24 @@ export default function AppointmentCard({ observation, patient, personal, date }
                     <CardBody>
                         <p>{patient}</p>
                         <p>{personal}</p>
-                        <p>{date}</p>
+                        <p className='flex flex-row mt-2'>
+                            <CalendarDaysIcon className='w-5 h-5 mr-2' />
+                            {formattedDate}</p>
+                        <p className='flex flex-row'>
+                            <ClockIcon className='w-5 h-5 mr-2' />
+                            {formattedTime}
+                        </p>
                     </CardBody>
                     <CardFooter>
                         <div className='flex flex-row w-full gap-1'>
                             <div className='w-full'>
                                 <Button
                                     className='w-full bg-white'
-                                    radius='sm'>
+                                    radius='sm'
+                                    onPress={() => {
+                                        onOpen();
+                                        navigate(`${id}`);
+                                    }}>
                                     <PencilIcon className="h-5 w-5" />
                                 </Button>
                             </div>
@@ -31,9 +44,9 @@ export default function AppointmentCard({ observation, patient, personal, date }
                                 </Button>
                             </div>
                         </div>
-                    </CardFooter>
-                </Card>
-            </div>
+                    </CardFooter >
+                </Card >
+            </div >
         </>
     );
 }
