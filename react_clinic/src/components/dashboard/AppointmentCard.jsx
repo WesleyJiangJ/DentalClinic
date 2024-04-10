@@ -15,11 +15,11 @@ export default function AppointmentCard({ id, reason, patient, personal, date, o
                     <CardBody>
                         <p>{patient}</p>
                         <p>{personal}</p>
-                        <p className='flex flex-row mt-2'>
+                        <p className='flex flex-row mt-2 items-center'>
                             <CalendarDaysIcon className='w-5 h-5 mr-2' />
                             {formattedDate}
                         </p>
-                        <p className='flex flex-row'>
+                        <p className='flex flex-row items-center'>
                             <ClockIcon className='w-5 h-5 mr-2' />
                             {formattedTime}
                         </p>
