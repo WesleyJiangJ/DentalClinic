@@ -40,7 +40,6 @@ class NewPatientSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         patient_data = validated_data.pop("patient_data")
         patient = Patient.objects.create(**patient_data)
-        print(validated_data)
         medical_history = Medical_History.objects.create(
             id_patient=patient, **validated_data
         )
