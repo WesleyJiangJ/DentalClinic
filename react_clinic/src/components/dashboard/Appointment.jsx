@@ -96,7 +96,7 @@ export default function Appointment() {
                             eventSources={[
                                 {
                                     events: data.map((info) => ({
-                                        title: info.observation,
+                                        title: info.reason,
                                         start: info.datetime.slice(0, -1),
                                         end: info.datetime
                                     })),
@@ -128,7 +128,7 @@ export default function Appointment() {
                                 <AppointmentCard
                                     key={info.id}
                                     id={info.id}
-                                    observation={info.observation}
+                                    reason={info.reason}
                                     patient={`${info['patient_data'].first_name} ${info['patient_data'].middle_name} ${info['patient_data'].first_lastname} ${info['patient_data'].second_lastname}`}
                                     personal={`Dr. ${info['personal_data'].first_name} ${info['personal_data'].middle_name} ${info['personal_data'].first_lastname} ${info['personal_data'].second_lastname}`}
                                     date={info.datetime}

@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Card, CardHeader, CardBody, CardFooter } from '@nextui-org/react'
 import { PencilIcon, CheckIcon, CalendarDaysIcon, ClockIcon } from "@heroicons/react/24/solid";
 
-export default function AppointmentCard({ id, observation, patient, personal, date, onOpen, navigate }) {
+export default function AppointmentCard({ id, reason, patient, personal, date, onOpen, navigate }) {
     const formattedDate = new Date(date).toISOString().split('T')[0];
     const formattedTime = new Date(date).toISOString().split('T')[1].slice(0, 5);
     return (
@@ -10,14 +10,15 @@ export default function AppointmentCard({ id, observation, patient, personal, da
             <div className='m-2'>
                 <Card shadow='none' className='bg-[#1E1E1E] text-white' radius='sm'>
                     <CardHeader>
-                        <h1 className='text-xl font-bold'>{observation}</h1>
+                        <h1 className='text-xl font-bold'>{reason}</h1>
                     </CardHeader>
                     <CardBody>
                         <p>{patient}</p>
                         <p>{personal}</p>
                         <p className='flex flex-row mt-2'>
                             <CalendarDaysIcon className='w-5 h-5 mr-2' />
-                            {formattedDate}</p>
+                            {formattedDate}
+                        </p>
                         <p className='flex flex-row'>
                             <ClockIcon className='w-5 h-5 mr-2' />
                             {formattedTime}
