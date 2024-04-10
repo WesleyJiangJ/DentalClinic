@@ -31,7 +31,7 @@ export default function Appointment() {
         const newPath = currentPath.split('/').filter((segment) => segment !== param.id).join('/');
         navigate(newPath);
     }
-    
+
     React.useEffect(() => {
         loadData();
         if (param.id) {
@@ -95,11 +95,13 @@ export default function Appointment() {
                             nowIndicator={true}
                             eventSources={[
                                 {
-                                    events: data.map((info) => ({
-                                        title: info.reason,
-                                        start: info.datetime.slice(0, -1),
-                                        end: info.datetime
-                                    })),
+                                    events: data
+                                        .filter(info => info.status === 1)
+                                        .map((info) => ({
+                                            title: info.reason,
+                                            start: info.datetime.slice(0, -1),
+                                            end: info.datetime
+                                        })),
                                     color: '#1E1E1E',
                                     textColor: 'white'
                                 }
@@ -123,6 +125,7 @@ export default function Appointment() {
                     </div>
                     <div className='flex flex-col w-full md:w-1/3 h-[82vh] overflow-scroll'>
                         {data
+                            .filter(info => info.status === 1)
                             .sort((a, b) => new Date(a.datetime) - new Date(b.datetime))
                             .map((info) => (
                                 <AppointmentCard
