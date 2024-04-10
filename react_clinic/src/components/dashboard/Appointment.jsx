@@ -28,7 +28,7 @@ export default function Appointment() {
 
     const modifyURL = () => {
         const currentPath = location.pathname;
-        const newPath = currentPath.split('/').filter((segment) => segment !== param.id).join('/');
+        const newPath = currentPath.split('/').filter((segment) => segment !== param.id && segment !== param.slug).join('/');
         navigate(newPath);
     }
 
