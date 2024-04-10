@@ -32,7 +32,7 @@ export default function AppointmentCard({ id, reason, patient, personal, date, o
                                     radius='sm'
                                     onPress={() => {
                                         onOpen();
-                                        navigate(`${id}`);
+                                        navigate(`edit/${id}`);
                                     }}>
                                     <PencilIcon className="h-5 w-5" />
                                 </Button>
@@ -40,7 +40,11 @@ export default function AppointmentCard({ id, reason, patient, personal, date, o
                             <div className='w-full'>
                                 <Button
                                     className='w-full bg-white'
-                                    radius='sm'>
+                                    radius='sm'
+                                    onPress={() => {
+                                        onOpen();
+                                        navigate(`check/${id}`);
+                                    }}>
                                     <CheckIcon className="h-5 w-5" />
                                 </Button>
                             </div>
