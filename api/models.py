@@ -192,7 +192,7 @@ class Medical_History(models.Model):
     radiotherapy = models.BooleanField(default=False)
     chemotherapy = models.BooleanField(default=False)
     habit = models.BooleanField(default=False)
-    observation = models.TextField(null=True)
+    observation = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
@@ -202,8 +202,8 @@ class Appointment(models.Model):
     id_personal = models.ForeignKey(Personal, on_delete=models.CASCADE)
     datetime = models.DateTimeField()
     status = models.CharField(max_length=1, default=1, choices=APPOINTMENTSTATUS)
-    observation = models.TextField(null=True)
-    # notes = models.TextField(null=True)
+    reason = models.TextField(blank=False)
+    observation = models.TextField(blank=True)
 
 
 # Budget & Payments
