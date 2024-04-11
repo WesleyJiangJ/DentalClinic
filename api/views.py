@@ -1,6 +1,6 @@
 from django.contrib.auth.models import Group, User
-from rest_framework import permissions, viewsets, status
-from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import permissions, viewsets
 
 from api.serializers import *
 
@@ -46,3 +46,10 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     queryset = Appointment.objects.all()
     serializer_class = AppointmentSerializer
     # permission_classes = [permissions.IsAuthenticated]
+
+
+class Appointments(viewsets.ReadOnlyModelViewSet):
+    queryset = Appointment.objects.all()
+    serializer_class = AppointmentSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["id_patient"]
