@@ -97,6 +97,9 @@ class Patient(models.Model):
     status = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.first_name + ' ' + self.middle_name + ' ' + self.first_lastname + ' ' + self.second_lastname
+
 
 class Personal(models.Model):
     first_name = models.CharField(max_length=30)
@@ -112,6 +115,10 @@ class Personal(models.Model):
     role = models.CharField(max_length=1, choices=ROLE)
     status = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.first_name + ' ' + self.middle_name + ' ' + self.first_lastname + ' ' + self.second_lastname
+
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None):
