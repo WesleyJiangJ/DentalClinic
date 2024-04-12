@@ -133,8 +133,9 @@ export default function Appointment() {
                                     id={info.id}
                                     reason={info.reason}
                                     patient={`${info['patient_data'].first_name} ${info['patient_data'].middle_name} ${info['patient_data'].first_lastname} ${info['patient_data'].second_lastname}`}
-                                    personal={`Dr. ${info['personal_data'].first_name} ${info['personal_data'].middle_name} ${info['personal_data'].first_lastname} ${info['personal_data'].second_lastname}`}
+                                    personal={`${info['personal_data'].first_name} ${info['personal_data'].middle_name} ${info['personal_data'].first_lastname} ${info['personal_data'].second_lastname}`}
                                     date={info.datetime}
+                                    gender={info['personal_data'].gender}
                                     onOpen={onOpen}
                                     navigate={navigate}
                                 />
