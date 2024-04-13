@@ -16,6 +16,10 @@ const appointmentAPI = axios.create({
     baseURL: 'http://localhost:8000/appointment/'
 })
 
+const appointmentsAPI = axios.create({
+    baseURL: 'http://localhost:8000/appointments/'
+})
+
 // Patient
 export const getAllPatients = () => {
     return patientAPI.get('/')
@@ -57,6 +61,10 @@ export const getAllAppointments = () => {
 
 export const getSpecificAppointment = (id) => {
     return appointmentAPI.get(`/${id}`)
+}
+
+export const getAllAppointmentsByPatient = (id) => {
+    return appointmentsAPI.get(`?id_patient=${id}`)
 }
 
 export const putAppointment = (id, data) => {
