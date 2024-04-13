@@ -1,15 +1,17 @@
 import React from "react";
 import { sweetAlert } from './Alerts'
-import { getSpecificPatient, putPatient, getSpecificPersonal, putPersonal } from "../../api/apiFunctions";
+import { getSpecificPatient, putPatient, getSpecificPersonal, putPersonal, getAllAppointmentsByPatient } from "../../api/apiFunctions";
 import { useParams } from 'react-router-dom';
 import { Avatar, Button, Divider, Tabs, Tab, Card, CardBody, Textarea, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Badge, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, useDisclosure } from "@nextui-org/react";
 import { Typography } from "@material-tailwind/react";
 import { CheckCircleIcon, ChevronDownIcon, MinusCircleIcon, PencilSquareIcon } from "@heroicons/react/24/solid"
 import UserModal from "./UserModal"
+import AppointmentCard from "./AppointmentCard";
 
 export default function Detail({ value }) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [user, setUser] = React.useState([])
+    const [appoitmentsPending, setAppoitmentsPending] = React.useState([])
     const { id } = useParams();
     const departamentosNicaragua = {
         BO: "Boaco",
@@ -61,6 +63,13 @@ export default function Detail({ value }) {
             await getSpecificPatient(id)
                 .then((response) => {
                     setUser(response.data);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            await getAllAppointmentsByPatient(id)
+                .then((response) => {
+                    setAppoitmentsPending(response.data);
                 })
                 .catch((error) => {
                     console.error('Error:', error);
@@ -254,23 +263,110 @@ export default function Detail({ value }) {
                             classNames={{ cursor: "bg-[#1E1E1E] rounded-md" }}
                             fullWidth
                             size="md">
-                            <Tab key="photos" title="Citas Pendientes">
-                                <Card
-                                    radius="sm"
-                                    shadow="none">
-                                    <CardBody>
-                                        Citas Pendientes
-                                    </CardBody>
-                                </Card>
-                            </Tab>
-                            <Tab key="music" title="Citas Realizadas">
-                                <Card
-                                    radius="sm"
-                                    shadow="none">
-                                    <CardBody>
-                                        Citas Realizadas
-                                    </CardBody>
-                                </Card>
+                            <Tab key="appointments" title="Citas">
+                                <Tabs
+                                    aria-label="Options"
+                                    color="primary"
+                                    classNames={{ cursor: "bg-[#1E1E1E] rounded-md" }}
+                                    fullWidth
+                                    size="md">
+                                    <Tab key="appointments_pending" title="Citas Pendientes">
+                                        <Card
+                                            radius="sm"
+                                            shadow="none">
+                                            <CardBody>
+                                                <div className='flex flex-nowrap flex-col md:flex-wrap md:flex-row w-full h-[28vh] overflow-scroll'>
+                                                    {appoitmentsPending
+                                                        .filter(info => info.status === 1)
+                                                        .sort((a, b) => new Date(a.datetime) - new Date(b.datetime))
+                                                        .map((appointment) => (
+                                                            <div className="w-full md:w-1/2" key={appointment.id}>
+                                                                <AppointmentCard
+                                                                    id={appointment.id}
+                                                                    reason={appointment.reason}
+                                                                    personal={
+                                                                        (appointment['personal_data'].gender === "F" ? "Dra. " : "Dr. ") +
+                                                                        appointment['personal_data'].first_name + ' ' +
+                                                                        appointment['personal_data'].middle_name + ' ' +
+                                                                        appointment['personal_data'].first_lastname + ' ' +
+                                                                        appointment['personal_data'].second_lastname
+                                                                    }
+                                                                    date={appointment.datetime}
+                                                                    view={'patient_detail'}
+                                                                    appointmentType={'pending'}
+                                                                />
+                                                            </div>
+                                                        ))}
+                                                </div>
+                                            </CardBody>
+                                        </Card>
+                                    </Tab>
+
+                                    <Tab key="appointment_done" title="Citas Realizadas">
+                                        <Card
+                                            radius="sm"
+                                            shadow="none">
+                                            <CardBody>
+                                                <div className='flex flex-nowrap flex-col md:flex-wrap md:flex-row w-full h-[28vh] overflow-scroll'>
+                                                    {appoitmentsPending
+                                                        .filter(info => info.status === 3)
+                                                        .sort((a, b) => new Date(a.datetime) - new Date(b.datetime))
+                                                        .map((appointment) => (
+                                                            <div className="w-full md:w-1/2" key={appointment.id}>
+                                                                <AppointmentCard
+                                                                    id={appointment.id}
+                                                                    reason={appointment.reason}
+                                                                    personal={
+                                                                        (appointment['personal_data'].gender === "F" ? "Dra. " : "Dr. ") +
+                                                                        appointment['personal_data'].first_name + ' ' +
+                                                                        appointment['personal_data'].middle_name + ' ' +
+                                                                        appointment['personal_data'].first_lastname + ' ' +
+                                                                        appointment['personal_data'].second_lastname
+                                                                    }
+                                                                    date={appointment.datetime}
+                                                                    view={'patient_detail'}
+                                                                    observation={appointment.observation}
+                                                                    appointmentType={'done'}
+                                                                />
+                                                            </div>
+                                                        ))}
+                                                </div>
+                                            </CardBody>
+                                        </Card>
+                                    </Tab>
+
+                                    <Tab key="appointment_cancelled" title="Citas Canceladas">
+                                        <Card
+                                            radius="sm"
+                                            shadow="none">
+                                            <CardBody>
+                                                <div className='flex flex-nowrap flex-col md:flex-wrap md:flex-row w-full h-[28vh] overflow-scroll'>
+                                                    {appoitmentsPending
+                                                        .filter(info => info.status === 2)
+                                                        .sort((a, b) => new Date(a.datetime) - new Date(b.datetime))
+                                                        .map((appointment) => (
+                                                            <div className="w-full md:w-1/2" key={appointment.id}>
+                                                                <AppointmentCard
+                                                                    id={appointment.id}
+                                                                    reason={appointment.reason}
+                                                                    personal={
+                                                                        (appointment['personal_data'].gender === "F" ? "Dra. " : "Dr. ") +
+                                                                        appointment['personal_data'].first_name + ' ' +
+                                                                        appointment['personal_data'].middle_name + ' ' +
+                                                                        appointment['personal_data'].first_lastname + ' ' +
+                                                                        appointment['personal_data'].second_lastname
+                                                                    }
+                                                                    date={appointment.datetime}
+                                                                    view={'patient_detail'}
+                                                                    appointmentType={'cancelled'}
+                                                                />
+                                                            </div>
+                                                        ))}
+                                                </div>
+                                            </CardBody>
+                                        </Card>
+                                    </Tab>
+                                </Tabs>
                             </Tab>
                             <Tab key="videos" title="¿Historial Médico?">
                                 <Card
