@@ -5,8 +5,8 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import listPlugin from '@fullcalendar/list';
 import timeGridPlugin from '@fullcalendar/timegrid'
-import { Input, Button, useDisclosure } from '@nextui-org/react'
-import { PlusIcon } from "@heroicons/react/24/solid";
+import { Input, Button, useDisclosure, Select, SelectItem } from '@nextui-org/react'
+import { PlusIcon, MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import AppointmentCard from './AppointmentCard';
 import AppointmentModal from './AppointmentModal';
 
@@ -16,6 +16,9 @@ export default function Appointment() {
     const param = useParams();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [data, setData] = React.useState([]);
+    const [searchValue, setSearchValue] = React.useState("");
+    const [filterValue, setFilterValue] = React.useState(1);
+    const [filterData, setFilterData] = React.useState("");
 
     const loadData = async () => {
         const res = await getAllAppointments();
@@ -39,6 +42,26 @@ export default function Appointment() {
         }
     }, []);
 
+    // Search
+    const filteredAppointments = data.filter(info => {
+        const patientFullName = `${info[filterData].first_name} ${info[filterData].middle_name} ${info[filterData].first_lastname} ${info[filterData].second_lastname}`;
+        return patientFullName.toLowerCase().includes(searchValue.toLowerCase());
+    });
+
+    const filter = (e) => {
+        setFilterValue(Number(e.target.value));
+    };
+    
+    // Filter
+    React.useEffect(() => {
+        if (filterValue === 1) {
+            setFilterData('patient_data');
+        }
+        else {
+            setFilterData('personal_data');
+        }
+    }, [filterValue]);
+
     return (
         <>
             <div className="flex flex-col">
@@ -46,9 +69,23 @@ export default function Appointment() {
                     <div className='w-full'>
                         <Input
                             type="text"
-                            label="Buscar"
+                            placeholder="Buscar"
                             radius='sm'
+                            value={searchValue}
+                            onChange={(e) => setSearchValue(e.target.value)}
+                            startContent={<MagnifyingGlassIcon className="w-5 h-5" />}
                         />
+                    </div>
+                    <div>
+                        <Select
+                            label="Filtrar"
+                            onChange={filter}
+                            defaultSelectedKeys={'1'}
+                            className="w-32 mx-2"
+                            radius="sm">
+                            <SelectItem key={1} value={1}>Paciente</SelectItem>
+                            <SelectItem key={2} value={2}>Doctor</SelectItem>
+                        </Select>
                     </div>
                     <div>
                         <Button
@@ -95,7 +132,7 @@ export default function Appointment() {
                             nowIndicator={true}
                             eventSources={[
                                 {
-                                    events: data
+                                    events: filteredAppointments
                                         .filter(info => info.status === 1)
                                         .map((info) => ({
                                             title: info.reason,
@@ -124,7 +161,7 @@ export default function Appointment() {
                         />
                     </div>
                     <div className='flex flex-col w-full md:w-1/3 h-[82vh] overflow-scroll'>
-                        {data
+                        {filteredAppointments
                             .filter(info => info.status === 1)
                             .sort((a, b) => new Date(a.datetime) - new Date(b.datetime))
                             .map((info) => (
