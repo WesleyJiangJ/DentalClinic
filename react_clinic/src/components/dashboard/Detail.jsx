@@ -359,6 +359,7 @@ export default function Detail({ value }) {
                                                                     date={appointment.datetime}
                                                                     view={'patient_detail'}
                                                                     appointmentType={'cancelled'}
+                                                                    observation={appointment.observation}
                                                                 />
                                                             </div>
                                                         ))}
