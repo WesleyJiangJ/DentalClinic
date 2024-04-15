@@ -15,6 +15,7 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
     const [reason, setReason] = React.useState('');
     const [observation, setObservation] = React.useState('');
     const readOnly = param.slug === 'check';
+    const [cancellation, setCancellation] = React.useState(false);
 
     const [prevData, setPrevData] = React.useState({
         reason: '',
@@ -72,7 +73,8 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
         setDateValue("");
         setTimeValue("");
         setReason("");
-        setObservation("")
+        setObservation("");
+        setCancellation(false);
         if (param.id) {
             modifyURL();
         }
@@ -84,6 +86,7 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
             if (param.id) {
                 let dateArray = [];
                 let timeArray = [];
+                let changeUnique = [];
                 for (const key in prevData) {
                     dateArray.push(new Date(prevData['datetime']).toISOString().split('T')[0]);
                     timeArray.push(new Date(prevData['datetime']).toISOString().split('T')[1].slice(0, 5));
@@ -109,8 +112,9 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
                         }
                     }
                 }
+                changeUnique = [...new Set(change)];
                 if (change.length > 0 || param.slug === "check") {
-                    await sweetAlert('¿Estás seguro?', (param.slug === "edit" ? `¿Deseas modificar ${change.join(', ')}?` : '¿Desea marcarla como realizada?'), 'warning', 'success', (param.slug === 'edit' ? 'Actualizado' :  "Cita realizada"));
+                    await sweetAlert('¿Estás seguro?', (param.slug === "edit" ? `¿Deseas modificar ${changeUnique.join(', ')}?` : '¿Desea marcarla como realizada?'), 'warning', 'success', (param.slug === 'edit' ? 'Actualizado' : "Cita realizada"));
                     if (param.slug === 'check') {
                         formData.status = 3;
                         await putAppointment(param.id, formData);
@@ -136,17 +140,21 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
     }
 
     const cancelAppointment = async () => {
-        await sweetAlert("¿Deseas cancelar la cita?", "", "warning", "success", "La cita fue cancelada")
-        formData.status = 2;
-        putAppointment(param.id, formData)
-            .then(() => {
-                reloadData();
-            })
-            .catch((error) => {
-                console.error('Error: ', error);
-            })
-        resetForm();
-        onOpenChange(false);
+        setCancellation(true);
+        if (observation.length > 0) {
+            await sweetAlert("¿Deseas cancelar la cita?", "", "warning", "success", "La cita fue cancelada")
+            formData.status = 2;
+            formData.observation = formData.observation;
+            putAppointment(param.id, formData)
+                .then(() => {
+                    reloadData();
+                })
+                .catch((error) => {
+                    console.error('Error: ', error);
+                })
+            resetForm();
+            onOpenChange(false);
+        }
     }
 
     return (
@@ -250,12 +258,24 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
                                             value={param.slug === "edit" || !param.slug ? reason : observation}
                                             onChange={(e) => handleInputChange(e, param.slug === "edit" || !param.slug ? setReason : setObservation)}
                                         />
+
+                                        {cancellation === true &&
+                                            <Textarea
+                                                label='Motivo de Cancelación'
+                                                placeholder="Escriba aquí . . ."
+                                                size="lg"
+                                                radius="sm"
+                                                isInvalid={observation.length == 0 ? true : false}
+                                                value={observation}
+                                                onChange={(e) => handleInputChange(e, setObservation)}
+                                            />
+                                        }
                                     </div>
                                 </ModalBody>
                                 <ModalFooter className={param.id && param.slug === "edit" ? "flex justify-between" : ""}>
                                     {param.id && param.slug === "edit" ?
                                         <Button color="danger" radius="sm" variant="solid" onPress={cancelAppointment}>
-                                            Cancelar Cita
+                                            {cancellation ? 'Confirmar Cancelación' : 'Cancelar Cita'}
                                         </Button>
                                         :
                                         ""
