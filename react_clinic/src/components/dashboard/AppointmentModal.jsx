@@ -219,7 +219,9 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
                                                     variant="underlined"
                                                     value={id_personal}
                                                     onChange={(e) => handleInputChange(e, setIdPersonal)}>
-                                                    {personalData.map((personal) => (
+                                                    {personalData
+                                                    .filter(personal => personal.role === 2)
+                                                    .map((personal) => (
                                                         <SelectItem key={personal.id} value={personal.id} textValue={personal.first_name + ' ' + personal.middle_name + ' ' + personal.first_lastname + ' ' + personal.second_lastname}>
                                                             {personal.first_name} {personal.middle_name} {personal.first_lastname} {personal.second_lastname}
                                                         </SelectItem>
