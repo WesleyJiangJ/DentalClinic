@@ -1,5 +1,5 @@
 import React from "react";
-import { sweetAlert } from './Alerts'
+import { sweetAlert, sweetToast } from './Alerts'
 import { getSpecificPatient, putPatient, getSpecificPersonal, putPersonal, getAllAppointmentsByPatient } from "../../api/apiFunctions";
 import { useParams } from 'react-router-dom';
 import { Avatar, Button, Divider, Tabs, Tab, Card, CardBody, Textarea, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Badge, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, useDisclosure } from "@nextui-org/react";
@@ -85,6 +85,35 @@ export default function Detail({ value }) {
                 });
         }
     }
+
+    const changeStatus = async () => {
+        const pending = appoitmentsPending.filter((appointment) => appointment.status === 1);
+        if (pending.length > 0) {
+            sweetToast('error', "Tienes citas activas");
+        }
+        else {
+            await sweetAlert("¿Estás seguro?", `${user.first_name} ${user.first_lastname} será dado de ${user.status === true ? "baja" : "alta"}`, "warning", "success", `${user.first_name} ${user.first_lastname} fue dado de ${user.status === true ? "baja" : "alta"}`);
+            user.status = user.status === false ? true : false;
+            value === "Paciente"
+                ?
+                putPatient(id, user)
+                    .then(() => {
+                        loadData();
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    })
+                :
+                putPersonal(id, user)
+                    .then(() => {
+                        loadData();
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    })
+        }
+    }
+
     React.useEffect(() => {
         loadData();
     }, [id])
@@ -108,17 +137,7 @@ export default function Detail({ value }) {
                                     className={user.status === true ? 'text-danger' : 'text-success'}
                                     color={user.status === true ? 'danger' : 'success'}
                                     startContent={user.status === true ? <MinusCircleIcon className="w-5 h-5" /> : <CheckCircleIcon className="w-5 h-5" />}
-                                    onPress={async () => {
-                                        await sweetAlert("¿Estás seguro?", `${user.first_name} ${user.first_lastname} será dado de ${user.status === true ? "baja" : "alta"}`, "warning", "success", `${user.first_name} ${user.first_lastname} fue dado de ${user.status === true ? "baja" : "alta"}`);
-                                        user.status = user.status === false ? true : false;
-                                        value === "Paciente" ? putPatient(id, user) : putPersonal(id, user)
-                                            .then(() => {
-                                                loadData();
-                                            })
-                                            .catch((error) => {
-                                                console.error('Error:', error);
-                                            });
-                                    }}>
+                                    onPress={changeStatus}>
                                     {user.status === true ? 'Dar de baja' : 'Dar de alta'}
                                 </DropdownItem>
                             </DropdownMenu>
