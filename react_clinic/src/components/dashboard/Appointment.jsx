@@ -65,7 +65,7 @@ export default function Appointment() {
     return (
         <>
             <div className="flex flex-col">
-                <div className='flex flex-row mb-4'>
+                <div className='flex flex-row mb-4 gap-2'>
                     <div className='w-full'>
                         <Input
                             type="text"
@@ -81,7 +81,7 @@ export default function Appointment() {
                             label="Filtrar"
                             onChange={filter}
                             defaultSelectedKeys={'1'}
-                            className="w-32 mx-2"
+                            className="w-28 md:w-32"
                             radius="sm">
                             <SelectItem key={1} value={1}>Paciente</SelectItem>
                             <SelectItem key={2} value={2}>Doctor</SelectItem>
@@ -90,7 +90,7 @@ export default function Appointment() {
                     <div>
                         <Button
                             radius='sm'
-                            className='mx-2 h-full w-full bg-[#1E1E1E] text-white'
+                            className='p-3 h-full w-full bg-[#1E1E1E] text-white'
                             isIconOnly
                             onPress={onOpen}
                         >
