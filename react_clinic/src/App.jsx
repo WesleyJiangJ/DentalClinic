@@ -6,7 +6,7 @@ import Board from './components/dashboard/Board.jsx';
 import Patient from './components/dashboard/Patient.jsx';
 import Detail from './components/dashboard/Detail.jsx';
 import Appointment from './components/dashboard/Appointment.jsx';
-import Personal from './components/dashboard/personal/Personal.jsx';
+import Personal from './components/dashboard/Personal.jsx';
 
 function App() {
   return (
