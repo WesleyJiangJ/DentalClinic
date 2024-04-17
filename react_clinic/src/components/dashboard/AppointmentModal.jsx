@@ -1,17 +1,18 @@
 import React from "react";
 import { sweetAlert, sweetToast } from "./Alerts";
 import { getAllPatients, getAllPersonal, getSpecificAppointment, postAppointment, putAppointment } from "../../api/apiFunctions";
-import { Input, Select, SelectItem, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Textarea } from "@nextui-org/react";
+import { Input, Select, SelectItem, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Textarea, DatePicker } from "@nextui-org/react";
+import { now, getLocalTimeZone, parseDateTime, today } from "@internationalized/date";
 
 export default function AppointmentModal({ isOpen, onOpenChange, reloadData, param, modifyURL }) {
     const [patientData, setPatientData] = React.useState([]);
     const [id_patient, setIdPatient] = React.useState('');
     const [patientName, setPatientName] = React.useState('');
     const [personalData, setPersonalData] = React.useState([]);
+    const [personalGender, setPersonalGender] = React.useState('');
     const [id_personal, setIdPersonal] = React.useState('');
     const [personalName, setPersonalName] = React.useState('');
-    const [dateValue, setDateValue] = React.useState('');
-    const [timeValue, setTimeValue] = React.useState('');
+    const [dateValue, setDateValue] = React.useState(now(getLocalTimeZone()));
     const [reason, setReason] = React.useState('');
     const [observation, setObservation] = React.useState('');
     const readOnly = param.slug === 'check';
@@ -30,14 +31,12 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
             setIdPatient(res.data.id_patient);
             setPersonalName(res.data['personal_data'].first_name + ' ' + res.data['personal_data'].middle_name + ' ' + res.data['personal_data'].first_lastname + ' ' + res.data['personal_data'].second_lastname);
             setIdPersonal(res.data.id_personal);
+            setPersonalGender(res.data['personal_data'].gender)
             setReason(res.data.reason);
-            const formattedDate = new Date(res.data.datetime).toISOString().split('T')[0];
-            const formattedTime = new Date(res.data.datetime).toISOString().split('T')[1].slice(0, 5);
-            setDateValue(formattedDate);
-            setTimeValue(formattedTime);
+            setDateValue(parseDateTime((res.data.datetime).slice(0, -1)))
             setPrevData({
                 ...prevData,
-                datetime: formattedDate + ' ' + formattedTime,
+                datetime: parseDateTime((res.data.datetime).slice(0, -1)),
                 reason: res.data.reason
             });
         }
@@ -61,7 +60,7 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
     const formData = {
         id_patient,
         id_personal,
-        datetime: dateValue + ' ' + timeValue,
+        datetime: dateValue.year + '-' + String(dateValue.month).padStart(2, '0') + '-' + String(dateValue.day).padStart(2, '0') + 'T' + String(dateValue.hour).padStart(2, '0') + ':' + dateValue.minute + ':00Z',
         reason,
         status: 1,
         observation,
@@ -70,8 +69,7 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
     const resetForm = () => {
         setIdPatient("");
         setIdPersonal("");
-        setDateValue("");
-        setTimeValue("");
+        setDateValue(now(getLocalTimeZone()));
         setReason("");
         setObservation("");
         setCancellation(false);
@@ -87,11 +85,17 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
                 let dateArray = [];
                 let timeArray = [];
                 let changeUnique = [];
+                const formDataDate = parseDateTime((formData['datetime']).slice(0, -1))
+                const form_date = formDataDate.year + '-' + String(formDataDate.month).padStart(2, '0') + '-' + String(formDataDate.day).padStart(2, '0');
+                const form_time = String(formDataDate.hour).padStart(2, '0') + ':' + formDataDate.minute;
+                const form_prev_date = prevData['datetime'].year + '-' + String(prevData['datetime'].month).padStart(2, '0') + '-' + String(prevData['datetime'].day).padStart(2, '0');
+                const form_prev_time = String(prevData['datetime'].hour).padStart(2, '0') + ':' + prevData['datetime'].minute;
+
                 for (const key in prevData) {
-                    dateArray.push(new Date(prevData['datetime']).toISOString().split('T')[0]);
-                    timeArray.push(new Date(prevData['datetime']).toISOString().split('T')[1].slice(0, 5));
-                    dateArray.push(new Date(formData['datetime']).toISOString().split('T')[0]);
-                    timeArray.push(new Date(formData['datetime']).toISOString().split('T')[1].slice(0, 5));
+                    dateArray.push(form_date);
+                    timeArray.push(form_time);
+                    dateArray.push(form_prev_date);
+                    timeArray.push(form_prev_time);
 
                     if (prevData[key] !== formData[key]) {
                         if (key === "reason") {
@@ -211,7 +215,7 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
                                                     readOnly
                                                     value={personalName}
                                                     variant="underlined"
-                                                    startContent={"Dr. "}
+                                                    startContent={personalGender === "F" ? "Dra. " : "Dr. "}
                                                 />
                                                 :
                                                 <Select
@@ -220,36 +224,25 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
                                                     value={id_personal}
                                                     onChange={(e) => handleInputChange(e, setIdPersonal)}>
                                                     {personalData
-                                                    .filter(personal => personal.role === 2)
-                                                    .map((personal) => (
-                                                        <SelectItem key={personal.id} value={personal.id} textValue={personal.first_name + ' ' + personal.middle_name + ' ' + personal.first_lastname + ' ' + personal.second_lastname}>
-                                                            {personal.first_name} {personal.middle_name} {personal.first_lastname} {personal.second_lastname}
-                                                        </SelectItem>
-                                                    ))}
+                                                        .filter(personal => personal.role === 2)
+                                                        .map((personal) => (
+                                                            <SelectItem key={personal.id} value={personal.id} textValue={personal.first_name + ' ' + personal.middle_name + ' ' + personal.first_lastname + ' ' + personal.second_lastname}>
+                                                                {personal.first_name} {personal.middle_name} {personal.first_lastname} {personal.second_lastname}
+                                                            </SelectItem>
+                                                        ))}
                                                 </Select>
                                             }
                                         </div>
                                         <div className="flex flex-col md:flex-row gap-4">
-                                            <Input
-                                                label="Fecha"
-                                                placeholder=" "
-                                                type="date"
+                                            <DatePicker
+                                                label="Fecha y hora"
                                                 variant="underlined"
+                                                isReadOnly={readOnly}
+                                                minValue={today(getLocalTimeZone())}
+                                                hourCycle={12}
+                                                hideTimeZone
                                                 value={dateValue}
-                                                onChange={(e) => handleInputChange(e, setDateValue)}
-                                                min={new Date().toISOString().split("T")[0]}
-                                                readOnly={readOnly}
-                                            />
-                                            <Input
-                                                label="Hora"
-                                                placeholder=" "
-                                                type="time"
-                                                variant="underlined"
-                                                value={timeValue}
-                                                onChange={(e) => handleInputChange(e, setTimeValue)}
-                                                min="09:00"
-                                                max="17:00"
-                                                readOnly={readOnly}
+                                                onChange={setDateValue}
                                             />
                                         </div>
                                         <Textarea
