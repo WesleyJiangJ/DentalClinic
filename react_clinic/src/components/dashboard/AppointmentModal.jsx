@@ -60,7 +60,7 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
     const formData = {
         id_patient,
         id_personal,
-        datetime: dateValue.year + '-' + String(dateValue.month).padStart(2, '0') + '-' + String(dateValue.day).padStart(2, '0') + 'T' + String(dateValue.hour).padStart(2, '0') + ':' + dateValue.minute + ':00Z',
+        datetime: dateValue.year + '-' + String(dateValue.month).padStart(2, '0') + '-' + String(dateValue.day).padStart(2, '0') + 'T' + String(dateValue.hour).padStart(2, '0') + ':' + String(dateValue.minute).padStart(2, '0') + ':00Z',
         reason,
         status: 1,
         observation,
@@ -87,9 +87,9 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
                 let changeUnique = [];
                 const formDataDate = parseDateTime((formData['datetime']).slice(0, -1))
                 const form_date = formDataDate.year + '-' + String(formDataDate.month).padStart(2, '0') + '-' + String(formDataDate.day).padStart(2, '0');
-                const form_time = String(formDataDate.hour).padStart(2, '0') + ':' + formDataDate.minute;
+                const form_time = String(formDataDate.hour).padStart(2, '0') + ':' + String(dateValue.minute).padStart(2, '0');
                 const form_prev_date = prevData['datetime'].year + '-' + String(prevData['datetime'].month).padStart(2, '0') + '-' + String(prevData['datetime'].day).padStart(2, '0');
-                const form_prev_time = String(prevData['datetime'].hour).padStart(2, '0') + ':' + prevData['datetime'].minute;
+                const form_prev_time = String(prevData['datetime'].hour).padStart(2, '0') + ':' + String(prevData['datetime'].minute).padStart(2, '0');
 
                 for (const key in prevData) {
                     dateArray.push(form_date);
