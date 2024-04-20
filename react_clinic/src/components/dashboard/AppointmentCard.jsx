@@ -31,7 +31,7 @@ export default function AppointmentCard({ id, reason, patient, personal, date, o
                                 ?
                                 'bg-[#1E1E1E] text-white'
                                 :
-                                'bg-[#B63E3E] text-white'
+                                'bg-[#C62828] text-white'
                     }
                     radius='sm'>
                     <CardHeader>
