@@ -2,30 +2,8 @@ import React from "react";
 import { useNavigate } from 'react-router-dom'
 import { getAllPatients, getAllPersonal } from '../../api/apiFunctions.js'
 import UserModal from "./UserModal.jsx";
-import {
-    Table,
-    TableHeader,
-    TableColumn,
-    TableBody,
-    TableRow,
-    TableCell,
-    Input,
-    Button,
-    DropdownTrigger,
-    Dropdown,
-    DropdownMenu,
-    DropdownItem,
-    Chip,
-    Pagination,
-    Select,
-    SelectItem,
-    useDisclosure,
-} from "@nextui-org/react";
-import {
-    PlusIcon,
-    MagnifyingGlassIcon,
-    ChevronDownIcon,
-} from '@heroicons/react/24/solid'
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Button, DropdownTrigger, Dropdown, DropdownMenu, DropdownItem, Chip, Pagination, Select, SelectItem, useDisclosure } from "@nextui-org/react";
+import { PlusIcon, ChevronDownIcon } from '@heroicons/react/24/solid'
 
 const statusColorMap = {
     true: "success",
@@ -175,8 +153,7 @@ export default function PatientTable({ value }) {
                         isClearable
                         className="w-full"
                         size="sm"
-                        placeholder="Buscar"
-                        startContent={<MagnifyingGlassIcon className="w-5 h-5" />}
+                        label="Buscar"
                         value={filterValue}
                         onClear={() => onClear()}
                         onValueChange={onSearchChange}
