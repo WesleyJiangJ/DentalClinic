@@ -3,19 +3,12 @@ import { Button, Card, CardHeader, CardBody, CardFooter } from '@nextui-org/reac
 import { PencilIcon, CheckIcon, CalendarDaysIcon, ClockIcon } from "@heroicons/react/24/solid";
 
 export default function AppointmentCard({ id, reason, patient, personal, date, onOpen, navigate, view, observation, appointmentType }) {
-    const formattedDate = new Date(date).toISOString().split('T')[0];
-    const formattedTime = new Date(date).toISOString().split('T')[1].slice(0, 5);
-
-    // Get actual date and yesterday date
+    const formattedDate = new Date(date).toLocaleString('es-NI', { timeZone: 'UTC', day: '2-digit', month: '2-digit', year: 'numeric' });
+    const formattedTime = new Date(date).toLocaleString('es-NI', { timeZone: 'UTC', hour12: true, hour: 'numeric', minute: '2-digit' });
     const currentDate = new Date();
-    const yesterdayDate = new Date(currentDate);
-    yesterdayDate.setDate(currentDate.getDate() - 1);
-
-    // Convert appointment date to an object Date
-    const appointmentDate = new Date(date);
-
-    // Check if the appointment date is earlier than yesterday
-    const isPastAppointment = appointmentDate < yesterdayDate;
+    const currentDateFormat = new Date(currentDate.getFullYear() + '-' + String(currentDate.getMonth() + 1).padStart(2, '0') + '-' + String(currentDate.getDate()).padStart(2, '0') + 'T' + String(currentDate.getHours()).padStart(2, '0') + ':' + String(currentDate.getMinutes()).padStart(2, '0') + ':00Z').toISOString();
+    const appointmentDate = new Date(date).toISOString();
+    const isPastAppointment = currentDateFormat > appointmentDate;
 
     return (
         <>
