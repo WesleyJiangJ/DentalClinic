@@ -63,10 +63,9 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
 
     const onSubmit = async (data) => {
         try {
-            const date = data.datetime.year + '-' + String(data.datetime.month).padStart(2, '0') + '-' + String(data.datetime.day).padStart(2, '0') + 'T' + String(data.datetime.hour).padStart(2, '0') + ':' + String(data.datetime.minute).padStart(2, '0') + ':00Z';
+            const date = data.datetime + 'Z';
             if (param.id) {
                 let dateArray = [];
-                let changeUnique = [];
                 const parse_date = parseDateTime((date).slice(0, -1));
                 const form_date = parse_date.year + '-' + String(parse_date.month).padStart(2, '0') + '-' + String(parse_date.day).padStart(2, '0');
                 const form_time = String(parse_date.hour).padStart(2, '0') + ':' + String(parse_date.minute).padStart(2, '0');
@@ -96,9 +95,9 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
                         }
                     }
                 }
-                changeUnique = [...new Set(change)];
+
                 if (change.length > 0 || param.slug === "check") {
-                    await sweetAlert('¿Estás seguro?', (param.slug === "edit" ? `¿Deseas modificar ${changeUnique.join(', ')}?` : '¿Desea marcarla como realizada?'), 'warning', 'success', (param.slug === 'edit' ? 'Actualizado' : "Cita realizada"));
+                    await sweetAlert('¿Estás seguro?', (param.slug === "edit" ? `¿Deseas modificar ${change.join(', ')}?` : '¿Desea marcarla como realizada?'), 'warning', 'success', (param.slug === 'edit' ? 'Actualizado' : "Cita realizada"));
                     if (param.slug === 'check') {
                         data.datetime = date;
                         data.status = 3;
@@ -151,7 +150,7 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
             await sweetAlert("¿Deseas cancelar la cita?", "", "warning", "success", "La cita fue cancelada");
             const defaultValues = getValues();
             defaultValues.status = 2;
-            const date = defaultValues.datetime.year + '-' + String(defaultValues.datetime.month).padStart(2, '0') + '-' + String(defaultValues.datetime.day).padStart(2, '0') + 'T' + String(defaultValues.datetime.hour).padStart(2, '0') + ':' + String(defaultValues.datetime.minute).padStart(2, '0') + ':00Z';
+            const date = defaultValues.datetime + 'Z';
             defaultValues.datetime = date;
             defaultValues.observation = defaultValues.cancellation_reason;
             await putAppointment(param.id, defaultValues)
