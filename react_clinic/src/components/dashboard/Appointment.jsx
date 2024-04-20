@@ -6,7 +6,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import listPlugin from '@fullcalendar/list';
 import timeGridPlugin from '@fullcalendar/timegrid'
 import { Input, Button, useDisclosure, Select, SelectItem } from '@nextui-org/react'
-import { PlusIcon, MagnifyingGlassIcon } from "@heroicons/react/24/solid";
+import { PlusIcon } from "@heroicons/react/24/solid";
 import AppointmentCard from './AppointmentCard';
 import AppointmentModal from './AppointmentModal';
 
@@ -19,6 +19,7 @@ export default function Appointment() {
     const [searchValue, setSearchValue] = React.useState("");
     const [filterValue, setFilterValue] = React.useState(1);
     const [filterData, setFilterData] = React.useState("");
+    const currentDate = new Date();
 
     const loadData = async () => {
         const res = await getAllAppointments();
@@ -51,7 +52,7 @@ export default function Appointment() {
     const filter = (e) => {
         setFilterValue(Number(e.target.value));
     };
-    
+
     // Filter
     React.useEffect(() => {
         if (filterValue === 1) {
@@ -69,11 +70,10 @@ export default function Appointment() {
                     <div className='w-full'>
                         <Input
                             type="text"
-                            placeholder="Buscar"
+                            label="Buscar"
                             radius='sm'
                             value={searchValue}
                             onChange={(e) => setSearchValue(e.target.value)}
-                            startContent={<MagnifyingGlassIcon className="w-5 h-5" />}
                         />
                     </div>
                     <div>
@@ -137,10 +137,10 @@ export default function Appointment() {
                                         .map((info) => ({
                                             title: info.reason,
                                             start: info.datetime.slice(0, -1),
-                                            end: info.datetime
+                                            end: info.datetime,
+                                            color: (new Date(info.datetime).toISOString() < new Date(currentDate.getFullYear() + '-' + String(currentDate.getMonth() + 1).padStart(2, '0') + '-' + String(currentDate.getDate()).padStart(2, '0') + 'T' + String(currentDate.getHours()).padStart(2, '0') + ':' + String(currentDate.getMinutes()).padStart(2, '0') + ':00Z').toISOString()) ? "#C62828" : "#1E1E1E",
+                                            textColor: 'white'
                                         })),
-                                    color: '#1E1E1E',
-                                    textColor: 'white'
                                 }
                             ]}
                             businessHours={
