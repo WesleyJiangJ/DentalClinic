@@ -63,7 +63,7 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
 
     const onSubmit = async (data) => {
         try {
-            const date = data.datetime + 'Z';
+            const date = data.datetime.year + '-' + String(data.datetime.month).padStart(2, '0') + '-' + String(data.datetime.day).padStart(2, '0') + 'T' + String(data.datetime.hour).padStart(2, '0') + ':' + String(data.datetime.minute).padStart(2, '0') + ':00Z';
             if (param.id) {
                 let dateArray = [];
                 const parse_date = parseDateTime((date).slice(0, -1));
