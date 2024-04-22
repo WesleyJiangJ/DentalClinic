@@ -3,7 +3,7 @@ import { sweetAlert, sweetToast } from "./Alerts";
 import { useForm, Controller } from "react-hook-form"
 import { getAllPatients, getAllPersonal, getSpecificAppointment, postAppointment, putAppointment } from "../../api/apiFunctions";
 import { Input, Select, SelectItem, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Textarea, DatePicker } from "@nextui-org/react";
-import { now, getLocalTimeZone, parseDateTime, today } from "@internationalized/date";
+import { now, getLocalTimeZone, parseDateTime, today, parseAbsoluteToLocal } from "@internationalized/date";
 
 export default function AppointmentModal({ isOpen, onOpenChange, reloadData, param, modifyURL }) {
     const { control, handleSubmit, formState: { errors }, reset, getValues } = useForm({
@@ -24,6 +24,8 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
     const [personalData, setPersonalData] = React.useState([]);
     const [cancellation, setCancellation] = React.useState(false);
     const readOnly = param.slug === 'check';
+    const nowDate = now(getLocalTimeZone())
+    const [minValueDate, setMinValueDate] = React.useState(now(getLocalTimeZone()));
     const [prevData, setPrevData] = React.useState({
         reason: '',
         datetime: ''
@@ -54,6 +56,8 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
                 datetime: parseDateTime((res.data.datetime).slice(0, -1)),
                 reason: res.data.reason
             });
+            const nowConversion = nowDate.year + '-' + String(nowDate.month).padStart(2, '0') + '-' + String(nowDate.day).padStart(2, '0') + 'T' + String(nowDate.hour).padStart(2, '0') + ':' + String(nowDate.minute).padStart(2, '0') + ':' + '00Z';
+            setMinValueDate(parseDateTime(nowConversion.slice(0, -1)))
         }
         else {
             setPatientData((await getAllPatients()).data);
@@ -96,33 +100,61 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
                     }
                 }
 
-                if (change.length > 0 || param.slug === "check") {
-                    await sweetAlert('¿Estás seguro?', (param.slug === "edit" ? `¿Deseas modificar ${change.join(', ')}?` : '¿Desea marcarla como realizada?'), 'warning', 'success', (param.slug === 'edit' ? 'Actualizado' : "Cita realizada"));
-                    if (param.slug === 'check') {
-                        data.datetime = date;
-                        data.status = 3;
-                        await putAppointment(param.id, data);
+                if (now(getLocalTimeZone()) < parseDateTime((date).slice(0, -1))) {
+                    if (change.length > 0 || param.slug === "check") {
+                        await sweetAlert('¿Estás seguro?', (param.slug === "edit" ? `¿Deseas modificar ${change.join(', ')}?` : '¿Desea marcarla como realizada?'), 'warning', 'success', (param.slug === 'edit' ? 'Actualizado' : "Cita realizada"));
+                        if (param.slug === 'check') {
+                            data.datetime = date;
+                            data.status = 3;
+                            await putAppointment(param.id, data);
+                        }
+                        else {
+                            data.datetime = date;
+                            await putAppointment(param.id, data);
+                        }
                     }
                     else {
-                        data.datetime = date;
-                        await putAppointment(param.id, data);
+                        sweetToast('warning', 'No se realizaron modificaciones')
                     }
-                }
-                else {
-                    sweetToast('warning', 'No se realizaron modificaciones')
+                    reseting();
                 }
             }
             else {
                 data.datetime = date;
-                await postAppointment(data);
-                sweetToast('success', `Se ha agregado ${data.reason}`);
+                if (now(getLocalTimeZone()) < parseDateTime((date).slice(0, -1))) {
+                    await postAppointment(data);
+                    sweetToast('success', `Se ha agregado ${data.reason}`);
+                    reseting();
+                }
             }
-            reloadData();
-            resetForm();
-            onOpenChange(false);
         } catch (error) {
             console.log(error);
         }
+    }
+
+    const cancelAppointment = async () => {
+        setCancellation(true);
+        if (getValues('cancellation_reason').length > 0) {
+            await sweetAlert("¿Deseas cancelar la cita?", "", "warning", "success", "La cita fue cancelada");
+            const defaultValues = getValues();
+            defaultValues.status = 2;
+            const date = defaultValues.datetime + 'Z';
+            defaultValues.datetime = date;
+            defaultValues.observation = defaultValues.cancellation_reason;
+            await putAppointment(param.id, defaultValues)
+                .then(() => {
+                    reseting();
+                })
+                .catch((error) => {
+                    console.error('Error: ', error);
+                })
+        }
+    }
+
+    const reseting = () => {
+        reloadData();
+        resetForm();
+        onOpenChange(false);
     }
 
     const resetForm = () => {
@@ -141,27 +173,6 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
         setCancellation(false);
         if (param.id) {
             modifyURL();
-        }
-    }
-
-    const cancelAppointment = async () => {
-        setCancellation(true);
-        if (getValues('cancellation_reason').length > 0) {
-            await sweetAlert("¿Deseas cancelar la cita?", "", "warning", "success", "La cita fue cancelada");
-            const defaultValues = getValues();
-            defaultValues.status = 2;
-            const date = defaultValues.datetime + 'Z';
-            defaultValues.datetime = date;
-            defaultValues.observation = defaultValues.cancellation_reason;
-            await putAppointment(param.id, defaultValues)
-                .then(() => {
-                    reloadData();
-                })
-                .catch((error) => {
-                    console.error('Error: ', error);
-                })
-            resetForm();
-            onOpenChange(false);
         }
     }
 
@@ -272,8 +283,8 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
                                                         {...field}
                                                         label="Fecha y hora"
                                                         variant="underlined"
-                                                        isReadOnly={readOnly}
-                                                        minValue={today(getLocalTimeZone())}
+                                                        isReadOnly={readOnly || cancellation ? true : false}
+                                                        minValue={minValueDate}
                                                         hourCycle={12}
                                                         hideTimeZone
                                                         isInvalid={errors.datetime ? true : false}
