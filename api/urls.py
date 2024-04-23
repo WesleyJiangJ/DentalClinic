@@ -12,6 +12,9 @@ router.register(r"personal", views.PersonalViewSet)
 router.register(r"new_patient", views.NewPatientViewSet)
 router.register(r"appointment", views.AppointmentViewSet)
 router.register(r"appointments", views.Appointments, basename="appointments")
+router.register(r"treatment", views.TreatmentViewSet)
+router.register(r"budget", views.BudgetViewSet)
+router.register(r"budget_detail", views.BudgetDetailViewSet)
 
 
 # Wire up our API using automatic URL routing.
