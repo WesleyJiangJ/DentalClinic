@@ -30,6 +30,7 @@ class PersonalSerializer(serializers.ModelSerializer):
 
 class NewPatientSerializer(serializers.ModelSerializer):
     patient_data = PatientSerializer(write_only=True)
+
     class Meta:
         model = Medical_History
         fields = "__all__"
@@ -44,22 +45,41 @@ class NewPatientSerializer(serializers.ModelSerializer):
             id_patient=patient, **validated_data
         )
         return medical_history
-    
+
     def to_representation(self, instance):
         representation = super(NewPatientSerializer, self).to_representation(instance)
         patient_representation = PatientSerializer(instance.id_patient).data
-        representation['patient_data'] = patient_representation
+        representation["patient_data"] = patient_representation
         return representation
+
 
 class AppointmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appointment
-        fields = '__all__'
-    
+        fields = "__all__"
+
     def to_representation(self, instance):
         representation = super(AppointmentSerializer, self).to_representation(instance)
         patient_representation = PatientSerializer(instance.id_patient).data
         personal_representation = PersonalSerializer(instance.id_personal).data
-        representation['patient_data'] = patient_representation
-        representation['personal_data'] = personal_representation
+        representation["patient_data"] = patient_representation
+        representation["personal_data"] = personal_representation
         return representation
+
+
+class TreatmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Treatment
+        fields = "__all__"
+
+
+class BudgetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Budget
+        fields = "__all__"
+
+
+class BudgetDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Budget_Detail
+        fields = "__all__"
