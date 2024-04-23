@@ -61,14 +61,21 @@ export default function SideBar({ collapsed, onTitleChange }) {
                             <NavLink to="appointment" end style={getActiveStyles} onClick={() => handleTitleChange('Citas')} />}>
                         Citas
                     </MenuItem>
-                    <MenuItem icon={<BanknotesIcon className="h-5 w-5" />}> Pagos </MenuItem>
+                    <MenuItem icon={<BanknotesIcon className="h-5 w-5" />}
+                        component={
+                            <NavLink to="payments" end style={getActiveStyles} onClick={() => handleTitleChange('Pagos')} />}>
+                        Pagos
+                    </MenuItem>
                 </Menu>
                 <Menu menuItemStyles={menuItemStyles}>
                     <MenuItem icon={<UserGroupIcon className="h-5 w-5" />}
                         component={<NavLink to="personal" end style={getActiveStyles} onClick={() => handleTitleChange('Personal')} />}>
                         Personal
                     </MenuItem>
-                    <MenuItem icon={<CogIcon className="h-5 w-5" />}> Ajustes </MenuItem>
+                    <MenuItem icon={<CogIcon className="h-5 w-5" />}
+                        component={<NavLink to="settings" end style={getActiveStyles} onClick={() => handleTitleChange('Ajustes')}/>}>
+                        Ajustes
+                    </MenuItem>
                     <MenuItem icon={<ArrowLeftStartOnRectangleIcon className="h-5 w-5" />}> Logout </MenuItem>
                 </Menu>
             </Sidebar>
