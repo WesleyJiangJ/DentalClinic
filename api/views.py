@@ -53,3 +53,18 @@ class Appointments(viewsets.ReadOnlyModelViewSet):
     serializer_class = AppointmentSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["id_patient"]
+
+
+class TreatmentViewSet(viewsets.ModelViewSet):
+    queryset = Treatment.objects.all()
+    serializer_class = TreatmentSerializer
+
+
+class BudgetViewSet(viewsets.ModelViewSet):
+    queryset = Budget.objects.all()
+    serializer_class = BudgetSerializer
+
+
+class BudgetDetailViewSet(viewsets.ModelViewSet):
+    queryset = Budget_Detail.objects.all()
+    serializer_class = BudgetDetailSerializer
