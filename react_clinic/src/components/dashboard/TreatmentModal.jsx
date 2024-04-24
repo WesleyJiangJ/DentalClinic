@@ -91,6 +91,7 @@ export default function TreatmentModal({ isOpen, onOpenChange, loadTreatments, p
                     description: '',
                     price: ''
                 });
+                modifyURL();
             }}
             radius="sm"
             backdrop="blur"
