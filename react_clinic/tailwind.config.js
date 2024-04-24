@@ -1,9 +1,9 @@
 // tailwind.config.js
-const { nextui } = require("@nextui-org/react"); // NextUI
-const withMT = require("@material-tailwind/react/utils/withMT"); // Material Tailwind
+import { nextui } from "@nextui-org/react"; // NextUI
+import withMT from "@material-tailwind/react/utils/withMT"; // Material Tailwind
 
 /** @type {import('tailwindcss').Config} */
-module.exports = withMT({ // withMT was added when Material Tailwind was installed
+export default withMT({ // withMT was added when Material Tailwind was installed
   content: [
     './src/**/*.{js,jsx,ts,tsx}',
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
@@ -12,5 +12,16 @@ module.exports = withMT({ // withMT was added when Material Tailwind was install
     extend: {},
   },
   darkMode: "class",
-  plugins: [nextui()],
+  plugins: [nextui({
+    themes: {
+      light: {
+        colors: {
+          primary: '#1E1E1E',
+        },
+      },
+      dark: {
+        colors: {},
+      },
+    },
+  })],
 });
