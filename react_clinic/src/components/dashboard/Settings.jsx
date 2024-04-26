@@ -51,7 +51,7 @@ export default function Settings() {
             <Tabs
                 aria-label="Options"
                 color="primary"
-                classNames={{ cursor: "bg-[#1E1E1E] rounded-md" }}
+                radius="sm"
                 fullWidth>
                 <Tab key="treatments" title="Tratamientos">
                     <Table
@@ -82,7 +82,8 @@ export default function Settings() {
                         </TableBody>
                     </Table>
                     <Button
-                        className="w-full bg-[#1E1E1E] text-white mt-2"
+                        className="w-full mt-2"
+                        color="primary"
                         radius="sm"
                         size="lg"
                         onPress={onOpen}>
