@@ -39,7 +39,7 @@ export default function Settings() {
                 );
             case "price":
                 return (
-                    <p className="text-bold text-small capitalize">C${treatments.price}</p>
+                    <p className="text-bold text-small capitalize">C${parseFloat(treatments.price).toLocaleString()}</p>
                 );
             default:
                 return cellValue;
