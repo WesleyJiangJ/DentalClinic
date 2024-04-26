@@ -44,6 +44,7 @@ export default function PaymentModal({ isOpen, onOpenChange }) {
             setValue(`detailFields[${index}].cost`, selectedTreatment.price);
             setValue(`detailFields[${index}].quantity`, '');
             setValue(`detailFields[${index}].total`, '');
+            setTotal(calculateGrandTotal());
         }
         else {
             setValue(`detailFields[${index}].cost`, '');
