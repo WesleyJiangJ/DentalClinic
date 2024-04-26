@@ -239,6 +239,8 @@ class Treatment(models.Model):
 
 class Budget(models.Model):
     id_patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50)
+    description = models.CharField(max_length=256)
     status = models.CharField(max_length=1)
     created_at = models.DateTimeField(auto_now_add=True)
 
