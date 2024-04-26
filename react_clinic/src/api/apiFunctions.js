@@ -24,6 +24,10 @@ const treatmentAPI = axios.create({
     baseURL: 'http://localhost:8000/treatment/'
 })
 
+const budgetAPI = axios.create({
+    baseURL: 'http://localhost:8000/budget/'
+})
+
 // Patient
 export const getAllPatients = () => {
     return patientAPI.get('/')
@@ -94,4 +98,9 @@ export const putTreatment = (id, data) => {
 
 export const postTreatment = (data) => {
     return treatmentAPI.post('/', data)
+}
+
+// Budget
+export const getAllBudget = () => {
+    return budgetAPI.get('/')
 }
