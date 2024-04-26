@@ -16,7 +16,9 @@ export default withMT({ // withMT was added when Material Tailwind was installed
     themes: {
       light: {
         colors: {
-          primary: '#1E1E1E',
+          primary: {
+            DEFAULT: '#1E1E1E',
+          },
         },
       },
       dark: {
