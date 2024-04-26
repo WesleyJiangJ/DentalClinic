@@ -149,7 +149,7 @@ export default function Detail({ value }) {
                         </Badge>
                         <small className="text-base m-auto mb-5">{user.email}</small>
                         <Button
-                            className="bg-[#1E1E1E] text-white"
+                            color="primary"
                             radius="sm"
                             size="lg"
                             startContent={
@@ -238,7 +238,8 @@ export default function Detail({ value }) {
                             placeholder="Escribe aquí . . . "
                         />
                         <Button
-                            className="bg-[#1E1E1E] text-white mb-2"
+                            className="mb-2"
+                            color="primary"
                             size="lg"
                             radius="sm">
                             Guardar
@@ -279,14 +280,14 @@ export default function Detail({ value }) {
                         <Tabs
                             aria-label="Options"
                             color="primary"
-                            classNames={{ cursor: "bg-[#1E1E1E] rounded-md" }}
+                            radius="sm"
                             fullWidth
                             size="md">
                             <Tab key="appointments" title="Citas">
                                 <Tabs
                                     aria-label="Options"
                                     color="primary"
-                                    classNames={{ cursor: "bg-[#1E1E1E] rounded-md" }}
+                                    radius="sm"
                                     fullWidth
                                     size="md">
                                     <Tab key="appointments_pending" title="Citas Pendientes">

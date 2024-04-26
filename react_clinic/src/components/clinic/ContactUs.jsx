@@ -16,7 +16,7 @@ export default function ContactUs() {
                         <Button
                             radius="sm"
                             size="lg"
-                            className="w-full bg-[#1E1E1E] text-white">
+                            color="primary">
                             Enviar
                         </Button>
                     </div>

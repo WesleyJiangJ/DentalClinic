@@ -220,7 +220,7 @@ export default function Tables({ value }) {
                         <Button
                             onPress={onOpen}
                             size="lg"
-                            className="bg-[#1E1E1E] text-white"
+                            color="primary"
                             radius="sm"
                             endContent={<PlusIcon className="w-5 h-5" />}>
                             Nuevo

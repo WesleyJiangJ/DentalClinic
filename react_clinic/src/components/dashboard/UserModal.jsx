@@ -424,12 +424,12 @@ export default function NewPatientModal({ isOpen, onOpenChange, updateTable, upd
                                         <ModalFooter>
                                             {
                                                 param.id ?
-                                                    <Button className="bg-[#1E1E1E] text-white" radius="sm" type="submit">
+                                                    <Button color="primary" radius="sm" type="submit">
                                                         Actualizar
                                                     </Button>
                                                     :
                                                     <Button
-                                                        className="bg-[#1E1E1E] text-white"
+                                                        color="primary"
                                                         radius="sm"
                                                         onPress={value === "Personal" ? undefined : handleNextModal}
                                                         type={value === "Personal" ? "submit" : "button"}>
@@ -466,7 +466,7 @@ export default function NewPatientModal({ isOpen, onOpenChange, updateTable, upd
                                             <Button color="warning" variant="flat" onPress={handlePreviousModal} radius="sm">
                                                 Anterior
                                             </Button>
-                                            <Button className="bg-[#1E1E1E] text-white" type="submit" radius="sm">
+                                            <Button color="primary" type="submit" radius="sm">
                                                 Guardar
                                             </Button>
                                         </ModalFooter>

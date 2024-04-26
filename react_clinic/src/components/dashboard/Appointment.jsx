@@ -90,7 +90,8 @@ export default function Appointment() {
                     <div>
                         <Button
                             radius='sm'
-                            className='p-3 h-full w-full bg-[#1E1E1E] text-white'
+                            color="primary"
+                            className='p-3 h-full w-full'
                             isIconOnly
                             onPress={onOpen}
                         >

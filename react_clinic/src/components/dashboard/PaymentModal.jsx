@@ -296,14 +296,21 @@ export default function PaymentModal({ isOpen, onOpenChange }) {
                                             value={total.toLocaleString()}
                                             startContent={'C$'}
                                         />
-                                        <Button className="w-full my-2 bg-[#1E1E1E] text-white" radius="sm" size="lg" onClick={() => append({ id_budget: '', id_treatment: '', cost: '', quantity: '', id_personal: '' })}>Agregar Campo</Button>
+                                        <Button
+                                            className="w-full my-2"
+                                            color="primary"
+                                            radius="sm"
+                                            size="lg"
+                                            onClick={() => append({ id_budget: '', id_treatment: '', cost: '', quantity: '', id_personal: '' })}>
+                                            Agregar Campo
+                                        </Button>
                                     </div>
                                 </ModalBody>
                                 <ModalFooter>
                                     <Button color="danger" variant="light" radius="sm" onPress={onClose}>
                                         Cerrar
                                     </Button>
-                                    <Button className="bg-[#1E1E1E] text-white" radius="sm" type="submit">
+                                    <Button color="primary" radius="sm" type="submit">
                                         Guardar
                                     </Button>
                                 </ModalFooter>

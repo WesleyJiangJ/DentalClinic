@@ -340,7 +340,7 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
                                             Cerrar
                                         </Button>
                                         {!cancellation &&
-                                            <Button className="bg-[#1E1E1E] text-white ml-2" radius="sm" type="submit">
+                                            <Button className="ml-2" color="primary" radius="sm" type="submit">
                                                 {param.id ? (param.slug === 'edit' ? 'Reprogramar' : 'Realizada') : 'Agendar'}
                                             </Button>
                                         }

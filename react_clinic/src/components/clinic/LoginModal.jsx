@@ -49,7 +49,7 @@ export default function LoginModal({ isOpen, onOpenChange }) {
                                             Cerrar
                                         </Button>
                                         <Button
-                                            className="bg-[#1E1E1E] text-white"
+                                            color='primary'
                                             radius="sm"
                                             onPress={handleClick}>
                                             Iniciar Sesión

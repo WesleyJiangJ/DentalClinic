@@ -79,7 +79,10 @@ export default function NavBar() {
 
             <NavbarContent justify="end">
                 <NavbarItem>
-                    <Button className="bg-[#1E1E1E] text-white" onPress={onOpen}>
+                    <Button
+                        color="primary"
+                        radius="sm"
+                        onPress={onOpen}>
                         Login
                     </Button>
                 </NavbarItem>

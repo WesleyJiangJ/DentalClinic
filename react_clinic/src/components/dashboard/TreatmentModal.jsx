@@ -154,7 +154,7 @@ export default function TreatmentModal({ isOpen, onOpenChange, loadTreatments, p
                                 }}>
                                     Cerrar
                                 </Button>
-                                <Button className="bg-[#1E1E1E] text-white" radius="sm" type="submit">
+                                <Button color="primary" radius="sm" type="submit">
                                     Guardar
                                 </Button>
                             </ModalFooter>
