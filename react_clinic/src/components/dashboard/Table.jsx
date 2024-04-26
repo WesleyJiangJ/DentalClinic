@@ -1,9 +1,10 @@
 import React from "react";
 import { useNavigate } from 'react-router-dom'
-import { getAllPatients, getAllPersonal } from '../../api/apiFunctions.js'
+import { getAllPatients, getAllPersonal, getAllBudget } from '../../api/apiFunctions.js'
 import UserModal from "./UserModal.jsx";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Button, DropdownTrigger, Dropdown, DropdownMenu, DropdownItem, Chip, Pagination, Select, SelectItem, useDisclosure } from "@nextui-org/react";
 import { PlusIcon, ChevronDownIcon } from '@heroicons/react/24/solid'
+import PaymentModal from "./PaymentModal.jsx";
 
 const statusColorMap = {
     true: "success",
@@ -27,7 +28,7 @@ function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export default function PatientTable({ value }) {
+export default function Tables({ value }) {
     const navigate = useNavigate();
     const [filterValue, setFilterValue] = React.useState("");
     const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
@@ -50,7 +51,20 @@ export default function PatientTable({ value }) {
 
     const [users, setData] = React.useState([])
     const loadData = async () => {
-        const res = value === "Paciente" ? await getAllPatients() : await getAllPersonal();
+        const res =
+            value === "Paciente"
+                ?
+                await getAllPatients()
+                :
+                value === "Personal"
+                    ?
+                    await getAllPersonal()
+                    :
+                    value === "Pagos"
+                        ?
+                        await getAllBudget()
+                        :
+                        null
         setData(res.data)
     };
 
@@ -159,46 +173,50 @@ export default function PatientTable({ value }) {
                         onValueChange={onSearchChange}
                     />
                     <div className="flex gap-3">
-                        <Dropdown>
-                            <DropdownTrigger className="hidden sm:flex">
-                                <Button size="lg" radius="sm" endContent={<ChevronDownIcon className="w-5 h-5" />} variant="flat">
-                                    Estado
-                                </Button>
-                            </DropdownTrigger>
-                            <DropdownMenu
-                                disallowEmptySelection
-                                aria-label="Table Columns"
-                                closeOnSelect={false}
-                                selectedKeys={statusFilter}
-                                selectionMode="multiple"
-                                onSelectionChange={setStatusFilter}>
-                                {statusOptions.map((status) => (
-                                    <DropdownItem key={status.uid} className="capitalize">
-                                        {capitalize(status.name)}
-                                    </DropdownItem>
-                                ))}
-                            </DropdownMenu>
-                        </Dropdown>
-                        <Dropdown>
-                            <DropdownTrigger className="hidden sm:flex">
-                                <Button size="lg" radius="sm" endContent={<ChevronDownIcon className="w-5 h-5" />} variant="flat">
-                                    Columnas
-                                </Button>
-                            </DropdownTrigger>
-                            <DropdownMenu
-                                disallowEmptySelection
-                                aria-label="Table Columns"
-                                closeOnSelect={false}
-                                selectedKeys={visibleColumns}
-                                selectionMode="multiple"
-                                onSelectionChange={setVisibleColumns}>
-                                {columns.map((column) => (
-                                    <DropdownItem key={column.uid} className="capitalize">
-                                        {capitalize(column.name)}
-                                    </DropdownItem>
-                                ))}
-                            </DropdownMenu>
-                        </Dropdown>
+                        {(value === 'Paciente' || value === 'Personal') &&
+                            <>
+                                <Dropdown>
+                                    <DropdownTrigger className="hidden sm:flex">
+                                        <Button size="lg" radius="sm" endContent={<ChevronDownIcon className="w-5 h-5" />} variant="flat">
+                                            Estado
+                                        </Button>
+                                    </DropdownTrigger>
+                                    <DropdownMenu
+                                        disallowEmptySelection
+                                        aria-label="Table Columns"
+                                        closeOnSelect={false}
+                                        selectedKeys={statusFilter}
+                                        selectionMode="multiple"
+                                        onSelectionChange={setStatusFilter}>
+                                        {statusOptions.map((status) => (
+                                            <DropdownItem key={status.uid} className="capitalize">
+                                                {capitalize(status.name)}
+                                            </DropdownItem>
+                                        ))}
+                                    </DropdownMenu>
+                                </Dropdown>
+                                <Dropdown>
+                                    <DropdownTrigger className="hidden sm:flex">
+                                        <Button size="lg" radius="sm" endContent={<ChevronDownIcon className="w-5 h-5" />} variant="flat">
+                                            Columnas
+                                        </Button>
+                                    </DropdownTrigger>
+                                    <DropdownMenu
+                                        disallowEmptySelection
+                                        aria-label="Table Columns"
+                                        closeOnSelect={false}
+                                        selectedKeys={visibleColumns}
+                                        selectionMode="multiple"
+                                        onSelectionChange={setVisibleColumns}>
+                                        {columns.map((column) => (
+                                            <DropdownItem key={column.uid} className="capitalize">
+                                                {capitalize(column.name)}
+                                            </DropdownItem>
+                                        ))}
+                                    </DropdownMenu>
+                                </Dropdown>
+                            </>
+                        }
                         <Button
                             onPress={onOpen}
                             size="lg"
@@ -210,7 +228,7 @@ export default function PatientTable({ value }) {
                     </div>
                 </div>
                 <div className="flex justify-between items-center">
-                    <span className="text-default-500 text-small">Usuarios: {users.length}</span>
+                    <span className="text-default-500 text-small">{value === "Paciente" || value === "Personal" ? "Usuarios: " : "Presupuesto: "} {users.length}</span>
                     <label className="flex items-center text-default-400 text-small">
                         <Select
                             label="Filas"
@@ -246,7 +264,7 @@ export default function PatientTable({ value }) {
                     page={page}
                     total={pages}
                     onChange={setPage}
-                    classNames={{ cursor: "bg-[#1E1E1E] shadow-none rounded-md" }}
+                    classNames={{ cursor: "text-white shadow-none rounded-md" }}
                 />
             </div>
         );
@@ -291,7 +309,11 @@ export default function PatientTable({ value }) {
                     )}
                 </TableBody>
             </Table>
-            <UserModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} value={value} />
+            {value === "Paciente" || value === "Personal"
+                ?
+                <UserModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} value={value} />
+                :
+                <PaymentModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} />}
         </>
     );
 }
