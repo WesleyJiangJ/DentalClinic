@@ -137,6 +137,7 @@ export default function TreatmentModal({ isOpen, onOpenChange, loadTreatments, p
                                         <Input
                                             {...field}
                                             type="number"
+                                            placeholder="0.00"
                                             errorMessage={" "}
                                             label="Precio"
                                             variant="underlined"
