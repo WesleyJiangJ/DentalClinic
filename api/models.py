@@ -237,6 +237,10 @@ class Treatment(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.name
+
+
 class Budget(models.Model):
     id_patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
@@ -244,11 +248,16 @@ class Budget(models.Model):
     status = models.CharField(max_length=1)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Budget_Detail(models.Model):
     id_budget = models.ForeignKey(Budget, on_delete=models.CASCADE)
     id_treatment = models.ForeignKey(Treatment, on_delete=models.CASCADE)
-    id_personal = models.ForeignKey(Personal, on_delete=models.CASCADE, limit_choices_to={'role': 2})
+    id_personal = models.ForeignKey(
+        Personal, on_delete=models.CASCADE, limit_choices_to={"role": 2}
+    )
     cost = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
