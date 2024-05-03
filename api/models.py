@@ -253,7 +253,7 @@ class Budget(models.Model):
 
 
 class Budget_Detail(models.Model):
-    id_budget = models.ForeignKey(Budget, on_delete=models.CASCADE)
+    id_budget = models.ForeignKey(Budget, related_name="detailFields", on_delete=models.CASCADE)
     id_treatment = models.ForeignKey(Treatment, on_delete=models.CASCADE)
     id_personal = models.ForeignKey(
         Personal, on_delete=models.CASCADE, limit_choices_to={"role": 2}
