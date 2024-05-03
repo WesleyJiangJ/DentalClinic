@@ -104,3 +104,8 @@ export const postTreatment = (data) => {
 export const getAllBudget = () => {
     return budgetAPI.get('/')
 }
+
+export const postBudget = (data) => {
+    console.log(data)
+    return budgetAPI.post('/', data)
+}
