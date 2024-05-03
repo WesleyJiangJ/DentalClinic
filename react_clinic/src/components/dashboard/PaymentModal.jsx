@@ -2,7 +2,7 @@ import React from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form"
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Select, SelectItem, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Divider, Textarea } from "@nextui-org/react";
 import { TrashIcon } from "@heroicons/react/24/solid";
-import { getAllPatients, getAllPersonal, getAllTreatment } from "../../api/apiFunctions";
+import { getAllPatients, getAllPersonal, getAllTreatment, postBudget } from "../../api/apiFunctions";
 
 export default function PaymentModal({ isOpen, onOpenChange }) {
     const [patientData, setPatientData] = React.useState([]);
@@ -14,7 +14,13 @@ export default function PaymentModal({ isOpen, onOpenChange }) {
             name: '',
             description: '',
             status: 1,
-            detailFields: [{ id_budget: '', id_treatment: '', cost: '', quantity: '', total: '', id_personal: '' }]
+            detailFields: [{
+                id_treatment: '',
+                cost: '',
+                quantity: '',
+                total: '',
+                id_personal: ''
+            }]
         }
     });
     const { fields, append, remove } = useFieldArray({
@@ -27,8 +33,12 @@ export default function PaymentModal({ isOpen, onOpenChange }) {
         loadData();
     }, [])
 
-    const onSubmit = (data) => {
-        console.log(data);
+    const onSubmit = async (data) => {
+        try {
+            await postBudget(data);
+        } catch (error) {
+            console.log(error)
+        }
     };
 
     const loadData = async () => {
@@ -74,7 +84,6 @@ export default function PaymentModal({ isOpen, onOpenChange }) {
                 totalGeneral += totalCampo;
             }
         });
-        console.log(totalGeneral)
         return totalGeneral;
     };
 
