@@ -106,6 +106,5 @@ export const getAllBudget = () => {
 }
 
 export const postBudget = (data) => {
-    console.log(data)
     return budgetAPI.post('/', data)
 }
