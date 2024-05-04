@@ -1,6 +1,5 @@
 from django.contrib.auth.models import Group, User
 from rest_framework import serializers
-
 from api.models import *
 
 
@@ -73,13 +72,25 @@ class TreatmentSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class BudgetSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Budget
-        fields = "__all__"
-
-
 class BudgetDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Budget_Detail
         fields = "__all__"
+        extra_kwargs = {
+            "id_budget": {"read_only": True},
+        }
+
+
+class BudgetSerializer(serializers.ModelSerializer):
+    detailFields = BudgetDetailSerializer(many=True)
+
+    class Meta:
+        model = Budget
+        fields = "__all__"
+
+    def create(self, validated_data):
+        detail_data = validated_data.pop("detailFields")
+        budget = Budget.objects.create(**validated_data)
+        for detail in detail_data:
+            Budget_Detail.objects.create(id_budget=budget, **detail)
+        return budget
