@@ -245,7 +245,7 @@ class Budget(models.Model):
     id_patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=256)
-    status = models.CharField(max_length=1)
+    status = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
