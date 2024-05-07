@@ -18,7 +18,6 @@ export default function Dashboard() {
         const { pathname } = location;
         // Separates the path into segments and filters out the gaps
         const sections = pathname.split('/').filter(section => section !== '');
-        console.log(sections)
         if (sections.length > 1) {
             const section = sections[1];
             switch (section) {
