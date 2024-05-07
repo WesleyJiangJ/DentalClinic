@@ -1,21 +1,9 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import {
-    Sidebar,
-    Menu,
-    MenuItem,
-} from 'react-pro-sidebar';
-import {
-    HomeIcon,
-    UserIcon,
-    CalendarDaysIcon,
-    BanknotesIcon,
-    UserGroupIcon,
-    CogIcon,
-    ArrowLeftStartOnRectangleIcon
-} from "@heroicons/react/24/solid";
+import { Sidebar, Menu, MenuItem } from 'react-pro-sidebar';
+import { HomeIcon, UserIcon, CalendarDaysIcon, BanknotesIcon, UserGroupIcon, CogIcon, ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/solid";
 
-export default function SideBar({ collapsed, onTitleChange }) {
+export default function SideBar({ collapsed }) {
     const menuItemStyles = {
         button: {
             "&:hover": {
@@ -30,10 +18,6 @@ export default function SideBar({ collapsed, onTitleChange }) {
         color: isActive ? 'white' : '',
     });
 
-    const handleTitleChange = (title) => {
-        onTitleChange(title);
-    };
-
     return (
         <>
             <Sidebar
@@ -46,37 +30,42 @@ export default function SideBar({ collapsed, onTitleChange }) {
                     </svg>
                 </div>
                 <Menu menuItemStyles={menuItemStyles}>
-                    <MenuItem icon={<HomeIcon className="h-5 w-5" />} className='cursor-pointer'
-                        component={
-                            <NavLink to="" end style={getActiveStyles} onClick={() => handleTitleChange('Dashboard')} />}>
+                    <MenuItem
+                        icon={<HomeIcon className="h-5 w-5" />}
+                        component={<NavLink to="" end style={getActiveStyles} />}>
                         Dashboard
                     </MenuItem>
-                    <MenuItem icon={<UserIcon className="h-5 w-5" />} className='cursor-pointer'
-                        component={
-                            <NavLink to="patient" style={getActiveStyles} onClick={() => handleTitleChange('Pacientes')} />}>
+                    <MenuItem
+                        icon={<UserIcon className="h-5 w-5" />}
+                        component={<NavLink to="patient" style={getActiveStyles} />}>
                         Pacientes
                     </MenuItem>
-                    <MenuItem icon={<CalendarDaysIcon className="h-5 w-5" />}
-                        component={
-                            <NavLink to="appointment" end style={getActiveStyles} onClick={() => handleTitleChange('Citas')} />}>
+                    <MenuItem
+                        icon={<CalendarDaysIcon className="h-5 w-5" />}
+                        component={<NavLink to="appointment" style={getActiveStyles} />}>
                         Citas
                     </MenuItem>
-                    <MenuItem icon={<BanknotesIcon className="h-5 w-5" />}
-                        component={
-                            <NavLink to="payments" end style={getActiveStyles} onClick={() => handleTitleChange('Pagos')} />}>
+                    <MenuItem
+                        icon={<BanknotesIcon className="h-5 w-5" />}
+                        component={<NavLink to="payments" style={getActiveStyles} />}>
                         Pagos
                     </MenuItem>
                 </Menu>
                 <Menu menuItemStyles={menuItemStyles}>
-                    <MenuItem icon={<UserGroupIcon className="h-5 w-5" />}
-                        component={<NavLink to="personal" end style={getActiveStyles} onClick={() => handleTitleChange('Personal')} />}>
+                    <MenuItem
+                        icon={<UserGroupIcon className="h-5 w-5" />}
+                        component={<NavLink to="personal" style={getActiveStyles} />}>
                         Personal
                     </MenuItem>
-                    <MenuItem icon={<CogIcon className="h-5 w-5" />}
-                        component={<NavLink to="settings" end style={getActiveStyles} onClick={() => handleTitleChange('Ajustes')}/>}>
+                    <MenuItem
+                        icon={<CogIcon className="h-5 w-5" />}
+                        component={<NavLink to="settings" style={getActiveStyles} />}>
                         Ajustes
                     </MenuItem>
-                    <MenuItem icon={<ArrowLeftStartOnRectangleIcon className="h-5 w-5" />}> Logout </MenuItem>
+                    <MenuItem
+                        icon={<ArrowLeftStartOnRectangleIcon className="h-5 w-5" />}>
+                        Logout
+                    </MenuItem>
                 </Menu>
             </Sidebar>
         </>
