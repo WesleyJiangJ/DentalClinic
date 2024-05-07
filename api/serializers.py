@@ -82,7 +82,7 @@ class BudgetDetailSerializer(serializers.ModelSerializer):
 
 
 class BudgetSerializer(serializers.ModelSerializer):
-    detailFields = BudgetDetailSerializer(many=True)
+    detailFields = BudgetDetailSerializer(many=True, read_only=True)
 
     class Meta:
         model = Budget
@@ -94,3 +94,9 @@ class BudgetSerializer(serializers.ModelSerializer):
         for detail in detail_data:
             Budget_Detail.objects.create(id_budget=budget, **detail)
         return budget
+    
+    def to_representation(self, instance):
+        representation = super(BudgetSerializer, self).to_representation(instance)
+        patient_representation = PatientSerializer(instance.id_patient).data
+        representation["patient_data"] = patient_representation
+        return representation
