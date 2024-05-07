@@ -1,6 +1,5 @@
 import React from "react";
 import { useNavigate } from 'react-router-dom'
-import { getAllPatients, getAllPersonal, getAllBudget } from '../../api/apiFunctions.js'
 import UserModal from "./UserModal.jsx";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Button, DropdownTrigger, Dropdown, DropdownMenu, DropdownItem, Chip, Pagination, Select, SelectItem, useDisclosure } from "@nextui-org/react";
 import { PlusIcon, ChevronDownIcon } from '@heroicons/react/24/solid'
@@ -11,24 +10,16 @@ const statusColorMap = {
     false: "danger",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["full_name", "status"];
-
-const columns = [
-    { name: "Nombres", uid: "full_name", sortable: true },
-    { name: "Celular", uid: "phone_number", sortable: true },
-    { name: "Estado", uid: "status", sortable: false },
-];
-
 const statusOptions = [
-    { name: "Activo", uid: "true" },
-    { name: "Inactivo", uid: "false" },
+    { name: "Activo", uid: true },
+    { name: "Inactivo", uid: false },
 ];
 
 function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export default function Tables({ value }) {
+export default function Tables({ value, showDropdown, typeOfData, axiosResponse, INITIAL_VISIBLE_COLUMNS, columns, cellValues, sortedItem }) {
     const navigate = useNavigate();
     const [filterValue, setFilterValue] = React.useState("");
     const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
@@ -36,7 +27,7 @@ export default function Tables({ value }) {
     const [statusFilter, setStatusFilter] = React.useState("all");
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [sortDescriptor, setSortDescriptor] = React.useState({
-        column: "full_name",
+        column: cellValues[0].firstValue,
         direction: "ascending",
     });
     const [page, setPage] = React.useState(1);
@@ -49,23 +40,9 @@ export default function Tables({ value }) {
         return columns.filter((column) => Array.from(visibleColumns).includes(column.uid));
     }, [visibleColumns]);
 
-    const [users, setData] = React.useState([])
+    const [axiosData, setAxiosData] = React.useState([])
     const loadData = async () => {
-        const res =
-            value === "Paciente"
-                ?
-                await getAllPatients()
-                :
-                value === "Personal"
-                    ?
-                    await getAllPersonal()
-                    :
-                    value === "Pagos"
-                        ?
-                        await getAllBudget()
-                        :
-                        null
-        setData(res.data)
+        setAxiosData((await axiosResponse).data);
     };
 
     React.useEffect(() => {
@@ -77,21 +54,21 @@ export default function Tables({ value }) {
     };
 
     const filteredItems = React.useMemo(() => {
-        let filteredUsers = [...users];
+        let filteredData = [...axiosData];
 
         if (hasSearchFilter) {
-            filteredUsers = filteredUsers.filter((user) =>
-                user.first_name.toLowerCase().includes(filterValue.toLowerCase()),
+            filteredData = filteredData.filter((item) =>
+                eval(cellValues[0].firstValue).toLowerCase().includes(filterValue.toLowerCase()),
             );
         }
         if (statusFilter !== "all" && Array.from(statusFilter).length !== statusOptions.length) {
-            filteredUsers = filteredUsers.filter((user) =>
-                Array.from(statusFilter).includes(user.status.toString()),
+            filteredData = filteredData.filter((item) =>
+                Array.from(statusFilter).includes(eval(cellValues[2].firstValue).toString()),
             );
         }
 
-        return filteredUsers;
-    }, [users, filterValue, statusFilter]);
+        return filteredData;
+    }, [axiosData, filterValue, statusFilter]);
 
     const pages = Math.ceil(filteredItems.length / rowsPerPage) == 0 ? 1 : Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -104,34 +81,34 @@ export default function Tables({ value }) {
 
     const sortedItems = React.useMemo(() => {
         return [...items].sort((a, b) => {
-            const first = `${a.first_name} ${a.middle_name} ${a.first_lastname} ${a.second_lastname}`;
-            const second = `${b.first_name} ${b.middle_name} ${b.first_lastname} ${b.second_lastname}`;
+            const first = eval(`${sortedItem.first}`);
+            const second = eval(`${sortedItem.second}`);
             const cmp = first < second ? -1 : first > second ? 1 : 0;
 
             return sortDescriptor.direction === "descending" ? -cmp : cmp;
         });
     }, [sortDescriptor, items]);
 
-    const renderCell = React.useCallback((user, columnKey) => {
-        const cellValue = user[columnKey];
+    const renderCell = React.useCallback((item, columnKey) => {
+        const cellValue = item[columnKey];
         switch (columnKey) {
-            case "full_name":
+            case cellValues[0].firstColumn:
                 return (
                     <div className="flex flex-col my-2">
-                        <p className="text-bold text-small capitalize">{user.first_name} {user.middle_name} {user.first_lastname} {user.second_lastname}</p>
-                        <p className="text-bold text-tiny text-default-500">{user.email}</p>
+                        <p className="text-bold text-small capitalize">{eval(`${cellValues[0].firstValue}`)}</p>
+                        <p className="text-bold text-tiny text-default-500">{eval(`${cellValues[0].secondValue}`)}</p>
                     </div>
                 );
-            case "phone_number":
+            case cellValues[1].secondColumn:
                 return (
                     <div className="flex flex-col my-2">
-                        <p className="text-bold text-small capitalize">+505 {cellValue}</p>
+                        <p className="text-bold text-small capitalize">{eval(`${cellValues[1].firstValue}`)}</p>
                     </div>
                 );
-            case "status":
+            case cellValues[2].thirdColumn:
                 const statusText = cellValue ? "Activo" : "Inactivo";
                 return (
-                    <Chip className="capitalize my-2" color={statusColorMap[user.status]} size="sm" variant="flat">
+                    <Chip className="capitalize my-2" color={statusColorMap[cellValue]} size="sm" variant="flat">
                         {statusText}
                     </Chip>
                 );
@@ -173,7 +150,7 @@ export default function Tables({ value }) {
                         onValueChange={onSearchChange}
                     />
                     <div className="flex gap-3">
-                        {(value === 'Paciente' || value === 'Personal') &&
+                        {showDropdown &&
                             <>
                                 <Dropdown>
                                     <DropdownTrigger className="hidden sm:flex">
@@ -228,7 +205,7 @@ export default function Tables({ value }) {
                     </div>
                 </div>
                 <div className="flex justify-between items-center">
-                    <span className="text-default-500 text-small">{value === "Paciente" || value === "Personal" ? "Usuarios: " : "Presupuesto: "} {users.length}</span>
+                    <span className="text-default-500 text-small">{typeOfData} {axiosData.length}</span>
                     <label className="flex items-center text-default-400 text-small">
                         <Select
                             label="Filas"
@@ -249,7 +226,7 @@ export default function Tables({ value }) {
         statusFilter,
         visibleColumns,
         onRowsPerPageChange,
-        users.length,
+        axiosData.length,
         onSearchChange,
         hasSearchFilter,
     ]);
@@ -261,10 +238,10 @@ export default function Tables({ value }) {
                     isCompact
                     showControls
                     showShadow
+                    radius="sm"
                     page={page}
                     total={pages}
                     onChange={setPage}
-                    classNames={{ cursor: "text-white shadow-none rounded-md" }}
                 />
             </div>
         );
@@ -275,7 +252,7 @@ export default function Tables({ value }) {
             <Table
                 shadow="none"
                 radius="sm"
-                aria-label="Patient Table"
+                aria-label="Table"
                 isHeaderSticky
                 bottomContent={bottomContent}
                 bottomContentPlacement="outside"
@@ -309,11 +286,12 @@ export default function Tables({ value }) {
                     )}
                 </TableBody>
             </Table>
-            {value === "Paciente" || value === "Personal"
-                ?
+            {typeOfData === "Usuarios" &&
                 <UserModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} value={value} />
-                :
-                <PaymentModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} />}
+            }
+            {typeOfData === "Presupuestos" &&
+                <PaymentModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} />
+            }
         </>
     );
 }
