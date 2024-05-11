@@ -80,6 +80,12 @@ class BudgetDetailSerializer(serializers.ModelSerializer):
             "id_budget": {"read_only": True},
         }
 
+    def to_representation(self, instance):
+        representation = super(BudgetDetailSerializer, self).to_representation(instance)
+        treatment_representation = TreatmentSerializer(instance.id_treatment).data
+        representation["treatment_data"] = treatment_representation
+        return representation
+
 
 class BudgetSerializer(serializers.ModelSerializer):
     detailFields = BudgetDetailSerializer(many=True, read_only=True)
