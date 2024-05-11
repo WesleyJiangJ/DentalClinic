@@ -105,6 +105,10 @@ export const getAllBudget = () => {
     return budgetAPI.get('/')
 }
 
+export const getSpecificBudget = (id) => {
+    return budgetAPI.get(`/${id}`)
+}
+
 export const postBudget = (data) => {
     return budgetAPI.post('/', data)
 }
