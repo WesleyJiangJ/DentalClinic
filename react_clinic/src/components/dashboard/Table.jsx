@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import UserModal from "./UserModal.jsx";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Button, DropdownTrigger, Dropdown, DropdownMenu, DropdownItem, Chip, Pagination, Select, SelectItem, useDisclosure } from "@nextui-org/react";
 import { PlusIcon, ChevronDownIcon } from '@heroicons/react/24/solid'
@@ -20,6 +20,7 @@ function capitalize(str) {
 }
 
 export default function Tables({ value, showDropdown, typeOfData, axiosResponse, INITIAL_VISIBLE_COLUMNS, columns, cellValues, sortedItem }) {
+    const param = useParams();
     const navigate = useNavigate();
     const [filterValue, setFilterValue] = React.useState("");
     const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
@@ -264,7 +265,10 @@ export default function Tables({ value, showDropdown, typeOfData, axiosResponse,
                 onSelectionChange={setSelectedKeys}
                 onSortChange={setSortDescriptor}
                 selectionMode="single"
-                onRowAction={(key) => navigate(`detail/${key}`)}>
+                onRowAction={(key) => {
+                    navigate(`detail/${key}`);
+                    onOpenChange(true);
+                }}>
                 <TableHeader columns={headerColumns}>
                     {(column) => (
                         <TableColumn
@@ -290,7 +294,7 @@ export default function Tables({ value, showDropdown, typeOfData, axiosResponse,
                 <UserModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} value={value} />
             }
             {typeOfData === "Presupuestos" &&
-                <PaymentModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} />
+                <PaymentModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} param={param} />
             }
         </>
     );
