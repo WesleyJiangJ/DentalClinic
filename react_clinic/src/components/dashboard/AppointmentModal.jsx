@@ -3,7 +3,7 @@ import { sweetAlert, sweetToast } from "./Alerts";
 import { useForm, Controller } from "react-hook-form"
 import { getAllPatients, getAllPersonal, getSpecificAppointment, postAppointment, putAppointment } from "../../api/apiFunctions";
 import { Input, Select, SelectItem, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Textarea, DatePicker } from "@nextui-org/react";
-import { now, getLocalTimeZone, parseDateTime, today, parseAbsoluteToLocal } from "@internationalized/date";
+import { now, getLocalTimeZone, parseDateTime } from "@internationalized/date";
 
 export default function AppointmentModal({ isOpen, onOpenChange, reloadData, param, modifyURL }) {
     const { control, handleSubmit, formState: { errors }, reset, getValues } = useForm({
