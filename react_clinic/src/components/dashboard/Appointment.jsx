@@ -101,8 +101,6 @@ export default function Appointment() {
                             isOpen={isOpen}
                             onOpenChange={onOpenChange}
                             reloadData={reloadData}
-                            location={location}
-                            navigate={navigate}
                             param={param}
                             modifyURL={modifyURL}
                         />
