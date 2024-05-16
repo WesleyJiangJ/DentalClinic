@@ -42,17 +42,13 @@ export default function Tables({ value, showDropdown, typeOfData, axiosResponse,
     }, [visibleColumns]);
 
     const [axiosData, setAxiosData] = React.useState([])
-    const loadData = async () => {
-        setAxiosData((await axiosResponse).data);
+    const loadData = () => {
+        setAxiosData(axiosResponse);
     };
 
     React.useEffect(() => {
         loadData();
-    }, []);
-
-    const updateTable = async () => {
-        await loadData();
-    };
+    }, [axiosResponse]);
 
     const filteredItems = React.useMemo(() => {
         let filteredData = [...axiosData];
@@ -291,10 +287,10 @@ export default function Tables({ value, showDropdown, typeOfData, axiosResponse,
                 </TableBody>
             </Table>
             {typeOfData === "Usuarios" &&
-                <UserModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} value={value} />
+                <UserModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={loadData} value={value} />
             }
             {typeOfData === "Presupuestos" &&
-                <PaymentModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} param={param} />
+                <PaymentModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={loadData} param={param} />
             }
         </>
     );
