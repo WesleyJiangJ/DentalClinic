@@ -1,7 +1,9 @@
+import React from "react";
 import Table from "./Table"
 import { getAllBudget } from '../../api/apiFunctions.js'
 
 export default function Payments() {
+    const [budgetData, setBudgetData] = React.useState([]);
     const INITIAL_VISIBLE_COLUMNS = ["name", "status"];
     const columns = [
         { name: "Nombres", uid: "name", sortable: true },
@@ -27,6 +29,16 @@ export default function Payments() {
         first: "`${a.name}`",
         second: "`${b.name}`"
     }
+    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setBudgetData((await getAllBudget()).data);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+        fetchData();
+    }, [budgetData]);
 
     return (
         <>
@@ -34,7 +46,7 @@ export default function Payments() {
                 value={"Pagos"}
                 showDropdown={false}
                 typeOfData={"Presupuestos"}
-                axiosResponse={getAllBudget()}
+                axiosResponse={budgetData}
                 INITIAL_VISIBLE_COLUMNS={INITIAL_VISIBLE_COLUMNS}
                 columns={columns}
                 cellValues={cellValues}

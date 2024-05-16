@@ -1,7 +1,9 @@
+import React from "react";
 import Table from "./Table";
 import { getAllPersonal } from '../../api/apiFunctions.js'
 
 export default function Personal() {
+    const [personalData, setPersonalData] = React.useState([]);
     const INITIAL_VISIBLE_COLUMNS = ["full_name", "status"];
     const columns = [
         { name: "Nombres", uid: "full_name", sortable: true },
@@ -27,13 +29,24 @@ export default function Personal() {
         first: "`${a.first_name} ${a.middle_name} ${a.first_lastname} ${a.second_lastname}`",
         second: "`${b.first_name} ${b.middle_name} ${b.first_lastname} ${b.second_lastname}`"
     }
+    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setPersonalData((await getAllPersonal()).data);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+        fetchData();
+    }, [personalData]);
+
     return (
         <>
             <Table
                 value={"Personal"}
                 showDropdown={true}
                 typeOfData={"Usuarios"}
-                axiosResponse={getAllPersonal()}
+                axiosResponse={personalData}
                 INITIAL_VISIBLE_COLUMNS={INITIAL_VISIBLE_COLUMNS}
                 columns={columns}
                 cellValues={cellValues}

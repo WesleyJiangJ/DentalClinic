@@ -1,7 +1,9 @@
+import React from "react";
 import Table from "./Table";
 import { getAllPatients } from '../../api/apiFunctions.js'
 
 export default function Patient() {
+    const [patientData, setPatientData] = React.useState([]);
     const INITIAL_VISIBLE_COLUMNS = ["full_name", "status"];
     const columns = [
         { name: "Nombres", uid: "full_name", sortable: true },
@@ -27,6 +29,16 @@ export default function Patient() {
         first: "`${a.first_name} ${a.middle_name} ${a.first_lastname} ${a.second_lastname}`",
         second: "`${b.first_name} ${b.middle_name} ${b.first_lastname} ${b.second_lastname}`"
     }
+    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setPatientData((await getAllPatients()).data);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+        fetchData();
+    }, [patientData]);
 
     return (
         <>
@@ -34,7 +46,7 @@ export default function Patient() {
                 value={"Paciente"}
                 showDropdown={true}
                 typeOfData={"Usuarios"}
-                axiosResponse={getAllPatients()}
+                axiosResponse={patientData}
                 INITIAL_VISIBLE_COLUMNS={INITIAL_VISIBLE_COLUMNS}
                 columns={columns}
                 cellValues={cellValues}
