@@ -17,8 +17,11 @@
     "@testing-library/user-event": "^13.5.0",
     "autoprefixer": "^10.4.17",
     "axios": "^1.6.7",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "follow-redirects": "^1.15.6",
     "framer-motion": "^11.0.3",
-    "postcss": "^8.4.33",
+    "postcss": "^8.4.38",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.51.4",
@@ -26,9 +29,10 @@
     "react-router-dom": "^6.21.3",
     "react-scripts": "5.0.1",
     "react-scroll": "^1.9.0",
-    "sweetalert2": "^11.10.7",
+    "sweetalert2": "^11.11.0",
     "tailwindcss": "^3.4.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "webpack-dev-middleware": "^7.2.1"
   },
   "scripts": {
     "start": "react-scripts start",
