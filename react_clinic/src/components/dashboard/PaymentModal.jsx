@@ -1,72 +1,108 @@
 import React from "react";
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useForm, useFieldArray, Controller } from "react-hook-form"
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Select, SelectItem, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Divider, Textarea } from "@nextui-org/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Select, SelectItem, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Textarea } from "@nextui-org/react";
 import { TrashIcon } from "@heroicons/react/24/solid";
-import { getAllPatients, getAllPersonal, getAllTreatment, postBudget } from "../../api/apiFunctions";
+import { getAllPatients, getAllPersonal, getAllTreatment, getSpecificBudget, postBudget } from "../../api/apiFunctions";
+import { sweetToast } from "./Alerts";
 
-export default function PaymentModal({ isOpen, onOpenChange }) {
+export default function PaymentModal({ isOpen, onOpenChange, param, updateTable }) {
+    const navigate = useNavigate();
+    const location = useLocation();
     const [patientData, setPatientData] = React.useState([]);
     const [personalData, setPersonalData] = React.useState([]);
     const [treatmentData, setTreatmentData] = React.useState([]);
     const { control, handleSubmit, formState: { errors }, reset, getValues, setValue } = useForm({
         defaultValues: {
-            id_patient: '',
+            id_patient: 0,
             name: '',
             description: '',
-            status: 1,
+            status: true,
             detailFields: [{
-                id_treatment: '',
+                id_treatment: 0,
                 cost: '',
                 quantity: '',
                 total: '',
-                id_personal: ''
+                id_personal: 0
             }]
         }
     });
-    const { fields, append, remove } = useFieldArray({
+    const { fields, append, remove, } = useFieldArray({
         control,
-        name: 'detailFields',
+        name: 'detailFields'
     });
     const [total, setTotal] = React.useState(0);
 
     React.useEffect(() => {
         loadData();
-    }, [])
+    }, [param.id])
 
     const onSubmit = async (data) => {
         try {
             await postBudget(data);
+            updateTable();
+            clearAll();
+            modifyURL();
+            onOpenChange(true);
+            setTotal(0);
+            sweetToast('success', `${data.name.charAt(0).toUpperCase() + data.name.slice(1)} fue agregado a presupuestos`)
         } catch (error) {
             console.log(error)
         }
     };
 
     const loadData = async () => {
-        setPatientData((await getAllPatients()).data.filter(patient => patient.status === true));
-        setPersonalData((await getAllPersonal()).data.filter(personal => personal.status === true && personal.role === 2));
-        setTreatmentData((await getAllTreatment()).data);
+        const [patients, personals, treatments, budgetData] = await Promise.all([
+            getAllPatients(),
+            getAllPersonal(),
+            getAllTreatment(),
+            param.id ? getSpecificBudget(param.id) : null,
+        ]);
+
+        setPatientData(patients.data.filter(patient => patient.status === true));
+        setPersonalData(personals.data.filter(personal => personal.status === true && personal.role === 2));
+        setTreatmentData(treatments.data);
+
+        if (param.id && budgetData) {
+            reset({ ...budgetData.data });
+            let totalCost = 0;
+            for (const key in getValues().detailFields) {
+                handleTreatmentAPI(key, getValues().detailFields[key].id_treatment);
+                totalCost += getValues().detailFields[key].cost * getValues().detailFields[key].quantity;
+            }
+            setTotal(totalCost);
+        }
     }
+
+    const handleTreatmentAPI = (index, value) => {
+        const selectedTreatment = treatmentData.find(treatment => treatment.id === parseInt(value));
+        if (selectedTreatment !== undefined) {
+            setValue(`detailFields[${index}].cost`, selectedTreatment.price);
+            setValue(`detailFields[${index}].total`, parseFloat(getValues().detailFields[index].cost) * parseInt(getValues().detailFields[index].quantity));
+        }
+        else {
+            modifyURL();
+        }
+    };
 
     const handleTreatmentChange = (index, value) => {
         const selectedTreatment = treatmentData.find(treatment => treatment.id === parseInt(value));
 
         if (selectedTreatment) {
             setValue(`detailFields[${index}].cost`, selectedTreatment.price);
-            setValue(`detailFields[${index}].quantity`, '');
-            setValue(`detailFields[${index}].total`, '');
-            setTotal(calculateGrandTotal());
         }
         else {
             setValue(`detailFields[${index}].cost`, '');
-            setValue(`detailFields[${index}].quantity`, '');
-            setValue(`detailFields[${index}].total`, '');
-            setTotal(calculateGrandTotal());
         }
+        setValue(`detailFields[${index}].quantity`, '');
+        setValue(`detailFields[${index}].total`, '');
+        setValue(`detailFields[${index}].id_personal`, 0);
+        setTotal(calculateGrandTotal());
     };
 
     const handleTotalChange = (index, value) => {
         const cost = getValues(`detailFields[${index}].cost`);
-        if (value.trim() !== '') {
+        if (String(value).trim() !== '') {
             setValue(`detailFields[${index}].total`, cost * value);
             setTotal(calculateGrandTotal());
         }
@@ -78,7 +114,7 @@ export default function PaymentModal({ isOpen, onOpenChange }) {
     // Function to calculate the total of all totals in detailFields
     const calculateGrandTotal = () => {
         let totalGeneral = 0;
-        fields.forEach((field, index) => {
+        fields.forEach((_, index) => {
             const totalCampo = parseFloat(getValues(`detailFields[${index}].total`));
             if (!isNaN(totalCampo)) {
                 totalGeneral += totalCampo;
@@ -87,13 +123,40 @@ export default function PaymentModal({ isOpen, onOpenChange }) {
         return totalGeneral;
     };
 
+    const modifyURL = () => {
+        const currentPath = location.pathname;
+        const newPath = currentPath.split(`/detail/${param.id}`).filter((segment) => segment !== param.id && segment !== param.slug).join('');
+        navigate(newPath);
+    }
+
+    const clearAll = () => {
+        reset({
+            id_patient: 0,
+            name: '',
+            description: '',
+            status: true,
+            detailFields: Array.from({ length: fields.length }).map(() => ({
+                id_treatment: 0,
+                cost: '',
+                quantity: '',
+                total: '',
+                id_personal: 0
+            })),
+        });
+        // remove();
+        // append({ id_treatment: 0, cost: '', quantity: '', total: '', id_personal: 0 });
+        // for (let i = 0; i < fields.length; i++) {
+        //     remove(i);
+        // }
+    }
     return (
         <>
             <Modal
                 isOpen={isOpen}
                 onOpenChange={() => {
+                    clearAll();
+                    modifyURL();
                     onOpenChange(true);
-                    reset();
                     setTotal(0);
                 }}
                 size="full"
@@ -103,7 +166,7 @@ export default function PaymentModal({ isOpen, onOpenChange }) {
                     {(onClose) => (
                         <>
                             <form onSubmit={handleSubmit(onSubmit)}>
-                                <ModalHeader className="flex flex-col gap-1">Nuevo Presupuesto</ModalHeader>
+                                <ModalHeader className="flex flex-col gap-1">{param.id ? "Editar" : "Nuevo"} Presupuesto</ModalHeader>
                                 <ModalBody>
                                     <div className="flex flex-col gap-5">
                                         <div className="flex flex-col gap-4">
@@ -116,7 +179,12 @@ export default function PaymentModal({ isOpen, onOpenChange }) {
                                                         {...field}
                                                         label="Paciente"
                                                         variant="underlined"
+                                                        disallowEmptySelection
+                                                        selectedKeys={String(getValues().id_patient)}
                                                         isInvalid={errors.id_patient ? true : false}>
+                                                        <SelectItem key={0} value={0} textValue={"Seleccione una opción"}>
+                                                            Selecione una Opción
+                                                        </SelectItem>
                                                         {patientData.map((patient) => (
                                                             <SelectItem key={patient.id} value={patient.id} textValue={patient.first_name + ' ' + patient.middle_name + ' ' + patient.first_lastname + ' ' + patient.second_lastname}>
                                                                 {patient.first_name} {patient.middle_name} {patient.first_lastname} {patient.second_lastname}
@@ -129,6 +197,7 @@ export default function PaymentModal({ isOpen, onOpenChange }) {
                                             <Controller
                                                 name="name"
                                                 control={control}
+                                                defaultValue={''}
                                                 rules={{ required: true }}
                                                 render={({ field }) => (
                                                     <Input
@@ -143,6 +212,7 @@ export default function PaymentModal({ isOpen, onOpenChange }) {
                                             <Controller
                                                 name="description"
                                                 control={control}
+                                                defaultValue={''}
                                                 rules={{ required: true }}
                                                 render={({ field }) => (
                                                     <Textarea
@@ -182,11 +252,18 @@ export default function PaymentModal({ isOpen, onOpenChange }) {
                                                                         {...field}
                                                                         label="Tratamiento"
                                                                         variant="underlined"
+                                                                        disallowEmptySelection
+                                                                        selectedKeys={String(getValues().detailFields[index].id_treatment)}
                                                                         onChange={(e) => {
                                                                             field.onChange(e);
                                                                             handleTreatmentChange(index, e.target.value);
                                                                         }}
                                                                         isInvalid={errors?.detailFields?.[index]?.id_treatment ? true : false}>
+                                                                        <SelectItem key={0} value={0} textValue={"Seleccione una opción"}>
+                                                                            <div className="flex flex-col">
+                                                                                <span className="text-small">Seleccione una opción</span>
+                                                                            </div>
+                                                                        </SelectItem>
                                                                         {treatmentData.map((treatment) => (
                                                                             <SelectItem key={treatment.id} value={treatment.id} textValue={treatment.name}>
                                                                                 <div className="flex flex-col">
@@ -203,7 +280,7 @@ export default function PaymentModal({ isOpen, onOpenChange }) {
                                                             <Controller
                                                                 name={`detailFields[${index}].cost`}
                                                                 control={control}
-                                                                defaultValue=""
+                                                                defaultValue={''}
                                                                 rules={{ required: true }}
                                                                 render={({ field }) => (
                                                                     <Input
@@ -222,7 +299,7 @@ export default function PaymentModal({ isOpen, onOpenChange }) {
                                                             <Controller
                                                                 name={`detailFields[${index}].quantity`}
                                                                 control={control}
-                                                                defaultValue=""
+                                                                defaultValue={''}
                                                                 rules={{ required: true }}
                                                                 render={({ field }) => (
                                                                     <Input
@@ -245,7 +322,7 @@ export default function PaymentModal({ isOpen, onOpenChange }) {
                                                             <Controller
                                                                 name={`detailFields[${index}].total`}
                                                                 control={control}
-                                                                defaultValue=""
+                                                                defaultValue={''}
                                                                 rules={{ required: true }}
                                                                 render={({ field }) => (
                                                                     <Input
@@ -268,8 +345,13 @@ export default function PaymentModal({ isOpen, onOpenChange }) {
                                                                     <Select
                                                                         label="Médico"
                                                                         variant="underlined"
+                                                                        disallowEmptySelection
+                                                                        selectedKeys={String(getValues().detailFields[index].id_personal)}
                                                                         isInvalid={errors?.detailFields?.[index]?.id_personal ? true : false}
                                                                         {...field}>
+                                                                        <SelectItem key={0} value={0} textValue={"Seleccione una opción"}>
+                                                                            Selecione una Opción
+                                                                        </SelectItem>
                                                                         {personalData.map((personal) => (
                                                                             <SelectItem key={personal.id} value={personal.id} textValue={personal.first_name + ' ' + personal.middle_name + ' ' + personal.first_lastname + ' ' + personal.second_lastname}>
                                                                                 {personal.first_name} {personal.middle_name} {personal.first_lastname} {personal.second_lastname}
@@ -311,7 +393,7 @@ export default function PaymentModal({ isOpen, onOpenChange }) {
                                             color="primary"
                                             radius="sm"
                                             size="lg"
-                                            onClick={() => append({ id_budget: '', id_treatment: '', cost: '', quantity: '', id_personal: '' })}>
+                                            onClick={() => append({ id_treatment: 0, cost: '', quantity: '', total: '', id_personal: 0 })}>
                                             Agregar Campo
                                         </Button>
                                     </div>
@@ -328,7 +410,7 @@ export default function PaymentModal({ isOpen, onOpenChange }) {
                         </>
                     )}
                 </ModalContent>
-            </Modal>
+            </Modal >
         </>
     )
 }
