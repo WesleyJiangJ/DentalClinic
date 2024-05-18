@@ -88,7 +88,7 @@ class BudgetDetailSerializer(serializers.ModelSerializer):
 
 
 class BudgetSerializer(serializers.ModelSerializer):
-    detailFields = BudgetDetailSerializer(many=True, read_only=True)
+    detailFields = BudgetDetailSerializer(many=True)
 
     class Meta:
         model = Budget
