@@ -1,4 +1,3 @@
-import './App.css';
 import { Route, Routes } from 'react-router-dom';
 import DashboardContext from './components/dashboard/DashboardContext.js';
 import Clinic from './pages/Clinic.jsx';
