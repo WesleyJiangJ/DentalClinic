@@ -29,16 +29,17 @@ export default function Payments() {
         first: "`${a.name}`",
         second: "`${b.name}`"
     }
+    const fetchData = async () => {
+        try {
+            setBudgetData((await getAllBudget()).data);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+    
     React.useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setBudgetData((await getAllBudget()).data);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
         fetchData();
-    }, [budgetData]);
+    }, []);
 
     return (
         <>
@@ -47,6 +48,7 @@ export default function Payments() {
                 showDropdown={false}
                 typeOfData={"Presupuestos"}
                 axiosResponse={budgetData}
+                fetchData={fetchData}
                 INITIAL_VISIBLE_COLUMNS={INITIAL_VISIBLE_COLUMNS}
                 columns={columns}
                 cellValues={cellValues}

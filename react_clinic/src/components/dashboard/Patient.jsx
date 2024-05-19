@@ -29,16 +29,17 @@ export default function Patient() {
         first: "`${a.first_name} ${a.middle_name} ${a.first_lastname} ${a.second_lastname}`",
         second: "`${b.first_name} ${b.middle_name} ${b.first_lastname} ${b.second_lastname}`"
     }
+    const fetchData = async () => {
+        try {
+            setPatientData((await getAllPatients()).data);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
     React.useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setPatientData((await getAllPatients()).data);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
         fetchData();
-    }, [patientData]);
+    }, []);
 
     return (
         <>
@@ -47,6 +48,7 @@ export default function Patient() {
                 showDropdown={true}
                 typeOfData={"Usuarios"}
                 axiosResponse={patientData}
+                fetchData={fetchData}
                 INITIAL_VISIBLE_COLUMNS={INITIAL_VISIBLE_COLUMNS}
                 columns={columns}
                 cellValues={cellValues}
