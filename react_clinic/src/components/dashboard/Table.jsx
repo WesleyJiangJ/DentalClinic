@@ -206,7 +206,7 @@ export default function Tables({ value, showDropdown, typeOfData, axiosResponse,
                     </div>
                 </div>
                 <div className="flex justify-between items-center">
-                    <span className="text-default-500 text-small">{typeOfData} {axiosData.length}</span>
+                    <span className="text-default-500 text-small">{typeOfData}: {axiosData.length}</span>
                     <label className="flex items-center text-default-400 text-small">
                         <Select
                             label="Filas"
