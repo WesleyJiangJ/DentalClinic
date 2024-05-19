@@ -1,8 +1,8 @@
 import React from "react";
 import { useNavigate, useParams } from 'react-router-dom'
-import UserModal from "./UserModal.jsx";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Button, DropdownTrigger, Dropdown, DropdownMenu, DropdownItem, Chip, Pagination, Select, SelectItem, useDisclosure } from "@nextui-org/react";
 import { PlusIcon, ChevronDownIcon } from '@heroicons/react/24/solid'
+import UserModal from "./UserModal.jsx";
 import PaymentModal from "./PaymentModal.jsx";
 
 const statusColorMap = {
@@ -19,9 +19,10 @@ function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export default function Tables({ value, showDropdown, typeOfData, axiosResponse, INITIAL_VISIBLE_COLUMNS, columns, cellValues, sortedItem }) {
+export default function Tables({ value, showDropdown, typeOfData, axiosResponse, fetchData, INITIAL_VISIBLE_COLUMNS, columns, cellValues, sortedItem }) {
     const param = useParams();
     const navigate = useNavigate();
+    const [axiosData, setAxiosData] = React.useState([])
     const [filterValue, setFilterValue] = React.useState("");
     const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
     const [visibleColumns, setVisibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
@@ -41,14 +42,17 @@ export default function Tables({ value, showDropdown, typeOfData, axiosResponse,
         return columns.filter((column) => Array.from(visibleColumns).includes(column.uid));
     }, [visibleColumns]);
 
-    const [axiosData, setAxiosData] = React.useState([])
-    const loadData = () => {
-        setAxiosData(axiosResponse);
-    };
-
     React.useEffect(() => {
         loadData();
     }, [axiosResponse]);
+
+    const loadData = async () => {
+        setAxiosData(axiosResponse);
+    };
+
+    const updateTable = () => {
+        fetchData();
+    }
 
     const filteredItems = React.useMemo(() => {
         let filteredData = [...axiosData];
@@ -287,10 +291,10 @@ export default function Tables({ value, showDropdown, typeOfData, axiosResponse,
                 </TableBody>
             </Table>
             {typeOfData === "Usuarios" &&
-                <UserModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={loadData} value={value} />
+                <UserModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} value={value} />
             }
             {typeOfData === "Presupuestos" &&
-                <PaymentModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={loadData} param={param} />
+                <PaymentModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} param={param} />
             }
         </>
     );
