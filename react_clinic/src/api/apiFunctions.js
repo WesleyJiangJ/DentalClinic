@@ -109,6 +109,10 @@ export const getSpecificBudget = (id) => {
     return budgetAPI.get(`/${id}`)
 }
 
+export const putBudget = (id, data) => {
+    return budgetAPI.put(`/${id}/`, data)
+}
+
 export const postBudget = (data) => {
     return budgetAPI.post('/', data)
 }
