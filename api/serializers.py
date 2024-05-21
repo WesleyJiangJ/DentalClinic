@@ -100,7 +100,20 @@ class BudgetSerializer(serializers.ModelSerializer):
         for detail in detail_data:
             Budget_Detail.objects.create(id_budget=budget, **detail)
         return budget
-    
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get("name", instance.name)
+        instance.description = validated_data.get("description", instance.description)
+        instance.status = validated_data.get("status", instance.status)
+        instance.save()
+
+        detail_data = validated_data.pop("detailFields", [])
+        Budget_Detail.objects.filter(id_budget=instance).delete()
+
+        for detail in detail_data:
+            Budget_Detail.objects.create(id_budget=instance, **detail)
+        return instance
+
     def to_representation(self, instance):
         representation = super(BudgetSerializer, self).to_representation(instance)
         patient_representation = PatientSerializer(instance.id_patient).data
