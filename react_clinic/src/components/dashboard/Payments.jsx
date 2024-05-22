@@ -31,7 +31,7 @@ export default function Payments() {
     }
     const fetchData = async () => {
         try {
-            setBudgetData((await getAllBudget()).data);
+            setBudgetData((await getAllBudget()).data.filter(budget => budget.status === true));
         } catch (error) {
             console.error("Error fetching data:", error);
         }
