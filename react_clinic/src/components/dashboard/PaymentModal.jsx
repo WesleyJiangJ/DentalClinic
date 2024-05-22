@@ -3,27 +3,29 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useForm, useFieldArray, Controller } from "react-hook-form"
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Select, SelectItem, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Textarea } from "@nextui-org/react";
 import { TrashIcon } from "@heroicons/react/24/solid";
-import { getAllPatients, getAllPersonal, getAllTreatment, getSpecificBudget, postBudget } from "../../api/apiFunctions";
+import { getAllPatients, getAllPersonal, getAllTreatment, getSpecificBudget, postBudget, putBudget } from "../../api/apiFunctions";
 import { sweetToast } from "./Alerts";
 
 export default function PaymentModal({ isOpen, onOpenChange, param, updateTable }) {
     const navigate = useNavigate();
     const location = useLocation();
     const [patientData, setPatientData] = React.useState([]);
+    const [patientName, setPatientName] = React.useState('');
     const [personalData, setPersonalData] = React.useState([]);
     const [treatmentData, setTreatmentData] = React.useState([]);
+    const [total, setTotal] = React.useState(0);
     const { control, handleSubmit, formState: { errors }, reset, getValues, setValue } = useForm({
         defaultValues: {
-            id_patient: 0,
+            id_patient: '',
             name: '',
             description: '',
             status: true,
             detailFields: [{
-                id_treatment: 0,
+                id_treatment: '',
                 cost: '',
                 quantity: '',
                 total: '',
-                id_personal: 0
+                id_personal: ''
             }]
         }
     });
@@ -31,7 +33,6 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
         control,
         name: 'detailFields'
     });
-    const [total, setTotal] = React.useState(0);
 
     React.useEffect(() => {
         loadData();
@@ -39,32 +40,39 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
 
     const onSubmit = async (data) => {
         try {
-            await postBudget(data);
+            if (param.id) {
+                await putBudget(param.id, data);
+                sweetToast('success', `${data.name.charAt(0).toUpperCase() + data.name.slice(1)} fue modificado`);
+            }
+            else {
+                await postBudget(data);
+                sweetToast('success', `${data.name.charAt(0).toUpperCase() + data.name.slice(1)} fue agregado a presupuestos`);
+            }
             updateTable();
             clearAll();
             modifyURL();
             onOpenChange(true);
             setTotal(0);
-            sweetToast('success', `${data.name.charAt(0).toUpperCase() + data.name.slice(1)} fue agregado a presupuestos`)
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     };
 
     const loadData = async () => {
         const [patients, personals, treatments, budgetData] = await Promise.all([
-            getAllPatients(),
+            !param.id ? getAllPatients() : null,
             getAllPersonal(),
             getAllTreatment(),
             param.id ? getSpecificBudget(param.id) : null,
         ]);
 
-        setPatientData(patients.data.filter(patient => patient.status === true));
+        { !param.id && setPatientData(patients.data.filter(patient => patient.status === true)) };
         setPersonalData(personals.data.filter(personal => personal.status === true && personal.role === 2));
         setTreatmentData(treatments.data);
 
         if (param.id && budgetData) {
             reset({ ...budgetData.data });
+            setPatientName(budgetData.data.patient_data.first_name + ' ' + budgetData.data.patient_data.middle_name + ' ' + budgetData.data.patient_data.first_lastname + ' ' + budgetData.data.patient_data.second_lastname);
             let totalCost = 0;
             for (const key in getValues().detailFields) {
                 handleTreatmentAPI(key, getValues().detailFields[key].id_treatment);
@@ -96,7 +104,7 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
         }
         setValue(`detailFields[${index}].quantity`, '');
         setValue(`detailFields[${index}].total`, '');
-        setValue(`detailFields[${index}].id_personal`, 0);
+        setValue(`detailFields[${index}].id_personal`, '');
         setTotal(calculateGrandTotal());
     };
 
@@ -131,23 +139,18 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
 
     const clearAll = () => {
         reset({
-            id_patient: 0,
+            id_patient: '',
             name: '',
             description: '',
             status: true,
             detailFields: Array.from({ length: fields.length }).map(() => ({
-                id_treatment: 0,
+                id_treatment: '',
                 cost: '',
                 quantity: '',
                 total: '',
-                id_personal: 0
+                id_personal: ''
             })),
         });
-        // remove();
-        // append({ id_treatment: 0, cost: '', quantity: '', total: '', id_personal: 0 });
-        // for (let i = 0; i < fields.length; i++) {
-        //     remove(i);
-        // }
     }
     return (
         <>
@@ -170,34 +173,37 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
                                 <ModalBody>
                                     <div className="flex flex-col gap-5">
                                         <div className="flex flex-col gap-4">
-                                            <Controller
-                                                name="id_patient"
-                                                control={control}
-                                                rules={{ required: true }}
-                                                render={({ field }) => (
-                                                    <Select
-                                                        {...field}
-                                                        label="Paciente"
-                                                        variant="underlined"
-                                                        disallowEmptySelection
-                                                        selectedKeys={String(getValues().id_patient)}
-                                                        isInvalid={errors.id_patient ? true : false}>
-                                                        <SelectItem key={0} value={0} textValue={"Seleccione una opción"}>
-                                                            Selecione una Opción
-                                                        </SelectItem>
-                                                        {patientData.map((patient) => (
-                                                            <SelectItem key={patient.id} value={patient.id} textValue={patient.first_name + ' ' + patient.middle_name + ' ' + patient.first_lastname + ' ' + patient.second_lastname}>
-                                                                {patient.first_name} {patient.middle_name} {patient.first_lastname} {patient.second_lastname}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </Select>
-                                                )}
-                                            />
+                                            {!param.id ?
+                                                <Controller
+                                                    name="id_patient"
+                                                    control={control}
+                                                    rules={{ required: true }}
+                                                    render={({ field }) => (
+                                                        <Select
+                                                            {...field}
+                                                            label="Paciente"
+                                                            variant="underlined"
+                                                            disallowEmptySelection
+                                                            isInvalid={errors.id_patient ? true : false}>
+                                                            {patientData.map((patient) => (
+                                                                <SelectItem key={patient.id} value={patient.id} textValue={patient.first_name + ' ' + patient.middle_name + ' ' + patient.first_lastname + ' ' + patient.second_lastname}>
+                                                                    {patient.first_name} {patient.middle_name} {patient.first_lastname} {patient.second_lastname}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </Select>
+                                                    )}
+                                                />
+                                                :
+                                                <Input
+                                                    variant="underlined"
+                                                    value={patientName}
+                                                    readOnly
+                                                />
+                                            }
 
                                             <Controller
                                                 name="name"
                                                 control={control}
-                                                defaultValue={''}
                                                 rules={{ required: true }}
                                                 render={({ field }) => (
                                                     <Input
@@ -212,7 +218,6 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
                                             <Controller
                                                 name="description"
                                                 control={control}
-                                                defaultValue={''}
                                                 rules={{ required: true }}
                                                 render={({ field }) => (
                                                     <Textarea
@@ -253,17 +258,12 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
                                                                         label="Tratamiento"
                                                                         variant="underlined"
                                                                         disallowEmptySelection
-                                                                        selectedKeys={String(getValues().detailFields[index].id_treatment)}
+                                                                        defaultSelectedKeys={String(field.value)}
                                                                         onChange={(e) => {
                                                                             field.onChange(e);
                                                                             handleTreatmentChange(index, e.target.value);
                                                                         }}
                                                                         isInvalid={errors?.detailFields?.[index]?.id_treatment ? true : false}>
-                                                                        <SelectItem key={0} value={0} textValue={"Seleccione una opción"}>
-                                                                            <div className="flex flex-col">
-                                                                                <span className="text-small">Seleccione una opción</span>
-                                                                            </div>
-                                                                        </SelectItem>
                                                                         {treatmentData.map((treatment) => (
                                                                             <SelectItem key={treatment.id} value={treatment.id} textValue={treatment.name}>
                                                                                 <div className="flex flex-col">
@@ -280,7 +280,6 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
                                                             <Controller
                                                                 name={`detailFields[${index}].cost`}
                                                                 control={control}
-                                                                defaultValue={''}
                                                                 rules={{ required: true }}
                                                                 render={({ field }) => (
                                                                     <Input
@@ -290,7 +289,6 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
                                                                         variant="underlined"
                                                                         startContent={'C$'}
                                                                         isReadOnly
-                                                                        isInvalid={errors?.detailFields?.[index]?.cost ? true : false}
                                                                     />
                                                                 )}
                                                             />
@@ -299,7 +297,6 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
                                                             <Controller
                                                                 name={`detailFields[${index}].quantity`}
                                                                 control={control}
-                                                                defaultValue={''}
                                                                 rules={{ required: true }}
                                                                 render={({ field }) => (
                                                                     <Input
@@ -343,15 +340,13 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
                                                                 rules={{ required: true }}
                                                                 render={({ field }) => (
                                                                     <Select
+                                                                        {...field}
                                                                         label="Médico"
                                                                         variant="underlined"
+                                                                        key={`${field.name}-${field.value}`}
                                                                         disallowEmptySelection
-                                                                        selectedKeys={String(getValues().detailFields[index].id_personal)}
-                                                                        isInvalid={errors?.detailFields?.[index]?.id_personal ? true : false}
-                                                                        {...field}>
-                                                                        <SelectItem key={0} value={0} textValue={"Seleccione una opción"}>
-                                                                            Selecione una Opción
-                                                                        </SelectItem>
+                                                                        defaultSelectedKeys={String(field.value)}
+                                                                        isInvalid={errors?.detailFields?.[index]?.id_personal ? true : false}>
                                                                         {personalData.map((personal) => (
                                                                             <SelectItem key={personal.id} value={personal.id} textValue={personal.first_name + ' ' + personal.middle_name + ' ' + personal.first_lastname + ' ' + personal.second_lastname}>
                                                                                 {personal.first_name} {personal.middle_name} {personal.first_lastname} {personal.second_lastname}
@@ -393,7 +388,7 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
                                             color="primary"
                                             radius="sm"
                                             size="lg"
-                                            onClick={() => append({ id_treatment: 0, cost: '', quantity: '', total: '', id_personal: 0 })}>
+                                            onClick={() => append({ id_treatment: '', cost: '', quantity: '', total: '', id_personal: '' })}>
                                             Agregar Campo
                                         </Button>
                                     </div>
@@ -403,7 +398,7 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
                                         Cerrar
                                     </Button>
                                     <Button color="primary" radius="sm" type="submit">
-                                        Guardar
+                                        {param.id ? 'Actualizar' : 'Guardar'}
                                     </Button>
                                 </ModalFooter>
                             </form>
