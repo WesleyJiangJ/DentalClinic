@@ -4,7 +4,7 @@ import { useForm, useFieldArray, Controller } from "react-hook-form"
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Select, SelectItem, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Textarea } from "@nextui-org/react";
 import { TrashIcon } from "@heroicons/react/24/solid";
 import { getAllPatients, getAllPersonal, getAllTreatment, getSpecificBudget, postBudget, putBudget } from "../../api/apiFunctions";
-import { sweetToast } from "./Alerts";
+import { sweetToast, sweetAlert } from "./Alerts";
 
 export default function PaymentModal({ isOpen, onOpenChange, param, updateTable }) {
     const navigate = useNavigate();
@@ -152,6 +152,24 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
             })),
         });
     }
+
+    const cancelBudget = async () => {
+        await sweetAlert("¿Deseas eliminar el presupuesto?", "", "warning", "success", "El presupuesto fue eliminado");
+        const defaultValues = getValues();
+        defaultValues.status = false;
+        await putBudget(param.id, defaultValues)
+            .then(() => {
+                updateTable();
+                clearAll();
+                modifyURL();
+                onOpenChange(true);
+                setTotal(0);
+            })
+            .catch((error) => {
+                console.error('Error: ', error);
+            })
+    }
+
     return (
         <>
             <Modal
@@ -393,13 +411,27 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
                                         </Button>
                                     </div>
                                 </ModalBody>
-                                <ModalFooter>
-                                    <Button color="danger" variant="light" radius="sm" onPress={onClose}>
-                                        Cerrar
-                                    </Button>
-                                    <Button color="primary" radius="sm" type="submit">
-                                        {param.id ? 'Actualizar' : 'Guardar'}
-                                    </Button>
+                                <ModalFooter className={param.id ? "flex justify-between" : ""}>
+                                    {param.id ?
+                                        <div className="flex flex-row gap-2">
+                                            <Button color="danger" radius="sm" variant="solid" onClick={cancelBudget}>
+                                                Eliminar
+                                            </Button>
+                                            <Button color="primary" radius="sm" variant="solid">
+                                                Crear Control de Pagos
+                                            </Button>
+                                        </div>
+                                        :
+                                        ""
+                                    }
+                                    <div>
+                                        <Button color="danger" variant="light" radius="sm" onPress={onClose}>
+                                            Cerrar
+                                        </Button>
+                                        <Button color="primary" radius="sm" type="submit">
+                                            {param.id ? 'Actualizar' : 'Guardar'}
+                                        </Button>
+                                    </div>
                                 </ModalFooter>
                             </form>
                         </>
