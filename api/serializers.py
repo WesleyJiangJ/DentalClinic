@@ -104,6 +104,8 @@ class BudgetSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.name = validated_data.get("name", instance.name)
         instance.description = validated_data.get("description", instance.description)
+        instance.total = validated_data.get("total", instance.total)
+        instance.type = validated_data.get("type", instance.type)
         instance.status = validated_data.get("status", instance.status)
         instance.save()
 
