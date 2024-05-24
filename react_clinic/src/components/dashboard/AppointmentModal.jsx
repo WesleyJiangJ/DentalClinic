@@ -116,7 +116,7 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
                     else {
                         sweetToast('warning', 'No se realizaron modificaciones')
                     }
-                    reseting();
+                    restore();
                 }
             }
             else {
@@ -124,7 +124,7 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
                 if (now(getLocalTimeZone()) < parseDateTime((date).slice(0, -1))) {
                     await postAppointment(data);
                     sweetToast('success', `Se ha agregado ${data.reason}`);
-                    reseting();
+                    restore();
                 }
             }
         } catch (error) {
@@ -143,7 +143,7 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
             defaultValues.observation = defaultValues.cancellation_reason;
             await putAppointment(param.id, defaultValues)
                 .then(() => {
-                    reseting();
+                    restore();
                 })
                 .catch((error) => {
                     console.error('Error: ', error);
@@ -151,7 +151,7 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
         }
     }
 
-    const reseting = () => {
+    const restore = () => {
         reloadData();
         resetForm();
         onOpenChange(false);
