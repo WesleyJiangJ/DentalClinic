@@ -424,7 +424,7 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
                                         :
                                         ""
                                     }
-                                    <div>
+                                    <div className="flex gap-2">
                                         <Button color="danger" variant="light" radius="sm" onPress={onClose}>
                                             Cerrar
                                         </Button>
