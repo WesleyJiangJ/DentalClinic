@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Sidebar, Menu, MenuItem } from 'react-pro-sidebar';
-import { HomeIcon, UserIcon, CalendarDaysIcon, BanknotesIcon, UserGroupIcon, CogIcon, ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/solid";
+import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
+import { HomeIcon, UserIcon, CalendarDaysIcon, BanknotesIcon, UserGroupIcon, CogIcon, ArrowLeftStartOnRectangleIcon, CreditCardIcon, DocumentTextIcon } from "@heroicons/react/24/solid";
 
 export default function SideBar({ collapsed }) {
     const menuItemStyles = {
@@ -45,11 +45,18 @@ export default function SideBar({ collapsed }) {
                         component={<NavLink to="appointment" style={getActiveStyles} />}>
                         Citas
                     </MenuItem>
-                    <MenuItem
-                        icon={<BanknotesIcon className="h-5 w-5" />}
-                        component={<NavLink to="payments" style={getActiveStyles} />}>
-                        Pagos
-                    </MenuItem>
+                    <SubMenu label="Pagos" icon={<BanknotesIcon className="h-5 w-5" />}>
+                        <MenuItem
+                            icon={<CreditCardIcon className="h-5 w-5" />}
+                            component={<NavLink to="budget" style={getActiveStyles} />}>
+                            Presupuestos
+                        </MenuItem>
+                        <MenuItem
+                            icon={<DocumentTextIcon className="h-5 w-5" />}
+                            component={<NavLink to="control" style={getActiveStyles} />}>
+                            Pagos
+                        </MenuItem>
+                    </SubMenu>
                 </Menu>
                 <Menu menuItemStyles={menuItemStyles}>
                     <MenuItem
