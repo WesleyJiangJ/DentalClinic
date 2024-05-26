@@ -19,6 +19,8 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
             id_patient: '',
             name: '',
             description: '',
+            total: 0,
+            type: '1',
             status: true,
             detailFields: [{
                 id_treatment: '',
@@ -49,10 +51,7 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
                 sweetToast('success', `${data.name.charAt(0).toUpperCase() + data.name.slice(1)} fue agregado a presupuestos`);
             }
             updateTable();
-            clearAll();
-            modifyURL();
-            onOpenChange(true);
-            setTotal(0);
+            restore();
         } catch (error) {
             console.log(error);
         }
@@ -78,6 +77,7 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
                 handleTreatmentAPI(key, getValues().detailFields[key].id_treatment);
                 totalCost += getValues().detailFields[key].cost * getValues().detailFields[key].quantity;
             }
+            setValue('total', totalCost);
             setTotal(totalCost);
         }
     }
@@ -128,8 +128,45 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
                 totalGeneral += totalCampo;
             }
         });
+        setValue('total', totalGeneral);
         return totalGeneral;
     };
+
+    const cancelBudget = async () => {
+        await sweetAlert("¿Deseas eliminar el presupuesto?", "", "warning", "success", "El presupuesto fue eliminado");
+        const defaultValues = getValues();
+        defaultValues.status = false;
+        await putBudget(param.id, defaultValues)
+            .then(() => {
+                updateTable();
+                restore();
+            })
+            .catch((error) => {
+                console.error('Error: ', error);
+            })
+    }
+
+    const createPaymentControl = async () => {
+        await sweetAlert("¿Deseas crear el control de pago?", "Al continuar, no podrás realizar cambios", "warning", "success", "El control de pagos ha sido creado");
+        const defaultValues = getValues();
+        defaultValues.type = 2;
+        defaultValues.status = false;
+        await putBudget(param.id, defaultValues)
+            .then(() => {
+                updateTable();
+                restore();
+            })
+            .catch((error) => {
+                console.error('Error: ', error);
+            })
+    }
+
+    const restore = () => {
+        clearAll();
+        modifyURL();
+        onOpenChange(true);
+        setTotal(0);
+    }
 
     const modifyURL = () => {
         const currentPath = location.pathname;
@@ -153,32 +190,12 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
         });
     }
 
-    const cancelBudget = async () => {
-        await sweetAlert("¿Deseas eliminar el presupuesto?", "", "warning", "success", "El presupuesto fue eliminado");
-        const defaultValues = getValues();
-        defaultValues.status = false;
-        await putBudget(param.id, defaultValues)
-            .then(() => {
-                updateTable();
-                clearAll();
-                modifyURL();
-                onOpenChange(true);
-                setTotal(0);
-            })
-            .catch((error) => {
-                console.error('Error: ', error);
-            })
-    }
-
     return (
         <>
             <Modal
                 isOpen={isOpen}
                 onOpenChange={() => {
-                    clearAll();
-                    modifyURL();
-                    onOpenChange(true);
-                    setTotal(0);
+                    restore();
                 }}
                 size="full"
                 radius="sm"
@@ -417,7 +434,7 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
                                             <Button color="danger" radius="sm" variant="solid" onClick={cancelBudget}>
                                                 Eliminar
                                             </Button>
-                                            <Button color="primary" radius="sm" variant="solid">
+                                            <Button color="primary" radius="sm" variant="solid" onClick={createPaymentControl}>
                                                 Crear Control de Pagos
                                             </Button>
                                         </div>
