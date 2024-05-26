@@ -246,7 +246,6 @@ class Budget(models.Model):
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=256)
     total = models.DecimalField(max_digits=10, decimal_places=2)
-    type = models.CharField(max_length=1)
     status = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -255,7 +254,9 @@ class Budget(models.Model):
 
 
 class Budget_Detail(models.Model):
-    id_budget = models.ForeignKey(Budget, related_name="detailFields", on_delete=models.CASCADE)
+    id_budget = models.ForeignKey(
+        Budget, related_name="detailFields", on_delete=models.CASCADE
+    )
     id_treatment = models.ForeignKey(Treatment, on_delete=models.CASCADE)
     id_personal = models.ForeignKey(
         Personal, on_delete=models.CASCADE, limit_choices_to={"role": 2}
@@ -265,8 +266,14 @@ class Budget_Detail(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
+class Payment(models.Model):
+    id_budget = models.ForeignKey(Budget, on_delete=models.CASCADE, blank=True)
+    status = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
 class PaymentControl(models.Model):
-    id_budget = models.ForeignKey(Budget, on_delete=models.CASCADE)
+    id_payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
     paid = models.DecimalField(max_digits=10, decimal_places=2)
     note = models.TextField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
