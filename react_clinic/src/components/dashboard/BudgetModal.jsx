@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useForm, useFieldArray, Controller } from "react-hook-form"
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Select, SelectItem, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Textarea } from "@nextui-org/react";
 import { TrashIcon } from "@heroicons/react/24/solid";
-import { getAllPatients, getAllPersonal, getAllTreatment, getSpecificBudget, postBudget, putBudget } from "../../api/apiFunctions";
+import { getAllPatients, getAllPersonal, getAllTreatment, getSpecificBudget, postBudget, postPayment, putBudget } from "../../api/apiFunctions";
 import { sweetToast, sweetAlert } from "./Alerts";
 
 export default function BudgetModal({ isOpen, onOpenChange, param, updateTable }) {
@@ -20,7 +20,6 @@ export default function BudgetModal({ isOpen, onOpenChange, param, updateTable }
             name: '',
             description: '',
             total: 0,
-            type: '1',
             status: true,
             detailFields: [{
                 id_treatment: '',
@@ -148,13 +147,22 @@ export default function BudgetModal({ isOpen, onOpenChange, param, updateTable }
 
     const createPaymentControl = async () => {
         await sweetAlert("¿Deseas crear el control de pago?", "Al continuar, no podrás realizar cambios", "warning", "success", "El control de pagos ha sido creado");
+        const data = {
+            id_budget: param.id,
+        }
         const defaultValues = getValues();
-        defaultValues.type = 2;
         defaultValues.status = false;
-        await putBudget(param.id, defaultValues)
-            .then(() => {
-                updateTable();
-                restore();
+        await postPayment(data)
+            .then(async () => {
+                await putBudget(param.id, defaultValues)
+                    .then(() => {
+                        updateTable();
+                        restore();
+                    })
+                    .catch((error) => {
+                        console.error('Error: ', error);
+                    })
+                navigate('/dashboard/payment');
             })
             .catch((error) => {
                 console.error('Error: ', error);
