@@ -6,7 +6,7 @@ import Board from './components/dashboard/Board.jsx';
 import Patient from './components/dashboard/Patient.jsx';
 import Detail from './components/dashboard/Detail.jsx';
 import Appointment from './components/dashboard/Appointment.jsx';
-import Payments from './components/dashboard/Payments.jsx';
+import Budget from './components/dashboard/Budget.jsx';
 import BudgetModal from './components/dashboard/BudgetModal.jsx';
 import Personal from './components/dashboard/Personal.jsx';
 import Settings from './components/dashboard/Settings.jsx';
@@ -18,7 +18,7 @@ function App() {
       dashboard: 'Dashboard',
       patient: 'Pacientes',
       appointment: "Citas",
-      payments: "Pagos",
+      budget: "Presupuestos",
       personal: "Personal",
       settings: "Ajustes",
     },
@@ -34,7 +34,7 @@ function App() {
             <Route path='patient/detail/:id' element={<Detail value={"Paciente"} />} />
             <Route path='appointment/*' element={<Appointment />} />
             <Route path='appointment/:slug/:id' element={<Appointment />} />
-            <Route path='payments/*' element={<Payments />}>
+            <Route path='budget/*' element={<Budget />}>
               <Route path='detail/:id' element={<BudgetModal />} />
             </Route>
             <Route path='personal/*' element={<Personal />} />

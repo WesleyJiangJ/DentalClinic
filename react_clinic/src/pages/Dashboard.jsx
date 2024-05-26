@@ -25,8 +25,8 @@ export default function Dashboard() {
                     return titles.patient;
                 case 'appointment':
                     return titles.appointment;
-                case 'payments':
-                    return titles.payments;
+                case 'budget':
+                    return titles.budget;
                 case 'personal':
                     return titles.personal;
                 case 'settings':

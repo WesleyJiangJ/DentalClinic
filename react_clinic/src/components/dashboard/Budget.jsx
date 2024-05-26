@@ -1,8 +1,8 @@
 import React from "react";
-import Table from "./Table"
+import Table from "./Table.jsx"
 import { getAllBudget } from '../../api/apiFunctions.js'
 
-export default function Payments() {
+export default function Budget() {
     const [budgetData, setBudgetData] = React.useState([]);
     const INITIAL_VISIBLE_COLUMNS = ["name", "status"];
     const columns = [
