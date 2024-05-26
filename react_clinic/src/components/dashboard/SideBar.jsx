@@ -53,7 +53,7 @@ export default function SideBar({ collapsed }) {
                         </MenuItem>
                         <MenuItem
                             icon={<DocumentTextIcon className="h-5 w-5" />}
-                            component={<NavLink to="control" style={getActiveStyles} />}>
+                            component={<NavLink to="payment" style={getActiveStyles} />}>
                             Pagos
                         </MenuItem>
                     </SubMenu>
