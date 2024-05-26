@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Button, DropdownTrigger, Dropdown, DropdownMenu, DropdownItem, Chip, Pagination, Select, SelectItem, useDisclosure } from "@nextui-org/react";
 import { PlusIcon, ChevronDownIcon } from '@heroicons/react/24/solid'
 import UserModal from "./UserModal.jsx";
-import PaymentModal from "./PaymentModal.jsx";
+import BudgetModal from "./BudgetModal.jsx";
 
 const statusColorMap = {
     true: "success",
@@ -294,7 +294,7 @@ export default function Tables({ value, showDropdown, typeOfData, axiosResponse,
                 <UserModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} value={value} />
             }
             {typeOfData === "Presupuestos" &&
-                <PaymentModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} param={param} />
+                <BudgetModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} param={param} />
             }
         </>
     );
