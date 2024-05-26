@@ -4,6 +4,7 @@ import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input,
 import { PlusIcon, ChevronDownIcon } from '@heroicons/react/24/solid'
 import UserModal from "./UserModal.jsx";
 import BudgetModal from "./BudgetModal.jsx";
+import PaymentModal from "./PaymentModal.jsx"
 
 const statusColorMap = {
     true: "success",
@@ -295,6 +296,9 @@ export default function Tables({ value, showDropdown, typeOfData, axiosResponse,
             }
             {typeOfData === "Presupuestos" &&
                 <BudgetModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} param={param} />
+            }
+            {typeOfData === "Pagos" &&
+                <PaymentModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} param={param} />
             }
         </>
     );
