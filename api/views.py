@@ -68,3 +68,13 @@ class BudgetViewSet(viewsets.ModelViewSet):
 class BudgetDetailViewSet(viewsets.ModelViewSet):
     queryset = Budget_Detail.objects.all()
     serializer_class = BudgetDetailSerializer
+
+
+class PaymentViewSet(viewsets.ModelViewSet):
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+
+
+class PaymentControlViewSet(viewsets.ModelViewSet):
+    queryset = PaymentControl.objects.all()
+    serializer_class = PaymentControlSerializer
