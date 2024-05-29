@@ -150,7 +150,7 @@ export default function Tables({ value, showDropdown, showAddButton, typeOfData,
     const topContent = React.useMemo(() => {
         return (
             <div className="flex flex-col gap-4">
-                <div className="flex justify-between gap-3 items-end">
+                <div className={`flex justify-between items-end ${showAddButton && 'gap-3'}`}>
                     <Input
                         isClearable
                         className="w-full"
