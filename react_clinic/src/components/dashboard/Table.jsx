@@ -44,15 +44,24 @@ export default function Tables({ value, showDropdown, showAddButton, typeOfData,
     }, [visibleColumns]);
 
     React.useEffect(() => {
+        if (param.id) {
+            modifyURL();
+        }
         loadData();
     }, [axiosResponse]);
 
     const loadData = async () => {
         setAxiosData(axiosResponse);
     };
-
+    
     const updateTable = () => {
         fetchData();
+    }
+
+    const modifyURL = () => {
+        const currentPath = location.pathname;
+        const newPath = currentPath.split(`/detail/${param.id}`).filter((segment) => segment !== param.id && segment !== param.slug).join('');
+        navigate(newPath);
     }
 
     const filteredItems = React.useMemo(() => {
