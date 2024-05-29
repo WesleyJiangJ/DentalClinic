@@ -275,7 +275,7 @@ class Payment(models.Model):
 class PaymentControl(models.Model):
     id_payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
     paid = models.DecimalField(max_digits=10, decimal_places=2)
-    note = models.TextField(null=True)
+    note = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
