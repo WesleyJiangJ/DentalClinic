@@ -51,7 +51,9 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
         if (param.id) {
             try {
                 const res = (await getSpecificPayment(param.id)).data;
-                const resPaymentControl = (await getAllPaymentControl()).data.filter(payment => payment.id_payment === parseInt(param.id));
+                const resPaymentControl = (await getAllPaymentControl()).data
+                    .filter(payment => payment.id_payment === parseInt(param.id))
+                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
                 const treatmentData = res.budget_data.detailFields.map(field => ({
                     name: field.treatment_data.name,
                     cost: field.cost,
