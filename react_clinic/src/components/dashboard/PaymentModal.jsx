@@ -86,15 +86,8 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
     }
 
     const restore = () => {
-        modifyURL();
         onOpenChange(true);
         clearAll();
-    }
-
-    const modifyURL = () => {
-        const currentPath = location.pathname;
-        const newPath = currentPath.split(`/detail/${param.id}`).filter((segment) => segment !== param.id && segment !== param.slug).join('');
-        navigate(newPath);
     }
 
     const clearAll = () => {

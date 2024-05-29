@@ -87,9 +87,6 @@ export default function BudgetModal({ isOpen, onOpenChange, param, updateTable }
             setValue(`detailFields[${index}].cost`, selectedTreatment.price);
             setValue(`detailFields[${index}].total`, parseFloat(getValues().detailFields[index].cost) * parseInt(getValues().detailFields[index].quantity));
         }
-        else {
-            modifyURL();
-        }
     };
 
     const handleTreatmentChange = (index, value) => {
@@ -171,15 +168,8 @@ export default function BudgetModal({ isOpen, onOpenChange, param, updateTable }
 
     const restore = () => {
         clearAll();
-        modifyURL();
         onOpenChange(true);
         setTotal(0);
-    }
-
-    const modifyURL = () => {
-        const currentPath = location.pathname;
-        const newPath = currentPath.split(`/detail/${param.id}`).filter((segment) => segment !== param.id && segment !== param.slug).join('');
-        navigate(newPath);
     }
 
     const clearAll = () => {
