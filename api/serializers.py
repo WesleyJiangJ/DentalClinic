@@ -83,7 +83,9 @@ class BudgetDetailSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super(BudgetDetailSerializer, self).to_representation(instance)
         treatment_representation = TreatmentSerializer(instance.id_treatment).data
+        personal_representation = PersonalSerializer(instance.id_personal).data
         representation["treatment_data"] = treatment_representation
+        representation["personal_data"] = personal_representation
         return representation
 
 
@@ -105,7 +107,6 @@ class BudgetSerializer(serializers.ModelSerializer):
         instance.name = validated_data.get("name", instance.name)
         instance.description = validated_data.get("description", instance.description)
         instance.total = validated_data.get("total", instance.total)
-        instance.type = validated_data.get("type", instance.type)
         instance.status = validated_data.get("status", instance.status)
         instance.save()
 
@@ -121,3 +122,19 @@ class BudgetSerializer(serializers.ModelSerializer):
         patient_representation = PatientSerializer(instance.id_patient).data
         representation["patient_data"] = patient_representation
         return representation
+
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = "__all__"
+
+    def to_representation(self, instance):
+        representation = super(PaymentSerializer, self).to_representation(instance)
+        budget_representation = BudgetSerializer(instance.id_budget).data
+        representation["budget_data"] = budget_representation
+        return representation
+
+class PaymentControlSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PaymentControl
+        fields = "__all__"
