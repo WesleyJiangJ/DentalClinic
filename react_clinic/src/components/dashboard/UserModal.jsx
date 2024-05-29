@@ -153,7 +153,6 @@ export default function NewPatientModal({ isOpen, onOpenChange, updateTable, upd
                 }
                 else {
                     await postPersonal(formData.data);
-                    console.log(formData)
                 }
                 resetForm();
                 updateTable();
