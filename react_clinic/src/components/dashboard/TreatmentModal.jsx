@@ -148,11 +148,7 @@ export default function TreatmentModal({ isOpen, onOpenChange, loadTreatments, p
                                 />
                             </ModalBody>
                             <ModalFooter>
-                                <Button color="danger" variant="light" radius="sm" onPress={() => {
-                                    onClose();
-                                    reset();
-                                    modifyURL();
-                                }}>
+                                <Button color="danger" variant="light" radius="sm" onClick={onClose}>
                                     Cerrar
                                 </Button>
                                 <Button color="primary" radius="sm" type="submit">
