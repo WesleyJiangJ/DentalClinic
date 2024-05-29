@@ -28,7 +28,7 @@ class PersonalSerializer(serializers.ModelSerializer):
 
 
 class NewPatientSerializer(serializers.ModelSerializer):
-    patient_data = PatientSerializer(write_only=True)
+    data = PatientSerializer(write_only=True)
 
     class Meta:
         model = Medical_History
@@ -38,8 +38,8 @@ class NewPatientSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        patient_data = validated_data.pop("patient_data")
-        patient = Patient.objects.create(**patient_data)
+        data = validated_data.pop("data")
+        patient = Patient.objects.create(**data)
         medical_history = Medical_History.objects.create(
             id_patient=patient, **validated_data
         )
@@ -48,7 +48,7 @@ class NewPatientSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super(NewPatientSerializer, self).to_representation(instance)
         patient_representation = PatientSerializer(instance.id_patient).data
-        representation["patient_data"] = patient_representation
+        representation["data"] = patient_representation
         return representation
 
 
