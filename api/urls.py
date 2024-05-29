@@ -16,8 +16,6 @@ router.register(r"treatment", views.TreatmentViewSet)
 router.register(r"budget", views.BudgetViewSet)
 router.register(r"payment", views.PaymentViewSet)
 router.register(r"paymentcontrol", views.PaymentControlViewSet)
-# router.register(r"budget_detail", views.BudgetDetailViewSet)
-
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
