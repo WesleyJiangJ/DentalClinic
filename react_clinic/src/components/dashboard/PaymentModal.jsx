@@ -212,16 +212,19 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable,
                                                 <Controller
                                                     name="paid"
                                                     control={control}
-                                                    rules={{ required: true }}
+                                                    rules={{
+                                                        required: true,
+                                                        pattern: {
+                                                            value: /^\d*\.?\d+$/
+                                                        }
+                                                    }}
                                                     render={({ field }) => (
                                                         <Input
                                                             {...field}
                                                             label="Cuota"
                                                             variant="underlined"
                                                             placeholder="0.00"
-                                                            type="number"
                                                             startContent={'C$'}
-                                                            min={1}
                                                             value={field.value}
                                                             isInvalid={errors.paid ? true : false}
                                                         />
