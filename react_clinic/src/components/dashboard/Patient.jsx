@@ -46,6 +46,7 @@ export default function Patient() {
             <Table
                 value={"Paciente"}
                 showDropdown={true}
+                showAddButton={true}
                 typeOfData={"Usuarios"}
                 axiosResponse={patientData}
                 fetchData={fetchData}

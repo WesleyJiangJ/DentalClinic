@@ -46,6 +46,7 @@ export default function Payment() {
             <Table
                 value={"Pagos"}
                 showDropdown={false}
+                showAddButton={false}
                 typeOfData={"Pagos"}
                 axiosResponse={paymentData}
                 fetchData={fetchData}

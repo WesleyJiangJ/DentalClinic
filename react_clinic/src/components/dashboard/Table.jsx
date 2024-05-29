@@ -20,7 +20,7 @@ function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export default function Tables({ value, showDropdown, typeOfData, axiosResponse, fetchData, INITIAL_VISIBLE_COLUMNS, columns, cellValues, sortedItem }) {
+export default function Tables({ value, showDropdown, showAddButton, typeOfData, axiosResponse, fetchData, INITIAL_VISIBLE_COLUMNS, columns, cellValues, sortedItem }) {
     const param = useParams();
     const navigate = useNavigate();
     const [axiosData, setAxiosData] = React.useState([])
@@ -196,14 +196,16 @@ export default function Tables({ value, showDropdown, typeOfData, axiosResponse,
                                 </Dropdown>
                             </>
                         }
-                        <Button
-                            onPress={onOpen}
-                            size="lg"
-                            color="primary"
-                            radius="sm"
-                            endContent={<PlusIcon className="w-5 h-5" />}>
-                            Nuevo
-                        </Button>
+                        {showAddButton &&
+                            <Button
+                                onPress={onOpen}
+                                size="lg"
+                                color="primary"
+                                radius="sm"
+                                endContent={<PlusIcon className="w-5 h-5" />}>
+                                Nuevo
+                            </Button>
+                        }
                     </div>
                 </div>
                 <div className="flex justify-between items-center">
