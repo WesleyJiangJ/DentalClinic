@@ -246,9 +246,7 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
                                                     )}
                                                 />
                                             </div>
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-default-500 text-small">{paymentFields.length} abonos</span>
-                                            </div>
+                                            <span className="text-default-500 text-small">{paymentFields.length} abonos</span>
                                             <Table
                                                 aria-label="Treatment Detail Table"
                                                 radius="sm"
