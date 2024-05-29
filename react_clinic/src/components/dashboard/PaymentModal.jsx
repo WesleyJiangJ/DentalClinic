@@ -5,7 +5,7 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input
 import { getAllPaymentControl, getSpecificPayment, postPaymentControl } from "../../api/apiFunctions";
 import { sweetToast } from "./Alerts";
 
-export default function PaymentModal({ isOpen, onOpenChange, param, updateTable }) {
+export default function PaymentModal({ isOpen, onOpenChange, param, updateTable, modifyURL }) {
     const navigate = useNavigate();
     const location = useLocation();
     const { control, handleSubmit, formState: { errors }, reset } = useForm({
@@ -86,6 +86,7 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable 
     }
 
     const restore = () => {
+        modifyURL();
         onOpenChange(true);
         clearAll();
     }

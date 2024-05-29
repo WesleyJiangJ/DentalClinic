@@ -6,7 +6,7 @@ import { TrashIcon } from "@heroicons/react/24/solid";
 import { getAllPatients, getAllPersonal, getAllTreatment, getSpecificBudget, postBudget, postPayment, putBudget } from "../../api/apiFunctions";
 import { sweetToast, sweetAlert } from "./Alerts";
 
-export default function BudgetModal({ isOpen, onOpenChange, param, updateTable }) {
+export default function BudgetModal({ isOpen, onOpenChange, param, updateTable, modifyURL }) {
     const navigate = useNavigate();
     const location = useLocation();
     const [patientData, setPatientData] = React.useState([]);
@@ -167,6 +167,7 @@ export default function BudgetModal({ isOpen, onOpenChange, param, updateTable }
     }
 
     const restore = () => {
+        modifyURL();
         clearAll();
         onOpenChange(true);
         setTotal(0);
