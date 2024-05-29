@@ -28,6 +28,14 @@ const budgetAPI = axios.create({
     baseURL: 'http://localhost:8000/budget/'
 })
 
+const paymentAPI = axios.create({
+    baseURL: 'http://localhost:8000/payment/'
+})
+
+const paymentControlAPI = axios.create({
+    baseURL: 'http://localhost:8000/paymentcontrol/'
+})
+
 // Patient
 export const getAllPatients = () => {
     return patientAPI.get('/')
@@ -115,4 +123,26 @@ export const putBudget = (id, data) => {
 
 export const postBudget = (data) => {
     return budgetAPI.post('/', data)
+}
+
+// Payment
+export const getAllPayment = () => {
+    return paymentAPI.get('/')
+}
+
+export const getSpecificPayment = (id) => {
+    return paymentAPI.get(`/${id}`)
+}
+
+export const postPayment = (data) => {
+    return paymentAPI.post('/', data)
+}
+
+// Payment Control
+export const getAllPaymentControl = () => {
+    return paymentControlAPI.get('/')
+}
+
+export const postPaymentControl = (data) => {
+    return paymentControlAPI.post('/', data)
 }
