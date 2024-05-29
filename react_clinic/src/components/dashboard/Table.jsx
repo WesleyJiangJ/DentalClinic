@@ -306,10 +306,10 @@ export default function Tables({ value, showDropdown, showAddButton, typeOfData,
                 <UserModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} value={value} />
             }
             {typeOfData === "Presupuestos" &&
-                <BudgetModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} param={param} />
+                <BudgetModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} modifyURL={modifyURL} param={param} />
             }
             {typeOfData === "Pagos" &&
-                <PaymentModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} param={param} />
+                <PaymentModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} modifyURL={modifyURL} param={param} />
             }
         </>
     );
