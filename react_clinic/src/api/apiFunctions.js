@@ -134,6 +134,10 @@ export const getSpecificPayment = (id) => {
     return paymentAPI.get(`/${id}`)
 }
 
+export const putPayment = (id, data) => {
+    return paymentAPI.put(`/${id}/`, data)
+}
+
 export const postPayment = (data) => {
     return paymentAPI.post('/', data)
 }
