@@ -135,7 +135,7 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable,
                     {(onClose) => (
                         <>
                             <form onSubmit={handleSubmit(onSubmit)}>
-                                <ModalHeader className="flex flex-col gap-1">Agregar Cuota</ModalHeader>
+                                <ModalHeader className="flex flex-col gap-1">{paymentStatus ? 'Agregar Cuota' : 'Detalles'}</ModalHeader>
                                 <ModalBody>
                                     <div className="flex flex-col gap-5">
                                         <div className="flex flex-col gap-4">
