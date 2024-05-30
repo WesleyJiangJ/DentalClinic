@@ -63,6 +63,8 @@ class TreatmentViewSet(viewsets.ModelViewSet):
 class BudgetViewSet(viewsets.ModelViewSet):
     queryset = Budget.objects.all()
     serializer_class = BudgetSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["id_patient"]
 
 
 class BudgetDetailViewSet(viewsets.ModelViewSet):
@@ -73,6 +75,8 @@ class BudgetDetailViewSet(viewsets.ModelViewSet):
 class PaymentViewSet(viewsets.ModelViewSet):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['id_budget__id_patient']
 
 
 class PaymentControlViewSet(viewsets.ModelViewSet):
