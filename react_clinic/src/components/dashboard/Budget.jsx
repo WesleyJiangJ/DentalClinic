@@ -45,7 +45,8 @@ export default function Budget() {
         <>
             <Table
                 value={"Pagos"}
-                showDropdown={false}
+                showStatusDropdown={false}
+                showColumnsDropdown={false}
                 showAddButton={true}
                 typeOfData={"Presupuestos"}
                 axiosResponse={budgetData}

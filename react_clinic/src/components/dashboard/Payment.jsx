@@ -31,7 +31,7 @@ export default function Payment() {
     }
     const fetchData = async () => {
         try {
-            setPaymentData((await getAllPayment()).data.filter(payment => payment.status === true));
+            setPaymentData((await getAllPayment()).data);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -45,7 +45,8 @@ export default function Payment() {
         <>
             <Table
                 value={"Pagos"}
-                showDropdown={false}
+                showStatusDropdown={true}
+                showColumnsDropdown={false}
                 showAddButton={false}
                 typeOfData={"Pagos"}
                 axiosResponse={paymentData}

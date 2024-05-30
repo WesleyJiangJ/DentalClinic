@@ -45,7 +45,8 @@ export default function Personal() {
         <>
             <Table
                 value={"Personal"}
-                showDropdown={true}
+                showStatusDropdown={true}
+                showColumnsDropdown={true}
                 showAddButton={true}
                 typeOfData={"Usuarios"}
                 axiosResponse={personalData}

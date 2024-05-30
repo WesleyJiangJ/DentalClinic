@@ -20,7 +20,7 @@ function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export default function Tables({ value, showDropdown, showAddButton, typeOfData, axiosResponse, fetchData, INITIAL_VISIBLE_COLUMNS, columns, cellValues, sortedItem }) {
+export default function Tables({ value, showStatusDropdown, showColumnsDropdown, showAddButton, typeOfData, axiosResponse, fetchData, INITIAL_VISIBLE_COLUMNS, columns, cellValues, sortedItem }) {
     const param = useParams();
     const navigate = useNavigate();
     const [axiosData, setAxiosData] = React.useState([])
@@ -53,7 +53,7 @@ export default function Tables({ value, showDropdown, showAddButton, typeOfData,
     const loadData = async () => {
         setAxiosData(axiosResponse);
     };
-    
+
     const updateTable = () => {
         fetchData();
     }
@@ -161,8 +161,8 @@ export default function Tables({ value, showDropdown, showAddButton, typeOfData,
                         onValueChange={onSearchChange}
                     />
                     <div className="flex gap-3">
-                        {showDropdown &&
-                            <>
+                        <>
+                            {showStatusDropdown &&
                                 <Dropdown>
                                     <DropdownTrigger className="hidden sm:flex">
                                         <Button size="lg" radius="sm" endContent={<ChevronDownIcon className="w-5 h-5" />} variant="flat">
@@ -183,6 +183,8 @@ export default function Tables({ value, showDropdown, showAddButton, typeOfData,
                                         ))}
                                     </DropdownMenu>
                                 </Dropdown>
+                            }
+                            {showColumnsDropdown &&
                                 <Dropdown>
                                     <DropdownTrigger className="hidden sm:flex">
                                         <Button size="lg" radius="sm" endContent={<ChevronDownIcon className="w-5 h-5" />} variant="flat">
@@ -203,8 +205,8 @@ export default function Tables({ value, showDropdown, showAddButton, typeOfData,
                                         ))}
                                     </DropdownMenu>
                                 </Dropdown>
-                            </>
-                        }
+                            }
+                        </>
                         {showAddButton &&
                             <Button
                                 onPress={onOpen}
