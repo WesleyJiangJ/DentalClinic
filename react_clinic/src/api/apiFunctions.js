@@ -117,6 +117,10 @@ export const getSpecificBudget = (id) => {
     return budgetAPI.get(`/${id}`)
 }
 
+export const getAllBudgetByPatient = (id) => {
+    return budgetAPI.get(`?id_patient=${id}`)
+}
+
 export const putBudget = (id, data) => {
     return budgetAPI.put(`/${id}/`, data)
 }
@@ -132,6 +136,10 @@ export const getAllPayment = () => {
 
 export const getSpecificPayment = (id) => {
     return paymentAPI.get(`/${id}`)
+}
+
+export const getAllPaymentsByPatient = (id) => {
+    return paymentAPI.get(`?id_budget__id_patient=${id}`)
 }
 
 export const putPayment = (id, data) => {
