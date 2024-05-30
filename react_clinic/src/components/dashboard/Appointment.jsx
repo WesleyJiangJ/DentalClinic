@@ -82,7 +82,8 @@ export default function Appointment() {
                             onChange={filter}
                             defaultSelectedKeys={'1'}
                             className="w-28 md:w-32"
-                            radius="sm">
+                            radius="sm"
+                            disallowEmptySelection>
                             <SelectItem key={1} value={1}>Paciente</SelectItem>
                             <SelectItem key={2} value={2}>Doctor</SelectItem>
                         </Select>
