@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useForm, useFieldArray, Controller } from "react-hook-form"
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Select, SelectItem, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Textarea } from "@nextui-org/react";
 import { TrashIcon } from "@heroicons/react/24/solid";
@@ -8,7 +8,6 @@ import { sweetToast, sweetAlert } from "./Alerts";
 
 export default function BudgetModal({ isOpen, onOpenChange, param, updateTable, modifyURL }) {
     const navigate = useNavigate();
-    const location = useLocation();
     const [patientData, setPatientData] = React.useState([]);
     const [patientName, setPatientName] = React.useState('');
     const [personalData, setPersonalData] = React.useState([]);
