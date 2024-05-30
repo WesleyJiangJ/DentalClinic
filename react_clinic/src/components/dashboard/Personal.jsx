@@ -10,6 +10,14 @@ export default function Personal() {
         { name: "Celular", uid: "phone_number", sortable: true },
         { name: "Estado", uid: "status", sortable: false },
     ];
+    const statusColorMap = {
+        true: "success",
+        false: "danger",
+    };
+    const statusOptions = [
+        { name: "Activo", uid: true },
+        { name: "Inactivo", uid: false },
+    ];
     const cellValues = [
         {
             firstColumn: "full_name",
@@ -22,7 +30,11 @@ export default function Personal() {
         },
         {
             thirdColumn: "status",
-            firstValue: "`${item.status}`"
+            firstValue: "`${item.status}`",
+            secondValue: {
+                first: 'Activo',
+                second: 'Inactivo'
+            }
         }
     ];
     const sortedItem = {
@@ -36,11 +48,9 @@ export default function Personal() {
             console.error("Error fetching data:", error);
         }
     };
-
     React.useEffect(() => {
         fetchData();
     }, []);
-
     return (
         <>
             <Table
@@ -53,6 +63,8 @@ export default function Personal() {
                 fetchData={fetchData}
                 INITIAL_VISIBLE_COLUMNS={INITIAL_VISIBLE_COLUMNS}
                 columns={columns}
+                statusColorMap={statusColorMap}
+                statusOptions={statusOptions}
                 cellValues={cellValues}
                 sortedItem={sortedItem}
             />

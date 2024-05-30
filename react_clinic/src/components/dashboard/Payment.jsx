@@ -9,7 +9,14 @@ export default function Payment() {
         { name: "Nombres", uid: "name", sortable: true },
         { name: "Estado", uid: "status", sortable: false },
     ];
-
+    const statusColorMap = {
+        true: "danger",
+        false: "success",
+    };
+    const statusOptions = [
+        { name: "Pendiente", uid: true },
+        { name: "Pagado", uid: false },
+    ];
     const cellValues = [
         {
             firstColumn: "name",
@@ -22,7 +29,11 @@ export default function Payment() {
         },
         {
             thirdColumn: "status",
-            firstValue: "`${item.status}`"
+            firstValue: "`${item.status}`",
+            secondValue: {
+                first: 'Pendiente',
+                second: 'Pagado'
+            }
         }
     ];
     const sortedItem = {
@@ -36,11 +47,9 @@ export default function Payment() {
             console.error("Error fetching data:", error);
         }
     };
-
     React.useEffect(() => {
         fetchData();
     }, []);
-
     return (
         <>
             <Table
@@ -53,6 +62,8 @@ export default function Payment() {
                 fetchData={fetchData}
                 INITIAL_VISIBLE_COLUMNS={INITIAL_VISIBLE_COLUMNS}
                 columns={columns}
+                statusColorMap={statusColorMap}
+                statusOptions={statusOptions}
                 cellValues={cellValues}
                 sortedItem={sortedItem}
             />
