@@ -1,13 +1,11 @@
 import React from "react";
-import { useNavigate, useLocation } from 'react-router-dom'
 import { useForm, useFieldArray, Controller } from "react-hook-form"
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Textarea, Tabs, Tab } from "@nextui-org/react";
-import { getAllPaymentControl, getSpecificPayment, postPaymentControl } from "../../api/apiFunctions";
+import { getAllPaymentControl, getSpecificPayment, postPaymentControl, putPayment } from "../../api/apiFunctions";
 import { sweetToast } from "./Alerts";
 
 export default function PaymentModal({ isOpen, onOpenChange, param, updateTable, modifyURL }) {
-    const navigate = useNavigate();
-    const location = useLocation();
+    const [paymentStatus, setPaymentStatus] = React.useState(true);
     const { control, handleSubmit, formState: { errors }, reset } = useForm({
         defaultValues: {
             patientName: '',
@@ -38,10 +36,22 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable,
 
     const onSubmit = async (data) => {
         try {
-            await postPaymentControl(data);
-            sweetToast('success', `Se abonaron C$${data.paid}`);
-            updateTable();
-            loadData();
+            const calc = parseFloat(data.totalPaid) + parseFloat(data.paid);
+            if (calc > data.totalDebt) {
+                sweetToast('error', 'Está pagando un monto mayor a la deuda');
+            }
+            else {
+                if (calc === parseFloat(data.totalDebt)) {
+                    await postPaymentControl(data);
+                    await putPayment(param.id, { status: false });
+                    sweetToast('success', `Se ha finalizado el pago del tratamiento`);
+                }
+                else {
+                    await postPaymentControl(data);
+                    sweetToast('success', `Se abonaron C$${data.paid}`);
+                }
+                loadData();
+            }
         } catch (error) {
             console.log(error);
         }
@@ -51,9 +61,10 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable,
         if (param.id) {
             try {
                 const res = (await getSpecificPayment(param.id)).data;
+                setPaymentStatus(res.status);
                 const resPaymentControl = (await getAllPaymentControl()).data
                     .filter(payment => payment.id_payment === parseInt(param.id))
-                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));                 
                 const treatmentData = res.budget_data.detailFields.map(field => ({
                     name: field.treatment_data.name,
                     cost: field.cost,
@@ -76,6 +87,8 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable,
                     totalPaid: paymentData.reduce((acc, field) => acc + parseFloat(field.paid), 0),
                     remaining: res.budget_data.total - paymentData.reduce((acc, field) => acc + parseFloat(field.paid), 0),
                     id_payment: res.id,
+                    paid: '',
+                    note: '',
                     treatmentFields: treatmentData,
                     paymentFields: paymentData
                 })
@@ -89,6 +102,7 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable,
         modifyURL();
         onOpenChange(true);
         clearAll();
+        updateTable();
     }
 
     const clearAll = () => {
@@ -208,7 +222,7 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable,
                                     </div>
                                     <Tabs color="primary" size="md" fullWidth>
                                         <Tab key="1" aria-label="Payment Control" title="Control de Pagos">
-                                            <div className="flex flex-row gap-2">
+                                            <div className={`${paymentStatus ? "flex flex-row gap-2" : "hidden"}`}>
                                                 <Controller
                                                     name="paid"
                                                     control={control}
@@ -411,7 +425,7 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable,
                                     <Button color="danger" variant="light" radius="sm" onPress={onClose}>
                                         Cerrar
                                     </Button>
-                                    <Button color="primary" radius="sm" type="submit">
+                                    <Button color="primary" radius="sm" className={!paymentStatus && "hidden"} type="submit">
                                         Agregar
                                     </Button>
                                 </ModalFooter>
