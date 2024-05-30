@@ -6,21 +6,11 @@ import UserModal from "./UserModal.jsx";
 import BudgetModal from "./BudgetModal.jsx";
 import PaymentModal from "./PaymentModal.jsx"
 
-const statusColorMap = {
-    true: "success",
-    false: "danger",
-};
-
-const statusOptions = [
-    { name: "Activo", uid: true },
-    { name: "Inactivo", uid: false },
-];
-
 function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export default function Tables({ value, showStatusDropdown, showColumnsDropdown, showAddButton, typeOfData, axiosResponse, fetchData, INITIAL_VISIBLE_COLUMNS, columns, cellValues, sortedItem }) {
+export default function Tables({ value, showStatusDropdown, showColumnsDropdown, showAddButton, typeOfData, axiosResponse, fetchData, INITIAL_VISIBLE_COLUMNS, columns, statusColorMap, statusOptions, cellValues, sortedItem }) {
     const param = useParams();
     const navigate = useNavigate();
     const [axiosData, setAxiosData] = React.useState([])
@@ -69,7 +59,8 @@ export default function Tables({ value, showStatusDropdown, showColumnsDropdown,
 
         if (hasSearchFilter) {
             filteredData = filteredData.filter((item) =>
-                eval(cellValues[0].firstValue).toLowerCase().includes(filterValue.toLowerCase()),
+                eval(cellValues[0].firstValue).toLowerCase().includes(filterValue.toLowerCase()) ||
+                eval(cellValues[0].secondValue).toLowerCase().includes(filterValue.toLowerCase()),
             );
         }
         if (statusFilter !== "all" && Array.from(statusFilter).length !== statusOptions.length) {
@@ -117,7 +108,7 @@ export default function Tables({ value, showStatusDropdown, showColumnsDropdown,
                     </div>
                 );
             case cellValues[2].thirdColumn:
-                const statusText = cellValue ? "Activo" : "Inactivo";
+                const statusText = cellValue ? cellValues[2].secondValue.first : cellValues[2].secondValue.second;
                 return (
                     <Chip className="capitalize my-2" color={statusColorMap[cellValue]} size="sm" variant="flat">
                         {statusText}
