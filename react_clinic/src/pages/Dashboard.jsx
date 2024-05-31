@@ -41,7 +41,7 @@ export default function Dashboard() {
     };
     return (
         <>
-            <div className='flex'>
+            <div className='flex h-[100vh]'>
                 <SideBar collapsed={isToggled} />
                 <div className="flex flex-col w-full">
                     <div className='flex flex-row h-16 items-center bg-[rgb(249,249,249)]'>
@@ -60,7 +60,7 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    <div className='p-4'>
+                    <div className='h-[100vh] p-4'>
                         <Outlet />
                     </div>
                 </div>
