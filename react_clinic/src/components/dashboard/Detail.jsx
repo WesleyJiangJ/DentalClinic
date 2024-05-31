@@ -115,13 +115,13 @@ export default function Detail({ value }) {
     return (
         <>
             <div className="overflow-scroll">
-                <div className="flex flex-col md:flex-row gap-2 mb-2">
+                <div className="flex flex-col md:flex-row gap-2 mb-2 h-[45vh]">
                     <div className="flex flex-col bg-[#F2F5F8] p-5 rounded">
                         <Dropdown radius="sm">
                             <DropdownTrigger>
                                 <Avatar
                                     src={user.gender === 'M' ? "https://img.freepik.com/free-photo/young-bearded-man-with-striped-shirt_273609-5677.jpg" : "https://img.freepik.com/free-photo/young-beautiful-woman-pink-warm-sweater-natural-look-smiling-portrait-isolated-long-hair_285396-896.jpg"}
-                                    className="w-60 h-60 text-large mb-5 m-auto cursor-pointer"
+                                    className="w-60 h-60 text-large mb-5 m-auto cursor-pointer -z-0"
                                 />
                             </DropdownTrigger>
                             <DropdownMenu aria-label="Actions">
@@ -257,7 +257,7 @@ export default function Detail({ value }) {
                         </Table>
                     </div>
                 </div>
-                <div className="flex flex-col md:flex-row gap-2 h-[22.5rem]">
+                <div className="flex flex-col md:flex-row gap-2 h-[45vh]">
                     <div className="flex flex-col bg-[#F2F5F8] p-5 rounded w-full">
                         <Tabs
                             aria-label="Options"
@@ -276,7 +276,7 @@ export default function Detail({ value }) {
                                         <Card
                                             radius="sm"
                                             shadow="none"
-                                            className="h-[25vh]">
+                                            className="h-[28.5vh]">
                                             <CardBody>
                                                 <div className='flex flex-nowrap flex-col md:flex-wrap md:flex-row w-full h-[28vh] overflow-scroll'>
                                                     {appoitmentsPending
@@ -302,7 +302,7 @@ export default function Detail({ value }) {
                                                         ))
                                                     }
                                                     {appoitmentsPending.filter(info => info.status === 1).length === 0 && (
-                                                        <Card radius="sm" shadow="none" className="bg-primary text-white" fullWidth>
+                                                        <Card radius="sm" shadow="none" fullWidth>
                                                             <CardBody className="flex items-center justify-center h-full">
                                                                 No hay citas pendientes
                                                             </CardBody>
@@ -316,7 +316,7 @@ export default function Detail({ value }) {
                                         <Card
                                             radius="sm"
                                             shadow="none"
-                                            className="h-[25vh]">
+                                            className="h-[28.5vh]">
                                             <CardBody>
                                                 <div className='flex flex-nowrap flex-col md:flex-wrap md:flex-row w-full h-[28vh] overflow-scroll'>
                                                     {appoitmentsPending
@@ -343,7 +343,7 @@ export default function Detail({ value }) {
                                                         ))
                                                     }
                                                     {appoitmentsPending.filter(info => info.status === 3).length === 0 && (
-                                                        <Card radius="sm" shadow="none" className="bg-primary text-white" fullWidth>
+                                                        <Card radius="sm" shadow="none" fullWidth>
                                                             <CardBody className="flex items-center justify-center h-full">
                                                                 No hay citas realizadas
                                                             </CardBody>
@@ -358,7 +358,7 @@ export default function Detail({ value }) {
                                         <Card
                                             radius="sm"
                                             shadow="none"
-                                            className="h-[25vh]">
+                                            className="h-[28.5vh]">
                                             <CardBody>
                                                 <div className='flex flex-nowrap flex-col md:flex-wrap md:flex-row w-full h-[28vh] overflow-scroll'>
                                                     {appoitmentsPending
@@ -385,7 +385,7 @@ export default function Detail({ value }) {
                                                         ))
                                                     }
                                                     {appoitmentsPending.filter(info => info.status === 2).length === 0 && (
-                                                        <Card radius="sm" shadow="none" className="bg-primary text-white" fullWidth>
+                                                        <Card radius="sm" shadow="none" fullWidth>
                                                             <CardBody className="flex items-center justify-center h-full">
                                                                 No hay citas canceladas
                                                             </CardBody>
@@ -408,7 +408,7 @@ export default function Detail({ value }) {
                                         <Card
                                             radius="sm"
                                             shadow="none"
-                                            className="h-[25vh]">
+                                            className="h-[28.5vh]">
                                             <CardBody>
                                                 <div className='flex flex-nowrap flex-col md:flex-wrap md:flex-row w-full h-[28vh] overflow-scroll'>
                                                     {budget
@@ -426,7 +426,7 @@ export default function Detail({ value }) {
                                                         ))
                                                     }
                                                     {budget.filter(info => info.status === true).length === 0 && (
-                                                        <Card radius="sm" shadow="none" className="bg-primary text-white" fullWidth>
+                                                        <Card radius="sm" shadow="none" fullWidth>
                                                             <CardBody className="flex items-center justify-center h-full">
                                                                 No se encontraron presupuestos
                                                             </CardBody>
@@ -449,7 +449,7 @@ export default function Detail({ value }) {
                                         <Card
                                             radius="sm"
                                             shadow="none"
-                                            className="h-[25vh]">
+                                            className="h-[28.5vh]">
                                             <CardBody>
                                                 <div className='flex flex-nowrap flex-col md:flex-wrap md:flex-row w-full h-[28vh] overflow-scroll'>
                                                     {payment
@@ -466,7 +466,7 @@ export default function Detail({ value }) {
                                                         ))
                                                     }
                                                     {payment.filter(info => info.status === true).length === 0 && (
-                                                        <Card radius="sm" shadow="none" className="bg-primary text-white" fullWidth>
+                                                        <Card radius="sm" shadow="none" fullWidth>
                                                             <CardBody className="flex items-center justify-center h-full">
                                                                 No se encontraron pagos pendientes
                                                             </CardBody>
@@ -480,7 +480,7 @@ export default function Detail({ value }) {
                                         <Card
                                             radius="sm"
                                             shadow="none"
-                                            className="h-[25vh]">
+                                            className="h-[28.5vh]">
                                             <CardBody>
                                                 <div className='flex flex-nowrap flex-col md:flex-wrap md:flex-row w-full h-[28vh] overflow-scroll'>
                                                     {payment
@@ -497,7 +497,7 @@ export default function Detail({ value }) {
                                                         ))
                                                     }
                                                     {payment.filter(info => info.status === false).length === 0 && (
-                                                        <Card radius="sm" shadow="none" className="bg-primary text-white" fullWidth>
+                                                        <Card radius="sm" shadow="none" fullWidth>
                                                             <CardBody className="flex items-center justify-center h-full">
                                                                 No se encontraron tratamientos pagados
                                                             </CardBody>
