@@ -1,17 +1,20 @@
 import React from "react";
 import { sweetAlert, sweetToast } from './Alerts'
-import { getSpecificPatient, putPatient, getSpecificPersonal, putPersonal, getAllAppointmentsByPatient } from "../../api/apiFunctions";
+import { getSpecificPatient, putPatient, getSpecificPersonal, putPersonal, getAllAppointmentsByPatient, getAllBudgetByPatient, getAllPaymentsByPatient } from "../../api/apiFunctions";
 import { useParams } from 'react-router-dom';
 import { Avatar, Button, Divider, Tabs, Tab, Card, CardBody, Textarea, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Badge, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, useDisclosure } from "@nextui-org/react";
 import { Typography } from "@material-tailwind/react";
 import { CheckCircleIcon, ChevronDownIcon, MinusCircleIcon, PencilSquareIcon } from "@heroicons/react/24/solid"
 import UserModal from "./UserModal"
 import AppointmentCard from "./AppointmentCard";
+import BudPayCard from "./BudPayCard";
 
 export default function Detail({ value }) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [user, setUser] = React.useState([])
     const [appoitmentsPending, setAppoitmentsPending] = React.useState([])
+    const [budget, setBudget] = React.useState([])
+    const [payment, setPayment] = React.useState([])
     const { id } = useParams();
     const departamentosNicaragua = {
         BO: "Boaco",
@@ -49,40 +52,31 @@ export default function Detail({ value }) {
 
     const age = (birthdate) => {
         const currentDate = new Date();
-        const fechaNacimientoDate = new Date(birthdate);
-        let age = currentDate.getFullYear() - fechaNacimientoDate.getFullYear();
+        const birthDate = new Date(birthdate);
+        let age = currentDate.getFullYear() - birthDate.getFullYear();
 
-        if (fechaNacimientoDate.getMonth() > currentDate.getMonth() || (fechaNacimientoDate.getMonth() === currentDate.getMonth() && fechaNacimientoDate.getDate() > currentDate.getDate())) {
+        if (birthDate.getMonth() > currentDate.getMonth() || (birthDate.getMonth() === currentDate.getMonth() && birthDate.getDate() > currentDate.getDate())) {
             age--;
         }
         return age;
     };
 
-    async function loadData() {
+    const loadData = async () => {
         if (value === "Paciente") {
-            await getSpecificPatient(id)
-                .then((response) => {
-                    setUser(response.data);
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                });
-            await getAllAppointmentsByPatient(id)
-                .then((response) => {
-                    setAppoitmentsPending(response.data);
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                });
+            const [patientResponse, appointmentsResponse, budgetResponse, paymentsResponse] = await Promise.all([
+                getSpecificPatient(id),
+                getAllAppointmentsByPatient(id),
+                getAllBudgetByPatient(id),
+                getAllPaymentsByPatient(id)
+            ]);
+
+            setUser(patientResponse.data);
+            setAppoitmentsPending(appointmentsResponse.data);
+            setBudget(budgetResponse.data);
+            setPayment(paymentsResponse.data);
         }
         else if (value === "Personal") {
-            await getSpecificPersonal(id)
-                .then((response) => {
-                    setUser(response.data);
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                });
+            setUser((await getSpecificPersonal(id)).data);
         }
     }
 
@@ -120,7 +114,7 @@ export default function Detail({ value }) {
 
     return (
         <>
-            <div className="h-[88vh] overflow-scroll">
+            <div className="overflow-scroll">
                 <div className="flex flex-col md:flex-row gap-2 mb-2">
                     <div className="flex flex-col bg-[#F2F5F8] p-5 rounded">
                         <Dropdown radius="sm">
@@ -249,7 +243,7 @@ export default function Detail({ value }) {
                             aria-label="Files Table"
                             radius="sm"
                             shadow="none"
-                            className="h-[7rem]">
+                            className="h-[9rem]">
                             <TableHeader>
                                 <TableColumn>Name</TableColumn>
                                 <TableColumn>Actions</TableColumn>
@@ -257,18 +251,6 @@ export default function Detail({ value }) {
                             <TableBody>
                                 <TableRow key="1">
                                     <TableCell>File 1</TableCell>
-                                    <TableCell>Ver</TableCell>
-                                </TableRow>
-                                <TableRow key="2">
-                                    <TableCell>File 2</TableCell>
-                                    <TableCell>Ver</TableCell>
-                                </TableRow>
-                                <TableRow key="3">
-                                    <TableCell>File 3</TableCell>
-                                    <TableCell>Ver</TableCell>
-                                </TableRow>
-                                <TableRow key="4">
-                                    <TableCell>File 4</TableCell>
                                     <TableCell>Ver</TableCell>
                                 </TableRow>
                             </TableBody>
@@ -293,7 +275,8 @@ export default function Detail({ value }) {
                                     <Tab key="appointments_pending" title="Citas Pendientes">
                                         <Card
                                             radius="sm"
-                                            shadow="none">
+                                            shadow="none"
+                                            className="h-[25vh]">
                                             <CardBody>
                                                 <div className='flex flex-nowrap flex-col md:flex-wrap md:flex-row w-full h-[28vh] overflow-scroll'>
                                                     {appoitmentsPending
@@ -316,16 +299,24 @@ export default function Detail({ value }) {
                                                                     appointmentType={'pending'}
                                                                 />
                                                             </div>
-                                                        ))}
+                                                        ))
+                                                    }
+                                                    {appoitmentsPending.filter(info => info.status === 1).length === 0 && (
+                                                        <Card radius="sm" shadow="none" className="bg-primary text-white" fullWidth>
+                                                            <CardBody className="flex items-center justify-center h-full">
+                                                                No hay citas pendientes
+                                                            </CardBody>
+                                                        </Card>
+                                                    )}
                                                 </div>
                                             </CardBody>
                                         </Card>
                                     </Tab>
-
                                     <Tab key="appointment_done" title="Citas Realizadas">
                                         <Card
                                             radius="sm"
-                                            shadow="none">
+                                            shadow="none"
+                                            className="h-[25vh]">
                                             <CardBody>
                                                 <div className='flex flex-nowrap flex-col md:flex-wrap md:flex-row w-full h-[28vh] overflow-scroll'>
                                                     {appoitmentsPending
@@ -349,7 +340,15 @@ export default function Detail({ value }) {
                                                                     appointmentType={'done'}
                                                                 />
                                                             </div>
-                                                        ))}
+                                                        ))
+                                                    }
+                                                    {appoitmentsPending.filter(info => info.status === 3).length === 0 && (
+                                                        <Card radius="sm" shadow="none" className="bg-primary text-white" fullWidth>
+                                                            <CardBody className="flex items-center justify-center h-full">
+                                                                No hay citas realizadas
+                                                            </CardBody>
+                                                        </Card>
+                                                    )}
                                                 </div>
                                             </CardBody>
                                         </Card>
@@ -358,7 +357,8 @@ export default function Detail({ value }) {
                                     <Tab key="appointment_cancelled" title="Citas Canceladas">
                                         <Card
                                             radius="sm"
-                                            shadow="none">
+                                            shadow="none"
+                                            className="h-[25vh]">
                                             <CardBody>
                                                 <div className='flex flex-nowrap flex-col md:flex-wrap md:flex-row w-full h-[28vh] overflow-scroll'>
                                                     {appoitmentsPending
@@ -382,21 +382,132 @@ export default function Detail({ value }) {
                                                                     observation={appointment.observation}
                                                                 />
                                                             </div>
-                                                        ))}
+                                                        ))
+                                                    }
+                                                    {appoitmentsPending.filter(info => info.status === 2).length === 0 && (
+                                                        <Card radius="sm" shadow="none" className="bg-primary text-white" fullWidth>
+                                                            <CardBody className="flex items-center justify-center h-full">
+                                                                No hay citas canceladas
+                                                            </CardBody>
+                                                        </Card>
+                                                    )}
                                                 </div>
                                             </CardBody>
                                         </Card>
                                     </Tab>
                                 </Tabs>
                             </Tab>
-                            <Tab key="videos" title="¿Historial Médico?">
-                                <Card
+                            <Tab key="budget" title="Presupuestos">
+                                <Tabs
+                                    aria-label="Options"
+                                    color="primary"
                                     radius="sm"
-                                    shadow="none">
-                                    <CardBody>
-                                        ¿Historial Médico?
-                                    </CardBody>
-                                </Card>
+                                    fullWidth
+                                    size="md">
+                                    <Tab key="budget" title="Presupuestos">
+                                        <Card
+                                            radius="sm"
+                                            shadow="none"
+                                            className="h-[25vh]">
+                                            <CardBody>
+                                                <div className='flex flex-nowrap flex-col md:flex-wrap md:flex-row w-full h-[28vh] overflow-scroll'>
+                                                    {budget
+                                                        .filter(info => info.status === true)
+                                                        .sort((a, b) => new Date(a.created_by) - new Date(b.created_by))
+                                                        .map((budget) => (
+                                                            <div className="w-full md:w-1/2" key={budget.id}>
+                                                                <BudPayCard
+                                                                    name={budget.name}
+                                                                    description={budget.description}
+                                                                    total={'Total C$' + parseFloat(budget.total).toLocaleString()}
+                                                                    treatmentQuantity={`${budget.detailFields.length} Tratamientos a Realizar`}
+                                                                />
+                                                            </div>
+                                                        ))
+                                                    }
+                                                    {budget.filter(info => info.status === true).length === 0 && (
+                                                        <Card radius="sm" shadow="none" className="bg-primary text-white" fullWidth>
+                                                            <CardBody className="flex items-center justify-center h-full">
+                                                                No se encontraron presupuestos
+                                                            </CardBody>
+                                                        </Card>
+                                                    )}
+                                                </div>
+                                            </CardBody>
+                                        </Card>
+                                    </Tab>
+                                </Tabs>
+                            </Tab>
+                            <Tab key="payments" title="Control de Pagos">
+                                <Tabs
+                                    aria-label="Options"
+                                    color="primary"
+                                    radius="sm"
+                                    fullWidth
+                                    size="md">
+                                    <Tab key="pending" title="Pendientes">
+                                        <Card
+                                            radius="sm"
+                                            shadow="none"
+                                            className="h-[25vh]">
+                                            <CardBody>
+                                                <div className='flex flex-nowrap flex-col md:flex-wrap md:flex-row w-full h-[28vh] overflow-scroll'>
+                                                    {payment
+                                                        .filter(info => info.status === true)
+                                                        .sort((a, b) => new Date(a.created_by) - new Date(b.created_by))
+                                                        .map((payment) => (
+                                                            <div className="w-full md:w-1/2" key={payment.id}>
+                                                                <BudPayCard
+                                                                    name={payment.budget_data.name}
+                                                                    description={payment.budget_data.description}
+                                                                    total={'Total C$' + parseFloat(payment.budget_data.total).toLocaleString()}
+                                                                />
+                                                            </div>
+                                                        ))
+                                                    }
+                                                    {payment.filter(info => info.status === true).length === 0 && (
+                                                        <Card radius="sm" shadow="none" className="bg-primary text-white" fullWidth>
+                                                            <CardBody className="flex items-center justify-center h-full">
+                                                                No se encontraron pagos pendientes
+                                                            </CardBody>
+                                                        </Card>
+                                                    )}
+                                                </div>
+                                            </CardBody>
+                                        </Card>
+                                    </Tab>
+                                    <Tab key="paymentsCompleted" title="Pagados">
+                                        <Card
+                                            radius="sm"
+                                            shadow="none"
+                                            className="h-[25vh]">
+                                            <CardBody>
+                                                <div className='flex flex-nowrap flex-col md:flex-wrap md:flex-row w-full h-[28vh] overflow-scroll'>
+                                                    {payment
+                                                        .filter(info => info.status === false)
+                                                        .sort((a, b) => new Date(a.created_by) - new Date(b.created_by))
+                                                        .map((payment) => (
+                                                            <div className="w-full md:w-1/2" key={payment.id}>
+                                                                <BudPayCard
+                                                                    name={payment.budget_data.name}
+                                                                    description={payment.budget_data.description}
+                                                                    total={'Total C$' + parseFloat(payment.budget_data.total).toLocaleString()}
+                                                                />
+                                                            </div>
+                                                        ))
+                                                    }
+                                                    {payment.filter(info => info.status === false).length === 0 && (
+                                                        <Card radius="sm" shadow="none" className="bg-primary text-white" fullWidth>
+                                                            <CardBody className="flex items-center justify-center h-full">
+                                                                No se encontraron tratamientos pagados
+                                                            </CardBody>
+                                                        </Card>
+                                                    )}
+                                                </div>
+                                            </CardBody>
+                                        </Card>
+                                    </Tab>
+                                </Tabs>
                             </Tab>
                         </Tabs>
                     </div>
@@ -420,18 +531,6 @@ export default function Detail({ value }) {
                             <TableBody>
                                 <TableRow key="1">
                                     <TableCell>File 1</TableCell>
-                                    <TableCell>Ver</TableCell>
-                                </TableRow>
-                                <TableRow key="2">
-                                    <TableCell>File 2</TableCell>
-                                    <TableCell>Ver</TableCell>
-                                </TableRow>
-                                <TableRow key="3">
-                                    <TableCell>File 3</TableCell>
-                                    <TableCell>Ver</TableCell>
-                                </TableRow>
-                                <TableRow key="4">
-                                    <TableCell>File 4</TableCell>
                                     <TableCell>Ver</TableCell>
                                 </TableRow>
                             </TableBody>
