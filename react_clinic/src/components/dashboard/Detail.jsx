@@ -157,7 +157,7 @@ export default function Detail({ value }) {
                     </div>
 
                     <div className="flex flex-col bg-[#F2F5F8] p-5 rounded w-full">
-                        <div className="flex flex-row">
+                        <div className="flex flex-row h-[100vh] items-center">
                             <div className="flex-1">
                                 <p className="text-small font-bold text-foreground/80 my-4">Nombre Completo</p>
                                 <h3 className="font-semibold text-foreground/90 my-4 mr-3">{user.first_name} {user.middle_name} {user.first_lastname} {user.second_lastname}</h3>
@@ -172,9 +172,9 @@ export default function Detail({ value }) {
                             </div>
                         </div>
 
-                        <Divider className="my-5" orientation="horizontal" />
+                        <Divider className="my-2" orientation="horizontal" />
 
-                        <div className="flex flex-row">
+                        <div className="flex flex-row h-[100vh] items-center">
                             <div className="flex-1">
                                 <p className="text-small font-bold text-foreground/80 my-4">Dirección</p>
                                 <h3 className="font-semibold text-foreground/90 my-4 mr-3">{user.address}</h3>
@@ -198,9 +198,9 @@ export default function Detail({ value }) {
 
                         {value === "Paciente" &&
                             <>
-                                <Divider className="my-5" orientation="horizontal" />
+                                <Divider className="my-2" orientation="horizontal" />
 
-                                <div className="flex flex-row">
+                                <div className="flex flex-row h-[100vh] items-center">
                                     <div className="flex-1">
                                         <p className="text-small font-bold text-foreground/80 my-4">Celular</p>
                                         <h3 className="font-semibold text-foreground/90 my-4">+505 {user.phone_number}</h3>
