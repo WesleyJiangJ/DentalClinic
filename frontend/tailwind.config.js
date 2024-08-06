@@ -19,6 +19,9 @@ export default withMT({ // withMT was added when Material Tailwind was installed
           primary: {
             DEFAULT: '#1E1E1E',
           },
+          card: {
+            DEFAULT: '#F2F5F8'
+          }
         },
       },
       dark: {
