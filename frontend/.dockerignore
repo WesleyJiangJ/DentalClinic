@@ -1,0 +1,28 @@
+# Ignore Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+package-lock.json
+yarn.lock
+
+# Ignore build and cache directories
+dist/
+build/
+.cache/
+
+# Ignore environment configuration files
+*.env
+
+# Ignore editor configuration files
+.vscode/
+.idea/
+
+# Ignore temporary files
+.DS_Store
+*.swp
+*.swo
+*~
+Thumbs.db
+
+# Ignore test files
+*.test.*
