@@ -39,34 +39,7 @@ export default function Detail({ value }) {
         2: "Doctor",
         3: "Asistente",
         4: "Paciente",
-    }
-
-    const userInformation = [
-        {
-            firstLabel: "Nombre Completo",
-            firstValue: `${user.first_name} ${user.middle_name} ${user.first_lastname} ${user.second_lastname}`,
-            secondLabel: "Género",
-            secondValue: `${user.gender === "F" ? "Femenino" : "Masculino"}`,
-            thirdLabel: "Fecha de Nacimiento",
-            thirdValue: `${user.birthdate} | ${age(user.birthdate)} años`,
-        },
-        {
-            firstLabel: "Dirección",
-            firstValue: `${user.address}`,
-            secondLabel: "Ciudad",
-            secondValue: `${getStateName(user.origin)}`,
-            thirdLabel: `${value === 'Paciente' ? 'Ocupación' : 'Role'}`,
-            thirdValue: `${value === 'Paciente' ? user.occupation : getRoleName(user.role)}`,
-        },
-        {
-            firstLabel: "Celular",
-            firstValue: `${user.phone_number}`,
-            secondLabel: "Contacto de Emergencia",
-            secondValue: `${user.emergency_contact}`,
-            thirdLabel: "Contacto de Emergencia",
-            thirdValue: `${user.emergency_number}`,
-        }
-    ]
+    }    
 
     function getStateName(abr) {
         return departamentosNicaragua[abr] || "Unknown";
@@ -133,6 +106,33 @@ export default function Detail({ value }) {
                     })
         }
     }
+
+    const userInformation = [
+        {
+            firstLabel: "Nombre Completo",
+            firstValue: `${user.first_name} ${user.middle_name} ${user.first_lastname} ${user.second_lastname}`,
+            secondLabel: "Género",
+            secondValue: `${user.gender === "F" ? "Femenino" : "Masculino"}`,
+            thirdLabel: "Fecha de Nacimiento",
+            thirdValue: `${user.birthdate} | ${age(user.birthdate)} años`,
+        },
+        {
+            firstLabel: "Dirección",
+            firstValue: `${user.address}`,
+            secondLabel: "Ciudad",
+            secondValue: `${getStateName(user.origin)}`,
+            thirdLabel: `${value === 'Paciente' ? 'Ocupación' : 'Role'}`,
+            thirdValue: `${value === 'Paciente' ? user.occupation : getRoleName(user.role)}`,
+        },
+        {
+            firstLabel: "Celular",
+            firstValue: `${user.phone_number}`,
+            secondLabel: "Contacto de Emergencia",
+            secondValue: `${user.emergency_contact}`,
+            thirdLabel: "Contacto de Emergencia",
+            thirdValue: `${user.emergency_number}`,
+        }
+    ]
 
     React.useEffect(() => {
         loadData();
