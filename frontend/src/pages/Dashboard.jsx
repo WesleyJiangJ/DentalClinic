@@ -44,7 +44,7 @@ export default function Dashboard() {
             <div className='flex h-[100vh]'>
                 <SideBar collapsed={isToggled} />
                 <div className="flex flex-col w-full">
-                    <div className='flex flex-row h-16 items-center bg-[rgb(249,249,249)]'>
+                    <div className='hidden md:flex flex-row h-16 items-center bg-[rgb(249,249,249)]'>
                         <div className='mx-4 grow hidden md:flex'>
                             <button
                                 className='flex items-center'
@@ -60,7 +60,7 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    <div className='h-[100vh] p-4'>
+                    <div className='h-full p-2 overflow-auto'>
                         <Outlet />
                     </div>
                 </div>
