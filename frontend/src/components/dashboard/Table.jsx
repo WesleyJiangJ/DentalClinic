@@ -18,7 +18,7 @@ export default function Tables({ value, showStatusDropdown, showColumnsDropdown,
     const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
     const [visibleColumns, setVisibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
     const [statusFilter, setStatusFilter] = React.useState(new Set([true.toString()]));
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [rowsPerPage, setRowsPerPage] = React.useState(20);
     const [sortDescriptor, setSortDescriptor] = React.useState({
         column: cellValues[0].firstValue,
         direction: "ascending",
@@ -151,7 +151,7 @@ export default function Tables({ value, showStatusDropdown, showColumnsDropdown,
                         onClear={() => onClear()}
                         onValueChange={onSearchChange}
                     />
-                    <div className="flex gap-3">
+                    <div className="hidden md:flex gap-3">
                         <>
                             {showStatusDropdown &&
                                 <Dropdown>
@@ -216,12 +216,13 @@ export default function Tables({ value, showStatusDropdown, showColumnsDropdown,
                         <Select
                             label="Filas"
                             onChange={onRowsPerPageChange}
-                            defaultSelectedKeys={'5'}
+                            defaultSelectedKeys="all"
                             className="w-20"
                             radius="sm">
-                            <SelectItem key="5" value="5">5</SelectItem>
-                            <SelectItem key="10" value="10">10</SelectItem>
-                            <SelectItem key="15" value="15">15</SelectItem>
+                            <SelectItem key="20" value="20">20</SelectItem>
+                            <SelectItem key="60" value="60">60</SelectItem>
+                            <SelectItem key="80" value="80">80</SelectItem>
+                            <SelectItem key="100" value="100">100</SelectItem>
                         </Select>
                     </label>
                 </div>
