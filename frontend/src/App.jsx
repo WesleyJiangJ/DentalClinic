@@ -13,6 +13,7 @@ import PaymentModal from './components/dashboard/PaymentModal.jsx';
 import Personal from './components/dashboard/Personal.jsx';
 import Settings from './components/dashboard/Settings.jsx';
 import TreatmentModal from './components/dashboard/TreatmentModal.jsx';
+import Odontogram from './components/dashboard/Odontogram.jsx';
 
 function App() {
   const dashboardData = {
@@ -24,6 +25,7 @@ function App() {
       payment: "Pagos",
       personal: "Personal",
       settings: "Ajustes",
+      odontogram: 'Odontograma',
     },
   };
   return (
@@ -47,6 +49,7 @@ function App() {
             <Route path='personal/detail/:id' element={<Detail value={"Personal"} />} />
             <Route path='settings/*' element={<Settings />}>
               <Route path='treatment/:id' element={<TreatmentModal />} />
+            <Route path='odontogram/' element={<Odontogram />} />
             </Route>
           </Route>
         </Routes>
