@@ -52,7 +52,7 @@ class Appointments(viewsets.ReadOnlyModelViewSet):
     queryset = Appointment.objects.all()
     serializer_class = AppointmentSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ["id_patient"]
+    filterset_fields = ["id_patient", "id_personal"]
 
 
 class TreatmentViewSet(viewsets.ModelViewSet):
@@ -76,9 +76,21 @@ class PaymentViewSet(viewsets.ModelViewSet):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['id_budget__id_patient']
+    filterset_fields = ["id_budget__id_patient"]
 
 
 class PaymentControlViewSet(viewsets.ModelViewSet):
     queryset = PaymentControl.objects.all()
     serializer_class = PaymentControlSerializer
+
+
+class OdontogramViewSet(viewsets.ModelViewSet):
+    queryset = Odontogram.objects.all()
+    serializer_class = OdontogramSerializer
+
+
+class OdontogramTeethViewSet(viewsets.ModelViewSet):
+    queryset = OdontogramTeeth.objects.all()
+    serializer_class = OdontogramTeethSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["id_odontogram", "tooth_number"]
