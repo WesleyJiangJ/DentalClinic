@@ -452,7 +452,7 @@ export default function BudgetModal({ isOpen, onOpenChange, param, updateTable, 
                         </>
                     )}
                 </ModalContent>
-            </Modal >
+            </Modal>
         </>
     )
 }
