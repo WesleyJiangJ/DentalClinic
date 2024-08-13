@@ -33,35 +33,43 @@ MARITAL_STATUS = [
     ("V", "Viudo"),
 ]
 
-ODONTOGRAM = [
-    (0, "Diente sano", "#FFFFFF"),  # Blanco
-    (1, "Caries", "#FF0000"),  # Rojo
-    (2, "Restauración", "Obturación", "#FFFF00"),  # Amarillo
-    (3, "Endodoncia", "#00FF00"),  # Verde
-    (4, "Extracción", "#808080"),  # Gris
-    (5, "Fractura", "#800080"),  # Púrpura
-    (6, "Absceso", "#FFA500"),  # Naranja
-    (7, "Retracción gingival", "#00FFFF"),  # Cian
-    (8, "Diente impactado", "#008080"),  # Verde azulado
-    (9, "Supernumerario", "#FF1493"),  # Rosa fuerte
-    (10, "Maloclusión", "#800000"),  # Marrón
-    (11, "Movilidad", "#FF4500"),  # Naranja rojizo
-    (12, "Erupción dental", "#40E0D0"),  # Turquesa medio
-    (13, "Quiste dental", "#DA70D6"),  # Violeta claro
-    (14, "Manchas o decoloraciones", "#D2691E"),  # Chocolate
-    (15, "Hipoplasia del esmalte", "#B0E0E6"),  # Azul claro
-    (16, "Sensibilidad dental", "#8B4513"),  # Silla de montar marrón
-    (17, "Desgaste dental", "#A9A9A9"),  # Gris oscuro
-    (18, "Erosión dental", "#008B8B"),  # Verde azulado oscuro
-    (19, "Recesión gingival", "#2E8B57"),  # Verde mar oscuro
-    (20, "Hipertrofia gingival", "#FFD700"),  # Amarillo oro
-    (21, "Lesiones mucosas orales", "#8A2BE2"),  # Azul violeta oscuro
-    (22, "Bruxismo", "#FF6347"),  # Tomate
-    (23, "Trastornos de la ATM", "#6A5ACD"),  # Azul lavanda
-    (24, "Cierre de diastemas", "#00FF7F"),  # Verde primavera
-    (25, "Anomalías dentales", "#9932CC"),  # Púrpura oscuro
-    (26, "Restos radiculares", "#8B0000"),  # Rojo oscuro
-    (27, "Amelogénesis imperfecta", "#FFDAB9"),  # Melocotón
+TEETH_STATUS = [
+    (0, "Diente sano"),
+    (1, "Caries"),
+    (2, "Restauración"),
+    (3, "Endodoncia"),
+    (4, "Extracción"),
+    (5, "Fractura"),
+    (6, "Absceso"),
+    (7, "Retracción gingival"),
+    (8, "Diente impactado"),
+    (9, "Supernumerario"),
+    (10, "Maloclusión"),
+    (11, "Movilidad"),
+    (12, "Erupción dental"),
+    (13, "Quiste dental"),
+    (14, "Manchas o decoloraciones"),
+    (15, "Hipoplasia del esmalte"),
+    (16, "Sensibilidad dental"),
+    (17, "Desgaste dental"),
+    (18, "Erosión dental"),
+    (19, "Recesión gingival"),
+    (20, "Hipertrofia gingival"),
+    (21, "Lesiones mucosas orales"),
+    (22, "Bruxismo"),
+    (23, "Trastornos de la ATM"),
+    (24, "Cierre de diastemas"),
+    (25, "Anomalías dentales"),
+    (26, "Restos radiculares"),
+    (27, "Amelogénesis imperfecta"),
+]
+
+SURFACE = [
+    ("F", "Facial"),
+    ("D", "Distral"),
+    ("M", "Mesial"),
+    ("L", "Lingual"),
+    ("O", "Occlusal"),
 ]
 
 ROLE = [
@@ -275,43 +283,24 @@ class Payment(models.Model):
 class PaymentControl(models.Model):
     id_payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
     paid = models.DecimalField(max_digits=10, decimal_places=2)
-    note = models.TextField(blank=True)
+    # note = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
-# class Payment_Control_History(models.Model):
-#     id_budget = models.ForeignKey(Budget, on_delete=models.CASCADE)
-#     modified_by = models.ForeignKey(Personal, on_delete=models.CASCADE)
-#     description = models.TextField(null=False)
-#     created_at = models.DateTimeField(auto_now_add=True)
+class Odontogram(models.Model):
+    id_patient = models.ForeignKey(
+        Patient, on_delete=models.CASCADE, limit_choices_to={"status": True}
+    )
+    name = models.CharField(max_length=50)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
 
 
-# Odontogram
-# class Odontogram(models.Model):
-#     id_medical_history = models.ForeignKey(Medical_History, on_delete=models.CASCADE)
-#     created_at = models.DateTimeField(auto_now_add=True)
-
-
-# class Odontogram_Area(models.Model):
-#     area = models.IntegerField()
-
-
-# class Odontogram_Teeth(models.Model):
-#     teeth = models.IntegerField()
-
-
-# class Odontogram_Face(models.Model):
-#     face = models.CharField(max_length=10)
-
-
-# class Odontogram_Status(models.Model):
-#     description = models.CharField(max_length=50)
-#     color = models.CharField(max_length=7)
-
-
-# class Odontogram_Resume(models.Model):
-#     id_odontogram = models.ForeignKey(Odontogram, on_delete=models.CASCADE)
-#     id_area = models.ForeignKey(Odontogram_Area, on_delete=models.CASCADE)
-#     id_teeth = models.ForeignKey(Odontogram_Teeth, on_delete=models.CASCADE)
-#     id_face = models.ForeignKey(Odontogram_Face, on_delete=models.CASCADE)
-#     id_status = models.ForeignKey(Odontogram_Status, on_delete=models.CASCADE)
+class OdontogramTeeth(models.Model):
+    id_odontogram = models.ForeignKey(Odontogram, on_delete=models.CASCADE)
+    tooth_number = models.PositiveSmallIntegerField()
+    surface = models.CharField(max_length=1, choices=SURFACE)
+    observation = models.CharField(max_length=256, blank=True)
+    status = models.CharField(max_length=2, choices=TEETH_STATUS)
