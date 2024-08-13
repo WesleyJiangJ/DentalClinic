@@ -123,6 +123,7 @@ class BudgetSerializer(serializers.ModelSerializer):
         representation["patient_data"] = patient_representation
         return representation
 
+
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
@@ -134,7 +135,20 @@ class PaymentSerializer(serializers.ModelSerializer):
         representation["budget_data"] = budget_representation
         return representation
 
+
 class PaymentControlSerializer(serializers.ModelSerializer):
     class Meta:
         model = PaymentControl
+        fields = "__all__"
+
+
+class OdontogramSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Odontogram
+        fields = "__all__"
+
+
+class OdontogramTeethSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OdontogramTeeth
         fields = "__all__"
