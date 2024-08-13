@@ -49,8 +49,8 @@ function App() {
             <Route path='personal/detail/:id' element={<Detail value={"Personal"} />} />
             <Route path='settings/*' element={<Settings />}>
               <Route path='treatment/:id' element={<TreatmentModal />} />
-            <Route path='odontogram/' element={<Odontogram />} />
             </Route>
+            <Route path='odontogram/' element={<Odontogram />} />
           </Route>
         </Routes>
       </DashboardContext.Provider>
