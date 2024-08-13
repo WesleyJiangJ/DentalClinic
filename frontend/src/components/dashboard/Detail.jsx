@@ -1,6 +1,6 @@
 import React from "react";
 import { sweetAlert, sweetToast } from './Alerts'
-import { getSpecificPatient, putPatient, getSpecificPersonal, putPersonal, getAllAppointmentsByPatient, getAllBudgetByPatient, getAllPaymentsByPatient } from "../../api/apiFunctions";
+import { getSpecificPatient, putPatient, getSpecificPersonal, putPersonal, getAllAppointmentsByUser, getAllBudgetByPatient, getAllPaymentsByPatient } from "../../api/apiFunctions";
 import { useParams } from 'react-router-dom';
 import { Avatar, Button, Tabs, Tab, Card, CardHeader, CardBody, Textarea, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Badge, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, useDisclosure } from "@nextui-org/react";
 import { CheckCircleIcon, ChevronDownIcon, MinusCircleIcon, PencilSquareIcon } from "@heroicons/react/24/solid"
@@ -39,7 +39,7 @@ export default function Detail({ value }) {
         2: "Doctor",
         3: "Asistente",
         4: "Paciente",
-    }    
+    }
 
     function getStateName(abr) {
         return departamentosNicaragua[abr] || "Unknown";
@@ -64,7 +64,7 @@ export default function Detail({ value }) {
         if (value === "Paciente") {
             const [patientResponse, appointmentsResponse, budgetResponse, paymentsResponse] = await Promise.all([
                 getSpecificPatient(id),
-                getAllAppointmentsByPatient(id),
+                getAllAppointmentsByUser(id, ''),
                 getAllBudgetByPatient(id),
                 getAllPaymentsByPatient(id)
             ]);
@@ -76,6 +76,7 @@ export default function Detail({ value }) {
         }
         else if (value === "Personal") {
             setUser((await getSpecificPersonal(id)).data);
+            setAppoitmentsPending((await getAllAppointmentsByUser('', id)).data);
         }
     }
 
@@ -266,11 +267,11 @@ export default function Detail({ value }) {
                                                                             id={appointment.id}
                                                                             reason={appointment.reason}
                                                                             personal={
-                                                                                (appointment['personal_data'].gender === "F" ? "Dra. " : "Dr. ") +
-                                                                                appointment['personal_data'].first_name + ' ' +
-                                                                                appointment['personal_data'].middle_name + ' ' +
-                                                                                appointment['personal_data'].first_lastname + ' ' +
-                                                                                appointment['personal_data'].second_lastname
+                                                                                (value === 'Paciente' ? appointment['personal_data'].gender === "F" ? "Dra. " : "Dr. " : "") +
+                                                                                appointment[value === 'Paciente' ? 'personal_data' : 'patient_data'].first_name + ' ' +
+                                                                                appointment[value === 'Paciente' ? 'personal_data' : 'patient_data'].middle_name + ' ' +
+                                                                                appointment[value === 'Paciente' ? 'personal_data' : 'patient_data'].first_lastname + ' ' +
+                                                                                appointment[value === 'Paciente' ? 'personal_data' : 'patient_data'].second_lastname
                                                                             }
                                                                             date={appointment.datetime}
                                                                             view={'patient_detail'}
@@ -306,11 +307,11 @@ export default function Detail({ value }) {
                                                                             id={appointment.id}
                                                                             reason={appointment.reason}
                                                                             personal={
-                                                                                (appointment['personal_data'].gender === "F" ? "Dra. " : "Dr. ") +
-                                                                                appointment['personal_data'].first_name + ' ' +
-                                                                                appointment['personal_data'].middle_name + ' ' +
-                                                                                appointment['personal_data'].first_lastname + ' ' +
-                                                                                appointment['personal_data'].second_lastname
+                                                                                (value === 'Paciente' ? appointment['personal_data'].gender === "F" ? "Dra. " : "Dr. " : "") +
+                                                                                appointment[value === 'Paciente' ? 'personal_data' : 'patient_data'].first_name + ' ' +
+                                                                                appointment[value === 'Paciente' ? 'personal_data' : 'patient_data'].middle_name + ' ' +
+                                                                                appointment[value === 'Paciente' ? 'personal_data' : 'patient_data'].first_lastname + ' ' +
+                                                                                appointment[value === 'Paciente' ? 'personal_data' : 'patient_data'].second_lastname
                                                                             }
                                                                             date={appointment.datetime}
                                                                             view={'patient_detail'}
@@ -348,11 +349,11 @@ export default function Detail({ value }) {
                                                                             id={appointment.id}
                                                                             reason={appointment.reason}
                                                                             personal={
-                                                                                (appointment['personal_data'].gender === "F" ? "Dra. " : "Dr. ") +
-                                                                                appointment['personal_data'].first_name + ' ' +
-                                                                                appointment['personal_data'].middle_name + ' ' +
-                                                                                appointment['personal_data'].first_lastname + ' ' +
-                                                                                appointment['personal_data'].second_lastname
+                                                                                (value === 'Paciente' ? appointment['personal_data'].gender === "F" ? "Dra. " : "Dr. " : "") +
+                                                                                appointment[value === 'Paciente' ? 'personal_data' : 'patient_data'].first_name + ' ' +
+                                                                                appointment[value === 'Paciente' ? 'personal_data' : 'patient_data'].middle_name + ' ' +
+                                                                                appointment[value === 'Paciente' ? 'personal_data' : 'patient_data'].first_lastname + ' ' +
+                                                                                appointment[value === 'Paciente' ? 'personal_data' : 'patient_data'].second_lastname
                                                                             }
                                                                             date={appointment.datetime}
                                                                             view={'patient_detail'}
