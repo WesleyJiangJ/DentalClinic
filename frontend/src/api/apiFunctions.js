@@ -36,6 +36,10 @@ const paymentControlAPI = axios.create({
     baseURL: 'http://localhost:8000/paymentcontrol/'
 })
 
+const odontogramAPI = axios.create({
+    baseURL: 'http://localhost:8000/odontogram/'
+})
+
 const odontogramTeethAPI = axios.create({
     baseURL: 'http://localhost:8000/odontogramteeth/'
 })
@@ -164,6 +168,15 @@ export const postPaymentControl = (data) => {
 }
 
 // Odontogram
+export const getOdontogram = (id_odontogram, id_patient) => {
+    return odontogramAPI.get(`?id=${id_odontogram}&id_patient=${id_patient}`)
+}
+
+export const postOdontogram = (data) => {
+    return odontogramAPI.post('/', data)
+}
+
+// Odontogram Tooth
 export const getOdontogramTeeth = (id, tooth) => {
     return odontogramTeethAPI.get(`?id_odontogram=${id}&tooth_number=${tooth}`)
 }
