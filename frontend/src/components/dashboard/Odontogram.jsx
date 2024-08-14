@@ -1,7 +1,8 @@
 import React from "react";
 import { Card, CardBody, CardHeader, useDisclosure } from "@nextui-org/react";
+import { useParams } from "react-router-dom";
 import OdontogramModal from "./OdontogramModal";
-import { getOdontogramTeeth } from "../../api/apiFunctions";
+import { getOdontogram, getOdontogramTeeth, getSpecificPatient } from "../../api/apiFunctions";
 
 // F - Facial   - Up
 // L - Lingual  - Down
@@ -10,7 +11,9 @@ import { getOdontogramTeeth } from "../../api/apiFunctions";
 // O - Occlusal - Center
 
 export default function Odontogram() {
+    const param = useParams();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const [patient, setPatient] = React.useState([]);
     const [tooth, setTooth] = React.useState(0);
     const rightUpper = [18, 17, 16, 15, 14, 13, 12, 11];
     const rightUpperChildren = [55, 54, 53, 52, 51];
@@ -57,17 +60,18 @@ export default function Odontogram() {
     }
 
     const loadData = async () => {
-        const res = (await getOdontogramTeeth(1, '')).data;
-
+        const res = (await getOdontogramTeeth(param.id, '')).data;
+        const odontogram = (await getOdontogram(param.id, '')).data;
+        setPatient({
+            name: odontogram[0].patient_data.first_name + ' ' + odontogram[0].patient_data.middle_name + ' ' + odontogram[0].patient_data.first_lastname + ' ' + odontogram[0].patient_data.second_lastname,
+            birthdate: odontogram[0].patient_data.birthdate
+        });
         res.forEach((tooth) => {
             const pathElement = document.getElementById(`${tooth.surface}-${tooth.tooth_number}`);
-            console.log(pathElement)
             if (pathElement) {
                 pathElement.setAttribute("fill", condition.find(item => item.key === tooth.status).color);
             }
         });
-
-        console.log(res)
     }
 
     const deletedSurface = (id) => {
@@ -99,7 +103,6 @@ export default function Odontogram() {
                                         onClick={() => {
                                             onOpen();
                                             setTooth(index);
-                                            console.log(index)
                                         }}
                                         width="100%"
                                         height="100%"
@@ -601,9 +604,8 @@ export default function Odontogram() {
                             <p className="font-bold text-large">Paciente</p>
                         </CardHeader>
                         <CardBody className="gap-2">
-                            <p className="text-medium">Patient Name</p>
-                            <p className="text-medium">Birthdate</p>
-                            <p className="text-medium">DNI</p>
+                            <p className="text-medium">{patient.name}</p>
+                            <p className="text-medium">{patient.birthdate}</p>
                         </CardBody>
                     </Card>
                     <Card
@@ -624,7 +626,7 @@ export default function Odontogram() {
                     </Card>
                 </div>
             </div>
-            <OdontogramModal isOpen={isOpen} onOpenChange={onOpenChange} tooth={tooth} handleTooth={handleTooth} reloadData={reloadData} deletedSurface={deletedSurface} />
+            <OdontogramModal isOpen={isOpen} onOpenChange={onOpenChange} param={param.id} tooth={tooth} handleTooth={handleTooth} reloadData={reloadData} deletedSurface={deletedSurface} />
         </>
     );
 }
