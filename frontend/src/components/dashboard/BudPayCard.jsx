@@ -15,10 +15,12 @@ export default function BudPayCard({ name, description, total, treatmentQuantity
                             <p className='text-md font-thin'>{description}</p>
                         </div>
                     </CardHeader>
-                    <CardBody>
-                        <p>{total}</p>
-                        <p>{treatmentQuantity}</p>
-                    </CardBody>
+                    {total !== undefined &&
+                        <CardBody>
+                            <p>{total}</p>
+                            <p>{treatmentQuantity}</p>
+                        </CardBody>
+                    }
                 </Card >
             </div >
         </>
