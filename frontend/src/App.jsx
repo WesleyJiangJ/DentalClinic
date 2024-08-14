@@ -25,7 +25,6 @@ function App() {
       payment: "Pagos",
       personal: "Personal",
       settings: "Ajustes",
-      odontogram: 'Odontograma',
     },
   };
   return (
@@ -37,6 +36,7 @@ function App() {
             <Route path='' element={<Board />} />
             <Route path='patient/*' element={<Patient />} />
             <Route path='patient/detail/:id' element={<Detail value={"Paciente"} />} />
+            <Route path='patient/odontogram/:id' element={<Odontogram />} />
             <Route path='appointment/*' element={<Appointment />} />
             <Route path='appointment/:slug/:id' element={<Appointment />} />
             <Route path='budget/*' element={<Budget />}>
@@ -50,7 +50,6 @@ function App() {
             <Route path='settings/*' element={<Settings />}>
               <Route path='treatment/:id' element={<TreatmentModal />} />
             </Route>
-            <Route path='odontogram/' element={<Odontogram />} />
           </Route>
         </Routes>
       </DashboardContext.Provider>
