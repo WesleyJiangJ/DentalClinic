@@ -1,19 +1,23 @@
 import React from "react";
 import { sweetAlert, sweetToast } from './Alerts'
-import { getSpecificPatient, putPatient, getSpecificPersonal, putPersonal, getAllAppointmentsByUser, getAllBudgetByPatient, getAllPaymentsByPatient } from "../../api/apiFunctions";
-import { useParams } from 'react-router-dom';
+import { getSpecificPatient, putPatient, getSpecificPersonal, putPersonal, getAllAppointmentsByUser, getAllBudgetByPatient, getAllPaymentsByPatient, getOdontogram } from "../../api/apiFunctions";
+import { useParams, useNavigate } from 'react-router-dom';
 import { Avatar, Button, Tabs, Tab, Card, CardHeader, CardBody, Textarea, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Badge, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, useDisclosure } from "@nextui-org/react";
 import { CheckCircleIcon, ChevronDownIcon, MinusCircleIcon, PencilSquareIcon } from "@heroicons/react/24/solid"
 import UserModal from "./UserModal"
 import AppointmentCard from "./AppointmentCard";
 import BudPayCard from "./BudPayCard";
+import NewOdontogramModal from "./NewOdontogramModal";
 
 export default function Detail({ value }) {
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
-    const [user, setUser] = React.useState([])
-    const [appoitmentsPending, setAppoitmentsPending] = React.useState([])
-    const [budget, setBudget] = React.useState([])
-    const [payment, setPayment] = React.useState([])
+    const navigate = useNavigate();
+    const { isOpen: isUserModalOpen, onOpen: onUserModalOpen, onOpenChange: onUserModalOpenChange } = useDisclosure();
+    const { isOpen: isOdontogramModalOpen, onOpen: onOdontogramModalOpen, onOpenChange: onOdontogramModalOpenChange } = useDisclosure();
+    const [user, setUser] = React.useState([]);
+    const [appoitmentsPending, setAppoitmentsPending] = React.useState([]);
+    const [budget, setBudget] = React.useState([]);
+    const [payment, setPayment] = React.useState([]);
+    const [odontogram, setOdontogram] = React.useState([]);
     const { id } = useParams();
     const departamentosNicaragua = {
         BO: "Boaco",
@@ -62,17 +66,19 @@ export default function Detail({ value }) {
 
     const loadData = async () => {
         if (value === "Paciente") {
-            const [patientResponse, appointmentsResponse, budgetResponse, paymentsResponse] = await Promise.all([
+            const [patientResponse, appointmentsResponse, budgetResponse, paymentsResponse, odontogramResponse] = await Promise.all([
                 getSpecificPatient(id),
                 getAllAppointmentsByUser(id, ''),
                 getAllBudgetByPatient(id),
-                getAllPaymentsByPatient(id)
+                getAllPaymentsByPatient(id),
+                getOdontogram('', id),
             ]);
 
             setUser(patientResponse.data);
             setAppoitmentsPending(appointmentsResponse.data);
             setBudget(budgetResponse.data);
             setPayment(paymentsResponse.data);
+            setOdontogram(odontogramResponse.data);
         }
         else if (value === "Personal") {
             setUser((await getSpecificPersonal(id)).data);
@@ -156,7 +162,7 @@ export default function Detail({ value }) {
                                     />
                                 </DropdownTrigger>
                                 <DropdownMenu aria-label="Actions">
-                                    <DropdownItem key="edit" startContent={<PencilSquareIcon className="w-4 h-4" />} onPress={onOpen}>Modificar</DropdownItem>
+                                    <DropdownItem key="edit" startContent={<PencilSquareIcon className="w-4 h-4" />} onPress={onUserModalOpen}>Modificar</DropdownItem>
                                     <DropdownItem
                                         key="status"
                                         className={user.status === true ? 'text-danger' : 'text-success'}
@@ -377,45 +383,36 @@ export default function Detail({ value }) {
                                         </Tabs>
                                     </Tab>
                                     <Tab key="budget" title="Presupuestos">
-                                        <Tabs
-                                            aria-label="Options"
-                                            color="primary"
+                                        <Card
                                             radius="sm"
-                                            fullWidth
-                                            size="md">
-                                            <Tab key="budget" title="Presupuestos">
-                                                <Card
-                                                    radius="sm"
-                                                    shadow="none"
-                                                    className="h-full">
-                                                    <CardBody>
-                                                        <div className='flex flex-nowrap flex-col md:flex-wrap md:flex-row w-full h-full overflow-scroll'>
-                                                            {budget
-                                                                .filter(info => info.status === true)
-                                                                .sort((a, b) => new Date(a.created_by) - new Date(b.created_by))
-                                                                .map((budget) => (
-                                                                    <div className="w-full md:w-1/2" key={budget.id}>
-                                                                        <BudPayCard
-                                                                            name={budget.name}
-                                                                            description={budget.description}
-                                                                            total={'Total C$' + parseFloat(budget.total).toLocaleString()}
-                                                                            treatmentQuantity={`${budget.detailFields.length} Tratamientos a Realizar`}
-                                                                        />
-                                                                    </div>
-                                                                ))
-                                                            }
-                                                            {budget.filter(info => info.status === true).length === 0 && (
-                                                                <Card radius="sm" shadow="none" fullWidth>
-                                                                    <CardBody className="flex items-center justify-center h-full">
-                                                                        No se encontraron presupuestos
-                                                                    </CardBody>
-                                                                </Card>
-                                                            )}
-                                                        </div>
-                                                    </CardBody>
-                                                </Card>
-                                            </Tab>
-                                        </Tabs>
+                                            shadow="none"
+                                            className="h-full">
+                                            <CardBody>
+                                                <div className='flex flex-nowrap flex-col md:flex-wrap md:flex-row w-full h-full overflow-scroll'>
+                                                    {budget
+                                                        .filter(info => info.status === true)
+                                                        .sort((a, b) => new Date(a.created_by) - new Date(b.created_by))
+                                                        .map((budget) => (
+                                                            <div className="w-full md:w-1/2" key={budget.id}>
+                                                                <BudPayCard
+                                                                    name={budget.name}
+                                                                    description={budget.description}
+                                                                    total={'Total C$' + parseFloat(budget.total).toLocaleString()}
+                                                                    treatmentQuantity={`${budget.detailFields.length} Tratamientos a Realizar`}
+                                                                />
+                                                            </div>
+                                                        ))
+                                                    }
+                                                    {budget.filter(info => info.status === true).length === 0 && (
+                                                        <Card radius="sm" shadow="none" fullWidth>
+                                                            <CardBody className="flex items-center justify-center h-full">
+                                                                No se encontraron presupuestos
+                                                            </CardBody>
+                                                        </Card>
+                                                    )}
+                                                </div>
+                                            </CardBody>
+                                        </Card>
                                     </Tab>
                                     <Tab key="payments" title="Control de Pagos">
                                         <Tabs
@@ -488,6 +485,35 @@ export default function Detail({ value }) {
                                             </Tab>
                                         </Tabs>
                                     </Tab>
+                                    <Tab key="odontogram" title="Odontograma">
+                                        <Card
+                                            radius="sm"
+                                            shadow="none"
+                                            className="h-full">
+                                            <CardBody>
+                                                <Button color="primary" radius="sm" size="lg" onClick={onOdontogramModalOpen}>Nuevo</Button>
+                                                <div className='flex flex-nowrap flex-col md:flex-wrap md:flex-row w-full h-full overflow-scroll'>
+                                                    {odontogram
+                                                        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+                                                        .map((odontogram) => (
+                                                            <div className="cursor-pointer w-full md:w-1/2" key={odontogram.id} onClick={() => navigate(`/dashboard/patient/odontogram/${odontogram.id}`)}>
+                                                                <BudPayCard
+                                                                    name={odontogram.name}
+                                                                />
+                                                            </div>
+                                                        ))
+                                                    }
+                                                    {odontogram.length === 0 && (
+                                                        <Card radius="sm" shadow="none" fullWidth>
+                                                            <CardBody className="flex items-center justify-center h-full">
+                                                                No se encontraron odontogramas
+                                                            </CardBody>
+                                                        </Card>
+                                                    )}
+                                                </div>
+                                            </CardBody>
+                                        </Card>
+                                    </Tab>
                                 </Tabs>
                             </CardBody>
                         </Card>
@@ -525,7 +551,8 @@ export default function Detail({ value }) {
                     </div>
                 </div>
             </div>
-            <UserModal isOpen={isOpen} onOpenChange={onOpenChange} updateData={loadData} value={value} />
+            <UserModal isOpen={isUserModalOpen} onOpenChange={onUserModalOpenChange} updateData={loadData} value={value} />
+            <NewOdontogramModal isOpen={isOdontogramModalOpen} onOpenChange={onOdontogramModalOpenChange} id_patient={id} navigate={navigate} />
         </>
     );
 }
@@ -595,6 +622,5 @@ function Notes() {
                 </Table>
             </CardBody>
         </Card>
-
     );
 }
