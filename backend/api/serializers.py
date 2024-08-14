@@ -146,6 +146,12 @@ class OdontogramSerializer(serializers.ModelSerializer):
     class Meta:
         model = Odontogram
         fields = "__all__"
+    
+    def to_representation(self, instance):
+        representation = super(OdontogramSerializer, self).to_representation(instance)
+        patient_representation = PatientSerializer(instance.id_patient).data
+        representation["patient_data"] = patient_representation
+        return representation
 
 
 class OdontogramTeethSerializer(serializers.ModelSerializer):
