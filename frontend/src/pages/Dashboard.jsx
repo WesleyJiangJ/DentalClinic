@@ -33,8 +33,6 @@ export default function Dashboard() {
                     return titles.personal;
                 case 'settings':
                     return titles.settings;
-                case 'odontogram':
-                    return titles.odontogram;
                 default:
                     return titles.dashboard;
             }
