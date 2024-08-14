@@ -87,6 +87,8 @@ class PaymentControlViewSet(viewsets.ModelViewSet):
 class OdontogramViewSet(viewsets.ModelViewSet):
     queryset = Odontogram.objects.all()
     serializer_class = OdontogramSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["id", "id_patient"]
 
 
 class OdontogramTeethViewSet(viewsets.ModelViewSet):
