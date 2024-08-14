@@ -626,7 +626,7 @@ export default function Odontogram() {
                     </Card>
                 </div>
             </div>
-            <OdontogramModal isOpen={isOpen} onOpenChange={onOpenChange} param={param.id} tooth={tooth} handleTooth={handleTooth} reloadData={reloadData} deletedSurface={deletedSurface} />
+            <OdontogramModal isOpen={isOpen} onOpenChange={onOpenChange} param={param} tooth={tooth} handleTooth={handleTooth} reloadData={reloadData} deletedSurface={deletedSurface} />
         </>
     );
 }
