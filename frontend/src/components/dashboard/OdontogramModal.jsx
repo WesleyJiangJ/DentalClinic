@@ -5,7 +5,7 @@ import { getOdontogramTeeth, odontogramSurfaceTeethDelete, postOdontogramTeeth }
 import { TrashIcon } from "@heroicons/react/24/outline"
 import { sweetToast } from "./Alerts";
 
-export default function OdontogramModal({ isOpen, onOpenChange, tooth, handleTooth, reloadData, deletedSurface }) {
+export default function OdontogramModal({ isOpen, onOpenChange, param, tooth, handleTooth, reloadData, deletedSurface }) {
     const { control, handleSubmit, formState: { errors }, reset } = useForm({
         defaultValues: {
             tooth_number: '',
@@ -53,7 +53,7 @@ export default function OdontogramModal({ isOpen, onOpenChange, tooth, handleToo
     ];
 
     const onSubmit = async (data) => {
-        await postOdontogramTeeth({ id_odontogram: 1, tooth_number: tooth, surface: toothSurface[0], observation: data.observation, status: data.status })
+        await postOdontogramTeeth({ id_odontogram: param, tooth_number: tooth, surface: toothSurface[0], observation: data.observation, status: data.status })
             .then(() => {
                 loadData();
                 reset();
@@ -66,7 +66,7 @@ export default function OdontogramModal({ isOpen, onOpenChange, tooth, handleToo
 
     const loadData = async () => {
         try {
-            const res = (await getOdontogramTeeth(1, tooth)).data;
+            const res = (await getOdontogramTeeth(param.id, tooth)).data;
             setToothRes(res)
 
             if (res.length > 0) {
