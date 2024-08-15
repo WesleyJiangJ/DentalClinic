@@ -14,6 +14,7 @@ export default function Settings() {
 
     React.useEffect(() => {
         loadTreatments();
+        modifyURL();
     }, []);
 
     const loadTreatments = async () => {
