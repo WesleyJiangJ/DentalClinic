@@ -1,8 +1,8 @@
 import React from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { getAllTreatment } from "../../api/apiFunctions";
+import { getAllTreatment, getAllOdontogramToothCondition } from "../../api/apiFunctions";
 import { Button, Tabs, Tab, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, useDisclosure } from "@nextui-org/react";
-import TreatmentModal from "./TreatmentModal";
+import SettingsModal from "./SettingsModal";
 
 export default function Settings() {
     const navigate = useNavigate();
@@ -10,11 +10,7 @@ export default function Settings() {
     const location = useLocation();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [treatment, setTreatment] = React.useState([]);
-
-    const columns = [
-        { name: "Tratamiento", uid: "treatment" },
-        { name: "Precio", uid: "price" },
-    ];
+    const [toothCondition, setToothCondition] = React.useState([]);
 
     React.useEffect(() => {
         loadTreatments();
@@ -22,30 +18,14 @@ export default function Settings() {
 
     const loadTreatments = async () => {
         setTreatment((await getAllTreatment()).data);
+        setToothCondition((await getAllOdontogramToothCondition()).data);
     }
 
     const modifyURL = () => {
         const currentPath = location.pathname;
-        const newPath = currentPath.split(`/treatment/${param.id}`).filter((segment) => segment !== param.id && segment !== param.slug).join('');
+        const newPath = currentPath.split(`/modal/${param.id}`).filter((segment) => segment !== param.id && segment !== param.slug).join('');
         navigate(newPath);
     }
-
-    const renderCell = React.useCallback((treatments, columnKey) => {
-        const cellValue = treatments[columnKey];
-        switch (columnKey) {
-            case "treatment":
-                return (
-                    <p className="text-bold text-small capitalize">{treatments.name}</p>
-                );
-            case "price":
-                return (
-                    <p className="text-bold text-small capitalize">C${parseFloat(treatments.price).toLocaleString()}</p>
-                );
-            default:
-                return cellValue;
-        }
-    }, []);
-
     return (
         <>
             <Tabs
@@ -54,44 +34,76 @@ export default function Settings() {
                 radius="sm"
                 fullWidth>
                 <Tab key="treatments" title="Tratamientos">
-                    <Table
-                        aria-label="Treatments Table"
-                        radius="sm"
-                        selectionMode="single"
-                        onRowAction={(key) => {
-                            navigate(`treatment/${key}`);
-                            onOpenChange(true);
-                        }}>
-                        <TableHeader columns={columns}>
-                            {(column) => (
-                                <TableColumn key={column.uid} align={column.uid === "actions" ? "center" : "start"}>
-                                    {column.name}
-                                </TableColumn>
-                            )}
-                        </TableHeader>
-                        <TableBody emptyContent={"No hubieron resultados"} items={treatment}>
-                            {(item) => (
-                                <TableRow key={item.id}>
-                                    {(columnKey) =>
-                                        <TableCell className="cursor-pointer">
-                                            {renderCell(item, columnKey)}
-                                        </TableCell>
-                                    }
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                    <Button
-                        className="w-full mt-2"
-                        color="primary"
-                        radius="sm"
-                        size="lg"
-                        onPress={onOpen}>
-                        Nuevo Tratamiento
-                    </Button>
+                    <Tables
+                        isOpen={isOpen}
+                        onOpen={onOpen}
+                        columns={[{ name: "Tratamiento", uid: "firstColumn" }, { name: "Precio", uid: "secondColumn" }]}
+                        data={treatment}
+                        navigate={navigate}
+                        onOpenChange={onOpenChange}
+                        displayValues='T'
+                        loadTreatments={loadTreatments}
+                        param={param}
+                        modifyURL={modifyURL}
+                    />
+                </Tab>
+                <Tab key="odontogram" title="Odontograma">
+                    <Tables
+                        isOpen={isOpen}
+                        onOpen={onOpen}
+                        columns={[{ name: "Condición", uid: "firstColumn" }, { name: "Color", uid: "secondColumn" }]}
+                        data={toothCondition}
+                        navigate={navigate}
+                        onOpenChange={onOpenChange}
+                        displayValues='OD'
+                        loadTreatments={loadTreatments}
+                        param={param}
+                        modifyURL={modifyURL}
+                    />
                 </Tab>
             </Tabs>
-            <TreatmentModal isOpen={isOpen} onOpenChange={onOpenChange} loadTreatments={loadTreatments} param={param} modifyURL={modifyURL} />
         </>
     )
+}
+
+function Tables({ isOpen, onOpen, columns, data, navigate, onOpenChange, displayValues, loadTreatments, param, modifyURL }) {
+    return (
+        <>
+            <Table
+                aria-label="Table"
+                radius="sm"
+                selectionMode="single"
+                shadow="none"
+                onRowAction={(key) => {
+                    navigate(`modal/${key}`);
+                    onOpenChange(true);
+                }}>
+                <TableHeader columns={columns}>
+                    {(column) => (
+                        <TableColumn key={column.uid} align={column.uid === "actions" ? "center" : "start"}>
+                            {column.name}
+                        </TableColumn>
+                    )}
+                </TableHeader>
+                <TableBody emptyContent={"No hubieron resultados"}>
+                    {data.map((field) => (
+                        <TableRow key={field.id} className="cursor-pointer">
+                            <TableCell>{displayValues === 'T' ? field.name : field.condition_name}</TableCell>
+                            <TableCell>{displayValues === 'T' ? `C$${parseFloat(field.price).toLocaleString()}` : <p style={{ color: field.color }}>{field.color}</p>}</TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+
+            <Button
+                className="w-full mt-2"
+                color="primary"
+                radius="sm"
+                size="lg"
+                onPress={onOpen}>
+                {displayValues === 'T' ? "Nuevo Tratamiento" : "Nueva Condición Dental"}
+            </Button>
+            <SettingsModal isOpen={isOpen} onOpenChange={onOpenChange} loadTreatments={loadTreatments} param={param} modifyURL={modifyURL} displayValues={displayValues} />
+        </>
+    );
 }
