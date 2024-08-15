@@ -19,6 +19,7 @@ router.register(r"paymentcontrol", views.PaymentControlViewSet)
 router.register(r"odontogram", views.OdontogramViewSet)
 router.register(r"odontogramteeth", views.OdontogramTeethViewSet)
 router.register(r"odontogramtoothcondition", views.OdontogramToothConditionViewSet)
+router.register(r"notes", views.NotesViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
