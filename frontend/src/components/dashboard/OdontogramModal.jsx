@@ -1,7 +1,7 @@
 import React from "react";
 import { Chip, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Autocomplete, AutocompleteItem, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Textarea } from "@nextui-org/react";
 import { useForm, Controller } from "react-hook-form"
-import { getOdontogramTeeth, odontogramSurfaceTeethDelete, postOdontogramTeeth } from "../../api/apiFunctions";
+import { getAllOdontogramToothCondition, getOdontogramTeeth, odontogramSurfaceTeethDelete, postOdontogramTeeth } from "../../api/apiFunctions";
 import { TrashIcon } from "@heroicons/react/24/outline"
 import { sweetToast } from "./Alerts";
 
@@ -9,7 +9,7 @@ export default function OdontogramModal({ isOpen, onOpenChange, param, tooth, ha
     const { control, handleSubmit, formState: { errors }, reset } = useForm({
         defaultValues: {
             tooth_number: '',
-            status: '',
+            condition: '',
             observation: ''
         }
     });
@@ -21,39 +21,10 @@ export default function OdontogramModal({ isOpen, onOpenChange, param, tooth, ha
     const [distralColor, setDistralColor] = React.useState('');
     const [occlusalColor, setOcclusalColor] = React.useState('');
     const [toothRes, setToothRes] = React.useState([]);
-    const condition = [
-        { key: 0, value: "Diente sano", color: "#F2F5F8" },
-        { key: 1, value: "Caries", color: "#FF0000" },
-        { key: 2, value: "Restauración", secondaryName: "Obturación", color: "#FFFF00" },
-        { key: 3, value: "Endodoncia", color: "#00FF00" },
-        { key: 4, value: "Extracción", color: "#808080" },
-        { key: 5, value: "Fractura", color: "#800080" },
-        { key: 6, value: "Absceso", color: "#FFA500" },
-        { key: 7, value: "Retracción gingival", color: "#00FFFF" },
-        { key: 8, value: "Diente impactado", color: "#008080" },
-        { key: 9, value: "Supernumerario", color: "#FF1493" },
-        { key: 10, value: "Maloclusión", color: "#800000" },
-        { key: 11, value: "Movilidad", color: "#FF4500" },
-        { key: 12, value: "Erupción dental", color: "#40E0D0" },
-        { key: 13, value: "Quiste dental", color: "#DA70D6" },
-        { key: 14, value: "Manchas o decoloraciones", color: "#D2691E" },
-        { key: 15, value: "Hipoplasia del esmalte", color: "#B0E0E6" },
-        { key: 16, value: "Sensibilidad dental", color: "#8B4513" },
-        { key: 17, value: "Desgaste dental", color: "#A9A9A9" },
-        { key: 18, value: "Erosión dental", color: "#008B8B" },
-        { key: 19, value: "Recesión gingival", color: "#2E8B57" },
-        { key: 20, value: "Hipertrofia gingival", color: "#FFD700" },
-        { key: 21, value: "Lesiones mucosas orales", color: "#8A2BE2" },
-        { key: 22, value: "Bruxismo", color: "#FF6347" },
-        { key: 23, value: "Trastornos de la ATM", color: "#6A5ACD" },
-        { key: 24, value: "Cierre de diastemas", color: "#00FF7F" },
-        { key: 25, value: "Anomalías dentales", color: "#9932CC" },
-        { key: 26, value: "Restos radiculares", color: "#8B0000" },
-        { key: 27, value: "Amelogénesis imperfecta", color: "#FFDAB9" }
-    ];
+    const [condition, setCondition] = React.useState([]);
 
     const onSubmit = async (data) => {
-        await postOdontogramTeeth({ id_odontogram: param, tooth_number: tooth, surface: toothSurface[0], observation: data.observation, status: data.status })
+        await postOdontogramTeeth({ id_odontogram: param.id, tooth_number: tooth, surface: toothSurface[0], observation: data.observation, condition: data.condition })
             .then(() => {
                 loadData();
                 reset();
@@ -67,11 +38,13 @@ export default function OdontogramModal({ isOpen, onOpenChange, param, tooth, ha
     const loadData = async () => {
         try {
             const res = (await getOdontogramTeeth(param.id, tooth)).data;
-            setToothRes(res)
+            const conditionRes = (await getAllOdontogramToothCondition()).data;
+            setToothRes(res);
+            setCondition(conditionRes);
 
             if (res.length > 0) {
                 res.forEach(element => {
-                    const color = condition.find(item => item.key === element.status)?.color || '#F2F5F8';
+                    const color = conditionRes.find(item => item.id === element.condition)?.color || '#F2F5F8';
                     if (element.surface === 'F') {
                         setFacialColor(color);
                     } else if (element.surface === 'L') {
@@ -208,7 +181,7 @@ export default function OdontogramModal({ isOpen, onOpenChange, param, tooth, ha
                                                 toothSurface !== '' && (
                                                     <>
                                                         <Controller
-                                                            name="status"
+                                                            name="condition"
                                                             control={control}
                                                             rules={{ required: true }}
                                                             render={({ field }) => (
@@ -221,11 +194,11 @@ export default function OdontogramModal({ isOpen, onOpenChange, param, tooth, ha
                                                                         field.onChange({
                                                                             target: { value }
                                                                         });
-                                                                        setColor(condition.find(item => item.key === parseInt(value)).color);
+                                                                        setColor(condition.find(item => item.id === parseInt(value)).color);
                                                                     }}
                                                                     onBlur={field.onBlur}
-                                                                    isInvalid={errors.status ? true : false}>
-                                                                    {(data) => <AutocompleteItem key={data.key} value={data.value} startContent={<Chip style={{ backgroundColor: data.color }} variant="solid" />}>{`${data.value}`}</AutocompleteItem>}
+                                                                    isInvalid={errors.condition ? true : false}>
+                                                                    {(data) => <AutocompleteItem key={data.id} value={data.condition_name} startContent={<Chip style={{ backgroundColor: data.color }} variant="solid" />}>{`${data.condition_name}`}</AutocompleteItem>}
                                                                 </Autocomplete>
                                                             )}>
                                                         </Controller>
@@ -261,7 +234,7 @@ export default function OdontogramModal({ isOpen, onOpenChange, param, tooth, ha
                                         isHeaderSticky>
                                         <TableHeader>
                                             <TableColumn>Superficie</TableColumn>
-                                            <TableColumn>Tratamiento</TableColumn>
+                                            <TableColumn>Condiciones</TableColumn>
                                             <TableColumn>Observaciones</TableColumn>
                                             <TableColumn></TableColumn>
                                         </TableHeader>
@@ -269,7 +242,7 @@ export default function OdontogramModal({ isOpen, onOpenChange, param, tooth, ha
                                             {toothRes.map((field) => (
                                                 <TableRow key={field.id}>
                                                     <TableCell className="w-1/6">{field.surface === 'F' ? 'Facial' : field.surface === 'D' ? 'Distral' : field.surface === 'M' ? 'Mesial' : field.surface === 'L' ? 'Lingual' : 'Occlusal'}</TableCell>
-                                                    <TableCell className="w-1/5">{condition.find(item => item.key === field.status).value}</TableCell>
+                                                    <TableCell className="w-1/5">{condition.find(item => item.id === field.condition).condition_name}</TableCell>
                                                     <TableCell className="w-1/2">{field.observation}</TableCell>
                                                     <TableCell className="w-1/12" onClick={() => deleteSurface(field.id, field.surface)}>
                                                         <TrashIcon className="w-5 h-5 cursor-pointer" color="red" />
