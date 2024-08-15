@@ -2,7 +2,7 @@ import React from "react";
 import { Card, CardBody, CardHeader, useDisclosure } from "@nextui-org/react";
 import { useParams } from "react-router-dom";
 import OdontogramModal from "./OdontogramModal";
-import { getOdontogram, getOdontogramTeeth, getSpecificPatient } from "../../api/apiFunctions";
+import { getAllOdontogramToothCondition, getOdontogram, getOdontogramTeeth, getSpecificPatient } from "../../api/apiFunctions";
 
 // F - Facial   - Up
 // L - Lingual  - Down
@@ -24,37 +24,6 @@ export default function Odontogram() {
     const leftLower = [31, 32, 33, 34, 35, 36, 37, 38];
     const leftLowerChildren = [71, 72, 73, 74, 75];
 
-    const condition = [
-        { key: 0, value: "Diente sano", color: "#F2F5F8" },
-        { key: 1, value: "Caries", color: "#FF0000" },
-        { key: 2, value: "Restauración", secondaryName: "Obturación", color: "#FFFF00" },
-        { key: 3, value: "Endodoncia", color: "#00FF00" },
-        { key: 4, value: "Extracción", color: "#808080" },
-        { key: 5, value: "Fractura", color: "#800080" },
-        { key: 6, value: "Absceso", color: "#FFA500" },
-        { key: 7, value: "Retracción gingival", color: "#00FFFF" },
-        { key: 8, value: "Diente impactado", color: "#008080" },
-        { key: 9, value: "Supernumerario", color: "#FF1493" },
-        { key: 10, value: "Maloclusión", color: "#800000" },
-        { key: 11, value: "Movilidad", color: "#FF4500" },
-        { key: 12, value: "Erupción dental", color: "#40E0D0" },
-        { key: 13, value: "Quiste dental", color: "#DA70D6" },
-        { key: 14, value: "Manchas o decoloraciones", color: "#D2691E" },
-        { key: 15, value: "Hipoplasia del esmalte", color: "#B0E0E6" },
-        { key: 16, value: "Sensibilidad dental", color: "#8B4513" },
-        { key: 17, value: "Desgaste dental", color: "#A9A9A9" },
-        { key: 18, value: "Erosión dental", color: "#008B8B" },
-        { key: 19, value: "Recesión gingival", color: "#2E8B57" },
-        { key: 20, value: "Hipertrofia gingival", color: "#FFD700" },
-        { key: 21, value: "Lesiones mucosas orales", color: "#8A2BE2" },
-        { key: 22, value: "Bruxismo", color: "#FF6347" },
-        { key: 23, value: "Trastornos de la ATM", color: "#6A5ACD" },
-        { key: 24, value: "Cierre de diastemas", color: "#00FF7F" },
-        { key: 25, value: "Anomalías dentales", color: "#9932CC" },
-        { key: 26, value: "Restos radiculares", color: "#8B0000" },
-        { key: 27, value: "Amelogénesis imperfecta", color: "#FFDAB9" }
-    ];
-
     const handleTooth = (value) => {
         setTooth(value);
     }
@@ -62,6 +31,7 @@ export default function Odontogram() {
     const loadData = async () => {
         const res = (await getOdontogramTeeth(param.id, '')).data;
         const odontogram = (await getOdontogram(param.id, '')).data;
+        const conditionRes = (await getAllOdontogramToothCondition()).data;
         setPatient({
             name: odontogram[0].patient_data.first_name + ' ' + odontogram[0].patient_data.middle_name + ' ' + odontogram[0].patient_data.first_lastname + ' ' + odontogram[0].patient_data.second_lastname,
             birthdate: odontogram[0].patient_data.birthdate
@@ -69,7 +39,7 @@ export default function Odontogram() {
         res.forEach((tooth) => {
             const pathElement = document.getElementById(`${tooth.surface}-${tooth.tooth_number}`);
             if (pathElement) {
-                pathElement.setAttribute("fill", condition.find(item => item.key === tooth.status).color);
+                pathElement.setAttribute("fill", conditionRes.find(item => item.id === tooth.condition).color);
             }
         });
     }
