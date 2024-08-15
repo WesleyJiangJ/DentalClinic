@@ -158,3 +158,8 @@ class OdontogramTeethSerializer(serializers.ModelSerializer):
     class Meta:
         model = OdontogramTeeth
         fields = "__all__"
+
+class OdontogramToothConditionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OdontogramToothCondition
+        fields = "__all__"
