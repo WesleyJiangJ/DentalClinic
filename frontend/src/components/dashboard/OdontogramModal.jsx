@@ -6,7 +6,7 @@ import { TrashIcon } from "@heroicons/react/24/outline"
 import { sweetToast } from "./Alerts";
 
 export default function OdontogramModal({ isOpen, onOpenChange, param, tooth, handleTooth, reloadData, deletedSurface }) {
-    const { control, handleSubmit, formState: { errors }, reset } = useForm({
+    const { control, handleSubmit, formState: { errors }, reset, watch } = useForm({
         defaultValues: {
             tooth_number: '',
             condition: '',
@@ -256,7 +256,7 @@ export default function OdontogramModal({ isOpen, onOpenChange, param, tooth, ha
                                     <Button color="danger" variant="light" radius="sm" onPress={onClose}>
                                         Cerrar
                                     </Button>
-                                    <Button color="primary" radius="sm" type="submit">
+                                    <Button color="primary" radius="sm" type="submit" isDisabled={watch('condition') === '' ? true : false}>
                                         Guardar
                                     </Button>
                                 </ModalFooter>
