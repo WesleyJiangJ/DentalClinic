@@ -39,7 +39,7 @@ export default function NewOdontogramModal({ isOpen, onOpenChange, id_patient, n
                         <ModalHeader className="flex flex-col gap-1">Nuevo Odontograma</ModalHeader>
                         <form onSubmit={handleSubmit}>
                             <ModalBody>
-                                <Input variant="underlined" label='Nombre' value={name} onChange={(e) => handleInputChange(e)} isInvalid={isInvalid} />
+                                <Input autoFocus={true} variant="underlined" label='Nombre' value={name} onChange={(e) => handleInputChange(e)} isInvalid={isInvalid} />
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" radius="sm" variant="light" onPress={onClose}>
