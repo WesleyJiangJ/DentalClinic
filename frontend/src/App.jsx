@@ -12,7 +12,7 @@ import Payment from './components/dashboard/Payment.jsx';
 import PaymentModal from './components/dashboard/PaymentModal.jsx';
 import Personal from './components/dashboard/Personal.jsx';
 import Settings from './components/dashboard/Settings.jsx';
-import TreatmentModal from './components/dashboard/TreatmentModal.jsx';
+import SettingsModal from './components/dashboard/SettingsModal.jsx';
 import Odontogram from './components/dashboard/Odontogram.jsx';
 
 function App() {
@@ -48,7 +48,7 @@ function App() {
             <Route path='personal/*' element={<Personal />} />
             <Route path='personal/detail/:id' element={<Detail value={"Personal"} />} />
             <Route path='settings/*' element={<Settings />}>
-              <Route path='treatment/:id' element={<TreatmentModal />} />
+              <Route path='modal/:id' element={<SettingsModal />} />
             </Route>
           </Route>
         </Routes>
