@@ -382,7 +382,7 @@ export default function Detail({ value }) {
                                             </Tab>
                                         </Tabs>
                                     </Tab>
-                                    <Tab key="budget" title="Presupuestos">
+                                    <Tab key="budget" title="Presupuestos" className={value !== 'Paciente' && 'hidden'}>
                                         <Card
                                             radius="sm"
                                             shadow="none"
@@ -414,7 +414,7 @@ export default function Detail({ value }) {
                                             </CardBody>
                                         </Card>
                                     </Tab>
-                                    <Tab key="payments" title="Control de Pagos">
+                                    <Tab key="payments" title="Control de Pagos" className={value !== 'Paciente' && 'hidden'}>
                                         <Tabs
                                             aria-label="Options"
                                             color="primary"
@@ -485,7 +485,7 @@ export default function Detail({ value }) {
                                             </Tab>
                                         </Tabs>
                                     </Tab>
-                                    <Tab key="odontogram" title="Odontograma">
+                                    <Tab key="odontogram" title="Odontograma" className={value !== 'Paciente' && 'hidden'}>
                                         <Card
                                             radius="sm"
                                             shadow="none"
