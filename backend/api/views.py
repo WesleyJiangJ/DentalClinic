@@ -97,6 +97,19 @@ class OdontogramTeethViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["id_odontogram", "tooth_number"]
 
+
 class OdontogramToothConditionViewSet(viewsets.ModelViewSet):
     queryset = OdontogramToothCondition.objects.all()
     serializer_class = OdontogramToothConditionSerializer
+
+
+class NotesViewSet(viewsets.ModelViewSet):
+    queryset = Notes.objects.all()
+    serializer_class = NotesSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = {
+        "content_type__app_label": ["exact"],
+        "content_type__model": ["exact"],
+        "object_id": ["exact"],
+        "id": ["exact"],
+    }
