@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 GENDER = [
     ("F", "Femenino"),
@@ -252,7 +254,6 @@ class Payment(models.Model):
 class PaymentControl(models.Model):
     id_payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
     paid = models.DecimalField(max_digits=10, decimal_places=2)
-    # note = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
@@ -281,3 +282,16 @@ class OdontogramTeeth(models.Model):
     surface = models.CharField(max_length=1, choices=SURFACE)
     observation = models.CharField(max_length=256, blank=True)
     condition = models.ForeignKey(OdontogramToothCondition, on_delete=models.CASCADE)
+
+
+class Notes(models.Model):
+    name = models.CharField(max_length=100)
+    content = models.TextField(max_length=256)
+    created_at = models.DateTimeField(auto_now_add=True)
+    # Fields for Polymorphic Relationship
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
+
+    def __str__(self):
+        return f"{self.name}"
