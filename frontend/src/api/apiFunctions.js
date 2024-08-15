@@ -44,6 +44,10 @@ const odontogramTeethAPI = axios.create({
     baseURL: 'http://localhost:8000/odontogramteeth/'
 })
 
+const odontogramToothConditionAPI = axios.create({
+    baseURL: 'http://localhost:8000/odontogramtoothcondition/'
+})
+
 // Patient
 export const getAllPatients = () => {
     return patientAPI.get('/')
@@ -187,4 +191,21 @@ export const postOdontogramTeeth = (data) => {
 
 export const odontogramSurfaceTeethDelete = (id) => {
     return odontogramTeethAPI.delete(`/${id}/`);
+}
+
+// Odontogram Tooth Condition
+export const getAllOdontogramToothCondition = () => {
+    return odontogramToothConditionAPI.get('/')
+}
+
+export const getSpecificOdontogramToothCondition = (id) => {
+    return odontogramToothConditionAPI.get(`/${id}`)
+}
+
+export const postOdontogramToothCondition = (data) => {
+    return odontogramToothConditionAPI.post('/', data)
+}
+
+export const putOdontogramToothCondition = (id, data) => {
+    return odontogramToothConditionAPI.put(`/${id}/`, data)
 }
