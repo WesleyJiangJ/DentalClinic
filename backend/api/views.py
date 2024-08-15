@@ -96,3 +96,7 @@ class OdontogramTeethViewSet(viewsets.ModelViewSet):
     serializer_class = OdontogramTeethSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["id_odontogram", "tooth_number"]
+
+class OdontogramToothConditionViewSet(viewsets.ModelViewSet):
+    queryset = OdontogramToothCondition.objects.all()
+    serializer_class = OdontogramToothConditionSerializer
