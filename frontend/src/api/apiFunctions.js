@@ -48,6 +48,10 @@ const odontogramToothConditionAPI = axios.create({
     baseURL: 'http://localhost:8000/odontogramtoothcondition/'
 })
 
+const notesAPI = axios.create({
+    baseURL: 'http://localhost:8000/notes/'
+})
+
 // Patient
 export const getAllPatients = () => {
     return patientAPI.get('/')
@@ -180,6 +184,10 @@ export const postOdontogram = (data) => {
     return odontogramAPI.post('/', data)
 }
 
+export const deleteOdontogram = (id) => {
+    return odontogramAPI.delete(`/${id}/`);
+}
+
 // Odontogram Tooth
 export const getOdontogramTeeth = (id, tooth) => {
     return odontogramTeethAPI.get(`?id_odontogram=${id}&tooth_number=${tooth}`)
@@ -208,4 +216,21 @@ export const postOdontogramToothCondition = (data) => {
 
 export const putOdontogramToothCondition = (id, data) => {
     return odontogramToothConditionAPI.put(`/${id}/`, data)
+}
+
+// Notes
+export const postNote = (data) => {
+    return notesAPI.post('/', data);
+}
+
+export const getNotes = (model, id) => {
+    return notesAPI.get(`?content_type__app_label=api&content_type__model=${model}&object_id=${id}`);
+}
+
+export const getNote = (model, id, noteID) => {
+    return notesAPI.get(`?content_type__app_label=api&content_type__model=${model}&object_id=${id}&id=${noteID}`);
+}
+
+export const deleteNote = (id) => {
+    return notesAPI.delete(`/${id}/`);
 }
