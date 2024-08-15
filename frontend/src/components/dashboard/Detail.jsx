@@ -1,13 +1,14 @@
 import React from "react";
 import { sweetAlert, sweetToast } from './Alerts'
-import { getSpecificPatient, putPatient, getSpecificPersonal, putPersonal, getAllAppointmentsByUser, getAllBudgetByPatient, getAllPaymentsByPatient, getOdontogram } from "../../api/apiFunctions";
+import { getSpecificPatient, putPatient, getSpecificPersonal, putPersonal, getAllAppointmentsByUser, getAllBudgetByPatient, getAllPaymentsByPatient, getOdontogram, getNotes } from "../../api/apiFunctions";
 import { useParams, useNavigate } from 'react-router-dom';
-import { Avatar, Button, Tabs, Tab, Card, CardHeader, CardBody, Textarea, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Badge, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, useDisclosure } from "@nextui-org/react";
-import { CheckCircleIcon, ChevronDownIcon, MinusCircleIcon, PencilSquareIcon } from "@heroicons/react/24/solid"
+import { Avatar, Button, Tabs, Tab, Card, CardHeader, CardBody, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Badge, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, useDisclosure } from "@nextui-org/react";
+import { CheckCircleIcon, MinusCircleIcon, PencilSquareIcon } from "@heroicons/react/24/solid"
 import UserModal from "./UserModal"
 import AppointmentCard from "./AppointmentCard";
 import BudPayCard from "./BudPayCard";
 import NewOdontogramModal from "./NewOdontogramModal";
+import Notes from "./Notes";
 
 export default function Detail({ value }) {
     const navigate = useNavigate();
@@ -18,6 +19,7 @@ export default function Detail({ value }) {
     const [budget, setBudget] = React.useState([]);
     const [payment, setPayment] = React.useState([]);
     const [odontogram, setOdontogram] = React.useState([]);
+    const [notes, setNotes] = React.useState([]);
     const { id } = useParams();
     const departamentosNicaragua = {
         BO: "Boaco",
@@ -66,12 +68,13 @@ export default function Detail({ value }) {
 
     const loadData = async () => {
         if (value === "Paciente") {
-            const [patientResponse, appointmentsResponse, budgetResponse, paymentsResponse, odontogramResponse] = await Promise.all([
+            const [patientResponse, appointmentsResponse, budgetResponse, paymentsResponse, odontogramResponse, notesResponse] = await Promise.all([
                 getSpecificPatient(id),
                 getAllAppointmentsByUser(id, ''),
                 getAllBudgetByPatient(id),
                 getAllPaymentsByPatient(id),
                 getOdontogram('', id),
+                getNotes('patient', id)
             ]);
 
             setUser(patientResponse.data);
@@ -79,10 +82,12 @@ export default function Detail({ value }) {
             setBudget(budgetResponse.data);
             setPayment(paymentsResponse.data);
             setOdontogram(odontogramResponse.data);
+            setNotes(notesResponse.data);
         }
         else if (value === "Personal") {
             setUser((await getSpecificPersonal(id)).data);
             setAppoitmentsPending((await getAllAppointmentsByUser('', id)).data);
+            setNotes((await getNotes('personal', id)).data);
         }
     }
 
@@ -234,7 +239,7 @@ export default function Detail({ value }) {
                             shadow="none"
                             radius="sm"
                             className="w-full md:w-1/2">
-                            <Notes />
+                            <Notes backgroundColor={'bg-card'} from={value === 'Paciente' ? 'PT' : 'PS'} loadData={loadData} notes={notes} />
                         </Card>
                     </div>
                     <div className="flex flex-col md:flex-row gap-2 h-[54%]">
@@ -491,7 +496,7 @@ export default function Detail({ value }) {
                                             shadow="none"
                                             className="h-full">
                                             <CardBody>
-                                                <Button color="primary" radius="sm" size="lg" onClick={onOdontogramModalOpen}>Nuevo</Button>
+                                                <Button color="primary" radius="sm" size="lg" onClick={onOdontogramModalOpen}>Crear Odontograma</Button>
                                                 <div className='flex flex-nowrap flex-col md:flex-wrap md:flex-row w-full h-full overflow-scroll'>
                                                     {odontogram
                                                         .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
@@ -575,52 +580,5 @@ function UserInformation({ firstLabel, secondLabel, thirdLabel, firstValue, seco
                 </div>
             </div>
         </>
-    );
-}
-
-function Notes() {
-    return (
-        <Card
-            radius="sm"
-            className="bg-card">
-            <CardHeader className="flex justify-between">
-                <p className="font-bold text-large">Notas</p>
-                <ChevronDownIcon className="w-5 h-5 cursor-pointer" />
-            </CardHeader>
-            <CardBody>
-                <Textarea
-                    size="md"
-                    radius="sm"
-                    minRows={7}
-                    className="w-full mb-2"
-                    placeholder="Escribe aquí . . . "
-                />
-                <Button
-                    className="mb-2"
-                    color="primary"
-                    size="lg"
-                    radius="sm">
-                    Guardar
-                </Button>
-                <Table
-                    hideHeader
-                    aria-label="Files Table"
-                    radius="sm"
-                    shadow="none"
-                // className="h-[9rem]"
-                >
-                    <TableHeader>
-                        <TableColumn>Name</TableColumn>
-                        <TableColumn>Actions</TableColumn>
-                    </TableHeader>
-                    <TableBody>
-                        <TableRow key="1">
-                            <TableCell>File 1</TableCell>
-                            <TableCell>Ver</TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
-            </CardBody>
-        </Card>
     );
 }
