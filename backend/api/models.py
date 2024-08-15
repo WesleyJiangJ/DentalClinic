@@ -33,37 +33,6 @@ MARITAL_STATUS = [
     ("V", "Viudo"),
 ]
 
-TEETH_STATUS = [
-    (0, "Diente sano"),
-    (1, "Caries"),
-    (2, "Restauración"),
-    (3, "Endodoncia"),
-    (4, "Extracción"),
-    (5, "Fractura"),
-    (6, "Absceso"),
-    (7, "Retracción gingival"),
-    (8, "Diente impactado"),
-    (9, "Supernumerario"),
-    (10, "Maloclusión"),
-    (11, "Movilidad"),
-    (12, "Erupción dental"),
-    (13, "Quiste dental"),
-    (14, "Manchas o decoloraciones"),
-    (15, "Hipoplasia del esmalte"),
-    (16, "Sensibilidad dental"),
-    (17, "Desgaste dental"),
-    (18, "Erosión dental"),
-    (19, "Recesión gingival"),
-    (20, "Hipertrofia gingival"),
-    (21, "Lesiones mucosas orales"),
-    (22, "Bruxismo"),
-    (23, "Trastornos de la ATM"),
-    (24, "Cierre de diastemas"),
-    (25, "Anomalías dentales"),
-    (26, "Restos radiculares"),
-    (27, "Amelogénesis imperfecta"),
-]
-
 SURFACE = [
     ("F", "Facial"),
     ("D", "Distral"),
@@ -298,9 +267,17 @@ class Odontogram(models.Model):
         return self.name
 
 
+class OdontogramToothCondition(models.Model):
+    condition_name = models.CharField(max_length=20)
+    color = models.CharField(max_length=7)
+
+    def __str__(self):
+        return self.condition_name
+
+
 class OdontogramTeeth(models.Model):
     id_odontogram = models.ForeignKey(Odontogram, on_delete=models.CASCADE)
     tooth_number = models.PositiveSmallIntegerField()
     surface = models.CharField(max_length=1, choices=SURFACE)
     observation = models.CharField(max_length=256, blank=True)
-    status = models.CharField(max_length=2, choices=TEETH_STATUS)
+    condition = models.ForeignKey(OdontogramToothCondition, on_delete=models.CASCADE)
