@@ -183,7 +183,7 @@ class User(AbstractBaseUser):
 
 
 # Medical History
-class Medical_History(models.Model):
+class MedicalHistory(models.Model):
     id_patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     allergies = models.BooleanField(default=False)
     pathological = models.BooleanField(default=False)
