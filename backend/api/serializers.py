@@ -27,29 +27,10 @@ class PersonalSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class NewPatientSerializer(serializers.ModelSerializer):
-    data = PatientSerializer(write_only=True)
-
+class MedicalHistorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = Medical_History
+        model = MedicalHistory
         fields = "__all__"
-        extra_kwargs = {
-            "id_patient": {"read_only": True},
-        }
-
-    def create(self, validated_data):
-        data = validated_data.pop("data")
-        patient = Patient.objects.create(**data)
-        medical_history = Medical_History.objects.create(
-            id_patient=patient, **validated_data
-        )
-        return medical_history
-
-    def to_representation(self, instance):
-        representation = super(NewPatientSerializer, self).to_representation(instance)
-        patient_representation = PatientSerializer(instance.id_patient).data
-        representation["data"] = patient_representation
-        return representation
 
 
 class AppointmentSerializer(serializers.ModelSerializer):
