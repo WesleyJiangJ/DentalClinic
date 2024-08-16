@@ -3,7 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form"
 import { sweetToast } from './Alerts'
 import { postPatient, putPatient, getSpecificPatient, postPersonal, putPersonal, getSpecificPersonal } from "../../api/apiFunctions";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Select, SelectItem } from "@nextui-org/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Select, SelectItem, DatePicker } from "@nextui-org/react";
+import { today, parseDate } from "@internationalized/date";
 
 export default function UserModal({ isOpen, onOpenChange, updateTable, updateData, value }) {
     const param = useParams();
@@ -14,7 +15,7 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
             middle_name: '',
             first_lastname: '',
             second_lastname: '',
-            birthdate: '',
+            birthdate: today(),
             gender: '',
             email: '',
             phone_number: '',
@@ -69,11 +70,11 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
             if (param.id) {
                 if (value === "Paciente") {
                     const res = (await getSpecificPatient(param.id)).data;
-                    reset({ ...res });
+                    reset({ ...res, birthdate: parseDate((res.birthdate)) });
                 }
                 else if (value === "Personal") {
                     const res = (await getSpecificPersonal(param.id)).data;
-                    reset({ ...res });
+                    reset({ ...res, birthdate: parseDate((res.birthdate)) });
                 }
             }
         }
@@ -82,6 +83,7 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
 
     const onSubmit = async (data) => {
         try {
+            data.birthdate = data.birthdate.year + '-' + String(data.birthdate.month).padStart(2, '0') + '-' + String(data.birthdate.day).padStart(2, '0')
             if (param.id) {
                 try {
                     if (value === "Paciente") {
@@ -210,10 +212,12 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
                                         control={control}
                                         rules={{ required: true }}
                                         render={({ field }) => (
-                                            <Input
+                                            <DatePicker
                                                 {...field}
-                                                label="Fecha de Nacimiento"
+                                                label='Fecha de Nacimiento'
                                                 variant="underlined"
+                                                showMonthAndYearPickers
+                                                maxValue={today()}
                                                 isInvalid={errors.birthdate ? true : false}
                                             />
                                         )}
