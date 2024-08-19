@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form"
-import { sweetToast } from './Alerts'
+import { sweetAlert, sweetToast } from './Alerts'
 import { postPatient, putPatient, getSpecificPatient, postPersonal, putPersonal, getSpecificPersonal } from "../../api/apiFunctions";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Select, SelectItem, DatePicker } from "@nextui-org/react";
 import { today, parseDate } from "@internationalized/date";
@@ -28,6 +28,7 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
             role: ''
         }
     });
+    const [prevData, setPrevData] = React.useState({});
     const genders = [
         { label: "Femenino", value: "F" },
         { label: "Masculino", value: "M" },
@@ -71,10 +72,12 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
                 if (value === "Paciente") {
                     const res = (await getSpecificPatient(param.id)).data;
                     reset({ ...res, birthdate: parseDate((res.birthdate)) });
+                    setPrevData({ ...res, birthdate: parseDate((res.birthdate)).toString() });
                 }
                 else if (value === "Personal") {
                     const res = (await getSpecificPersonal(param.id)).data;
                     reset({ ...res, birthdate: parseDate((res.birthdate)) });
+                    setPrevData({ ...res, birthdate: parseDate((res.birthdate)).toString() });
                 }
             }
         }
@@ -86,15 +89,61 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
             data.birthdate = data.birthdate.year + '-' + String(data.birthdate.month).padStart(2, '0') + '-' + String(data.birthdate.day).padStart(2, '0')
             if (param.id) {
                 try {
-                    if (value === "Paciente") {
-                        await putPatient(param.id, data);
+                    let changes = new Set();
+                    for (const key in prevData) {
+                        if (prevData[key] !== data[key]) {
+                            if (key === "first_name" || key === "middle_name" || key === "first_lastname" || key === "second_lastname") {
+                                changes.add("nombre");
+                            }
+                            else if (key === "birthdate") {
+                                changes.add("fecha de nacimiento");
+                            }
+                            else if (key === 'gender') {
+                                changes.add("género");
+                            }
+                            else if (key === 'email') {
+                                changes.add("correo");
+                            }
+                            else if (key === 'phone_number') {
+                                changes.add("celular");
+                            }
+                            else if (key === 'origin') {
+                                changes.add("departamento");
+                            }
+                            else if (key === 'address') {
+                                changes.add("dirección");
+                            }
+                            else if (key === 'marital_status') {
+                                changes.add("estado civil");
+                            }
+                            else if (key === 'emergency_contact') {
+                                changes.add("contacto de emergencia");
+                            }
+                            else if (key === 'emergency_number') {
+                                changes.add("número de contacto de emergencia");
+                            }
+                        }
                     }
-                    else if (value === "Personal") {
-                        await putPersonal(param.id, data);
+                    if (changes.size > 0) {
+                        await sweetAlert("¿Confirmar cambios?", `¿Deseas modificar ${Array.from(changes).join(', ')}?`, "warning", "success", "Datos Actualizados");
+                        if (value === "Paciente") {
+                            await putPatient(param.id, data);
+                            updateData();
+                            onOpenChange(false);
+                            reset();
+                        }
+                        else if (value === "Personal") {
+                            await putPersonal(param.id, data);
+                            updateData();
+                            onOpenChange(false);
+                            reset();
+                        }
                     }
-                    updateData();
-                    onOpenChange(false);
-                    sweetToast("success", "Actualizado");
+                    else {
+                        sweetToast('warning', 'No se realizaron modificaciones');
+                        onOpenChange(false);
+                        reset();
+                    }
                 } catch (error) {
                     console.log(error);
                 }
@@ -131,6 +180,7 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
                     !param.id && reset();
                 }}
                 placement="top-center"
+                isDismissable={false}
                 size="5xl"
                 radius="sm"
                 backdrop="blur">
@@ -373,6 +423,7 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
                                                 name="emergency_number"
                                                 control={control}
                                                 rules={{
+                                                    required: true,
                                                     minLength: 8,
                                                     maxLength: 8,
                                                     pattern: { value: /^\d{8}$/ }
