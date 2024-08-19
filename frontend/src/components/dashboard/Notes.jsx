@@ -19,7 +19,6 @@ export default function Notes({ backgroundColor, from, loadData, notes }) {
     });
 
     const onSubmit = async (data) => {
-        console.log(data)
         sweetToast('success', 'Nota guardada');
         await postNote(data)
             .then(() => {
