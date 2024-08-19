@@ -17,7 +17,6 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
             reason: '',
             observation: '',
             cancellation_reason: '',
-            status: 1,
         }
     });
     const [patientData, setPatientData] = React.useState([]);
@@ -49,7 +48,6 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
                 reason: res.data.reason,
                 observation: res.data.observation,
                 cancellation_reason: '',
-                status: res.data.status,
             });
             setPrevData({
                 ...prevData,
@@ -168,7 +166,6 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
             reason: '',
             observation: '',
             cancellation_reason: '',
-            status: 1,
         });
         setCancellation(false);
         if (param.id) {
