@@ -1,6 +1,6 @@
 import React from "react";
 import { sweetAlert, sweetToast } from './Alerts'
-import { getSpecificPatient, putPatient, getSpecificPersonal, putPersonal, getAllAppointmentsByUser, getAllBudgetByPatient, getAllPaymentsByPatient, getOdontogram, getNotes } from "../../api/apiFunctions";
+import { getSpecificPatient, putPatient, getSpecificPersonal, putPersonal, getAllAppointmentsByUser, getAllBudgetByPatient, getAllPaymentsByPatient, getOdontogram, getNotes, getMedicalHistory } from "../../api/apiFunctions";
 import { useParams, useNavigate } from 'react-router-dom';
 import { Avatar, Button, Tabs, Tab, Card, CardHeader, CardBody, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Badge, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, useDisclosure } from "@nextui-org/react";
 import { CheckCircleIcon, MinusCircleIcon, PencilSquareIcon } from "@heroicons/react/24/solid"
@@ -9,17 +9,20 @@ import AppointmentCard from "./AppointmentCard";
 import BudPayCard from "./BudPayCard";
 import NewOdontogramModal from "./NewOdontogramModal";
 import Notes from "./Notes";
+import MedicalHistory from "./MedicalHistory";
 
 export default function Detail({ value }) {
     const navigate = useNavigate();
     const { isOpen: isUserModalOpen, onOpen: onUserModalOpen, onOpenChange: onUserModalOpenChange } = useDisclosure();
     const { isOpen: isOdontogramModalOpen, onOpen: onOdontogramModalOpen, onOpenChange: onOdontogramModalOpenChange } = useDisclosure();
+    const { isOpen: isMedicalModalOpen, onOpen: onMedicalModalOpen, onOpenChange: onMedicalModalOpenChange } = useDisclosure();
     const [user, setUser] = React.useState([]);
     const [appoitmentsPending, setAppoitmentsPending] = React.useState([]);
     const [budget, setBudget] = React.useState([]);
     const [payment, setPayment] = React.useState([]);
     const [odontogram, setOdontogram] = React.useState([]);
     const [notes, setNotes] = React.useState([]);
+    const [medicalHistory, setMedicalHistory] = React.useState([]);
     const { id } = useParams();
     const departamentosNicaragua = {
         BO: "Boaco",
@@ -68,13 +71,14 @@ export default function Detail({ value }) {
 
     const loadData = async () => {
         if (value === "Paciente") {
-            const [patientResponse, appointmentsResponse, budgetResponse, paymentsResponse, odontogramResponse, notesResponse] = await Promise.all([
+            const [patientResponse, appointmentsResponse, budgetResponse, paymentsResponse, odontogramResponse, notesResponse, medicalHistoryResponse] = await Promise.all([
                 getSpecificPatient(id),
                 getAllAppointmentsByUser(id, ''),
                 getAllBudgetByPatient(id),
                 getAllPaymentsByPatient(id),
                 getOdontogram('', id),
-                getNotes('patient', id)
+                getNotes('patient', id),
+                getMedicalHistory(id)
             ]);
 
             setUser(patientResponse.data);
@@ -83,6 +87,7 @@ export default function Detail({ value }) {
             setPayment(paymentsResponse.data);
             setOdontogram(odontogramResponse.data);
             setNotes(notesResponse.data);
+            setMedicalHistory(medicalHistoryResponse.data);
         }
         else if (value === "Personal") {
             setUser((await getSpecificPersonal(id)).data);
@@ -519,6 +524,34 @@ export default function Detail({ value }) {
                                             </CardBody>
                                         </Card>
                                     </Tab>
+                                    <Tab key="medicalHistory" title="Historial Médico" className={value !== 'Paciente' && 'hidden'}>
+                                        <Card
+                                            radius="sm"
+                                            shadow="none"
+                                            className="h-full">
+                                            <CardBody>
+                                                <Button color="primary" radius="sm" size="lg" className={medicalHistory.length !== 0 && 'hidden'} onClick={onMedicalModalOpen}>Crear Historial Médico</Button>
+                                                <div className='flex flex-nowrap flex-col md:flex-wrap md:flex-row w-full h-full overflow-scroll'>
+                                                    {medicalHistory
+                                                        .map((medicalHistory) => (
+                                                            <div className="cursor-pointer w-full" key={medicalHistory.id} onClick={onMedicalModalOpen}>
+                                                                <BudPayCard
+                                                                    name={"Ver Historial Médico"}
+                                                                />
+                                                            </div>
+                                                        ))
+                                                    }
+                                                    {medicalHistory.length === 0 && (
+                                                        <Card radius="sm" shadow="none" fullWidth>
+                                                            <CardBody className="flex items-center justify-center h-full">
+                                                                No se ha creado el historial médico
+                                                            </CardBody>
+                                                        </Card>
+                                                    )}
+                                                </div>
+                                            </CardBody>
+                                        </Card>
+                                    </Tab>
                                 </Tabs>
                             </CardBody>
                         </Card>
@@ -558,6 +591,7 @@ export default function Detail({ value }) {
             </div>
             <UserModal isOpen={isUserModalOpen} onOpenChange={onUserModalOpenChange} updateData={loadData} value={value} />
             <NewOdontogramModal isOpen={isOdontogramModalOpen} onOpenChange={onOdontogramModalOpenChange} id_patient={id} navigate={navigate} />
+            <MedicalHistory isOpen={isMedicalModalOpen} onOpenChange={onMedicalModalOpenChange} id_patient={id} reloadData={loadData}/>
         </>
     );
 }
