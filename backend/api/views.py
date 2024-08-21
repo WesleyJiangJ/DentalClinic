@@ -39,7 +39,8 @@ class PersonalViewSet(viewsets.ModelViewSet):
 class MedicalHistoryViewSet(viewsets.ModelViewSet):
     queryset = MedicalHistory.objects.all()
     serializer_class = MedicalHistorySerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["id_patient"]
 
 
 class AppointmentViewSet(viewsets.ModelViewSet):
