@@ -258,9 +258,7 @@ class PaymentControl(models.Model):
 
 
 class Odontogram(models.Model):
-    id_patient = models.ForeignKey(
-        Patient, on_delete=models.CASCADE, limit_choices_to={"status": True}
-    )
+    id_patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
 
