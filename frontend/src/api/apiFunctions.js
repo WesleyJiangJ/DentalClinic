@@ -4,8 +4,8 @@ const patientAPI = axios.create({
     baseURL: 'http://localhost:8000/patient/'
 })
 
-const addPatientAPI = axios.create({
-    baseURL: 'http://localhost:8000/new_patient/'
+const medicalHistoryAPI = axios.create({
+    baseURL: 'http://localhost:8000/medicalhistory/'
 })
 
 const personalAPI = axios.create({
@@ -66,7 +66,20 @@ export const putPatient = (id, data) => {
 }
 
 export const postPatient = (data) => {
-    return addPatientAPI.post('/', data)
+    return patientAPI.post('/', data)
+}
+
+// Medical History
+export const getMedicalHistory = (id) => {
+    return medicalHistoryAPI.get(`?id_patient=${id}`)
+}
+
+export const postMedicalHistory = (data) => {
+    return medicalHistoryAPI.post('/', data)
+}
+
+export const putMedicalHistory = (id, data) => {
+    return medicalHistoryAPI.put(`/${id}/`, data)
 }
 
 // Personal
