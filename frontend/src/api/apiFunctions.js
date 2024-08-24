@@ -188,6 +188,10 @@ export const postPaymentControl = (data) => {
     return paymentControlAPI.post('/', data)
 }
 
+export const getPaymentControlFiltered = (startDate, endDate) => {
+    return paymentControlAPI.get(`?start_date=${startDate}&end_date=${endDate}`)
+}
+
 // Odontogram
 export const getOdontogram = (id_odontogram, id_patient) => {
     return odontogramAPI.get(`?id=${id_odontogram}&id_patient=${id_patient}`)
