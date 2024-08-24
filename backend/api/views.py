@@ -1,9 +1,8 @@
 from django.contrib.auth.models import Group, User
+import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions, viewsets
-
 from api.serializers import *
-
 from api.models import *
 
 
@@ -80,9 +79,24 @@ class PaymentViewSet(viewsets.ModelViewSet):
     filterset_fields = ["id_budget__id_patient"]
 
 
+class PaymentControlFilter(django_filters.FilterSet):
+    start_date = django_filters.DateFilter(
+        field_name="created_at", lookup_expr="gte", label="Start Date"
+    )
+    end_date = django_filters.DateFilter(
+        field_name="created_at", lookup_expr="lte", label="End Date"
+    )
+
+    class Meta:
+        model = PaymentControl
+        fields = ["start_date", "end_date"]
+
+
 class PaymentControlViewSet(viewsets.ModelViewSet):
     queryset = PaymentControl.objects.all()
     serializer_class = PaymentControlSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = PaymentControlFilter
 
 
 class OdontogramViewSet(viewsets.ModelViewSet):
