@@ -18,8 +18,10 @@ export default function Settings() {
     }, []);
 
     const loadTreatments = async () => {
-        setTreatment((await getAllTreatment()).data);
-        setToothCondition((await getAllOdontogramToothCondition()).data);
+        const treatment = (await getAllTreatment()).data;
+        const tooth = (await getAllOdontogramToothCondition()).data;
+        setTreatment(treatment);
+        setToothCondition(tooth);
     }
 
     const modifyURL = () => {
