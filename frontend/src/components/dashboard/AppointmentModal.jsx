@@ -58,8 +58,8 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
             setMinValueDate(parseDateTime(nowConversion.slice(0, -1)))
         }
         else {
-            setPatientData((await getAllPatients()).data);
-            setPersonalData((await getAllPersonal()).data.filter(personal => personal.role === 2));
+            setPatientData((await getAllPatients()).data.filter(patient => patient.status === true));
+            setPersonalData((await getAllPersonal()).data.filter(personal => personal.role === 2 && personal.status === true));
         }
     }
 
@@ -300,6 +300,7 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
                                                     placeholder="Escriba aquí . . ."
                                                     size="lg"
                                                     radius="sm"
+                                                    maxLength={param.slug === "edit" || !param.slug ? 64 : 128}
                                                     isInvalid={(!param.slug ? errors.reason : errors.observation) ? true : false}
                                                     readOnly={cancellation ? true : false}
                                                 />
@@ -317,6 +318,7 @@ export default function AppointmentModal({ isOpen, onOpenChange, reloadData, par
                                                         placeholder="Escriba aquí . . ."
                                                         size="lg"
                                                         radius="sm"
+                                                        maxLength={128}
                                                         isInvalid={getValues('cancellation_reason').length === 0 ? true : false}
                                                     />
                                                 }
