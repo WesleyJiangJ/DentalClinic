@@ -240,6 +240,7 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable,
                                                             placeholder="0.00"
                                                             startContent={'C$'}
                                                             value={field.value}
+                                                            maxLength={10}
                                                             isInvalid={errors.paid ? true : false}
                                                         />
                                                     )}
