@@ -97,6 +97,7 @@ export default function Notes({ backgroundColor, from, loadData, notes }) {
                                 {...field}
                                 label='Nombre'
                                 variant="underlined"
+                                maxLength={64}
                                 isInvalid={errors.name ? true : false}
                                 isReadOnly={noteID.length > 0}
                             />
@@ -142,9 +143,9 @@ export default function Notes({ backgroundColor, from, loadData, notes }) {
                             <TableRow key={note.id} className="cursor-pointer">
                                 {() =>
                                     <TableCell>
-                                        <div className="flex flex-col truncate max-w-sm md:max-w-md">
-                                            <p className="text-bold text-sm capitalize">{note.name}</p>
-                                            <p className="text-bold text-sm capitalize text-default-400">{note.content}</p>
+                                        <div className="flex flex-col">
+                                            <p className="text-bold text-sm capitalize truncate max-w-xs">{note.name}</p>
+                                            <p className="text-bold text-sm capitalize text-default-400 truncate max-w-xs">{note.content}</p>
                                         </div>
                                     </TableCell>
                                 }
