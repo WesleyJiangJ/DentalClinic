@@ -32,7 +32,7 @@ export default function Board() {
         setDoctor((((await getAllPersonal()).data).filter(item => item.status === true && item.role === 2).length));
         setTodayAppointment((((await getAllAppointments()).data).filter(item => item.status === 1 && new Date(item.datetime).toDateString() === new Date().toDateString()).length));
         setAppointment((((await getAllAppointments()).data).filter(item => item.status === 1).length));
-        const appointment = (await getAllAppointments()).data;
+        const appointment = ((await getAllAppointments()).data).filter((item) => item.status === 2 || item.status === 3);
         const paymentData = ((await getPaymentControlFiltered(startDate, endDate)).data);
         let total = 0;
         paymentData.map((item) => {
