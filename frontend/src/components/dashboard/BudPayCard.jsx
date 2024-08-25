@@ -11,8 +11,8 @@ export default function BudPayCard({ name, description, total, treatmentQuantity
                     className='bg-primary text-white'>
                     <CardHeader>
                         <div className="flex flex-col">
-                            <h1 className='text-xl font-bold'>{name}</h1>
-                            <p className='text-md font-thin'>{description}</p>
+                            <h1 className='text-xl font-bold truncate max-w-xs'>{name}</h1>
+                            <p className='text-md font-thin truncate max-w-xs'>{description}</p>
                         </div>
                     </CardHeader>
                     {total !== undefined &&
