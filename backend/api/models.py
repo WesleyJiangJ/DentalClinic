@@ -204,14 +204,14 @@ class Appointment(models.Model):
     id_personal = models.ForeignKey(Personal, on_delete=models.CASCADE)
     datetime = models.DateTimeField()
     status = models.CharField(max_length=1, default=1, choices=APPOINTMENTSTATUS)
-    reason = models.TextField(blank=False)
-    observation = models.TextField(blank=True)
+    reason = models.TextField(blank=False, max_length=64)
+    observation = models.TextField(blank=True, max_length=128)
 
 
 # Budget & Payments
 class Treatment(models.Model):
-    name = models.CharField(max_length=60)
-    description = models.CharField(max_length=250)
+    name = models.CharField(max_length=64)
+    description = models.CharField(max_length=128)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -222,7 +222,7 @@ class Treatment(models.Model):
 
 class Budget(models.Model):
     id_patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=64)
     description = models.CharField(max_length=256)
     total = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.BooleanField(default=True)
@@ -259,7 +259,7 @@ class PaymentControl(models.Model):
 
 class Odontogram(models.Model):
     id_patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=64)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -267,7 +267,7 @@ class Odontogram(models.Model):
 
 
 class OdontogramToothCondition(models.Model):
-    condition_name = models.CharField(max_length=20)
+    condition_name = models.CharField(max_length=64)
     color = models.CharField(max_length=7)
 
     def __str__(self):
@@ -283,7 +283,7 @@ class OdontogramTeeth(models.Model):
 
 
 class Notes(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=64)
     content = models.TextField(max_length=256)
     created_at = models.DateTimeField(auto_now_add=True)
     # Fields for Polymorphic Relationship
