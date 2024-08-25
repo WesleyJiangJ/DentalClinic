@@ -204,6 +204,7 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
                                                 {...field}
                                                 label="Primer Nombre"
                                                 variant="underlined"
+                                                maxLength={30}
                                                 isInvalid={errors.first_name ? true : false}
                                             />
                                         )}
@@ -217,6 +218,7 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
                                                 {...field}
                                                 label="Segundo Nombre"
                                                 variant="underlined"
+                                                maxLength={30}
                                                 isInvalid={errors.middle_name ? true : false}
                                             />
                                         )}
@@ -235,6 +237,7 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
                                                 {...field}
                                                 label="Primer Apellido"
                                                 variant="underlined"
+                                                maxLength={30}
                                                 isInvalid={errors.first_lastname ? true : false}
                                             />
                                         )}
@@ -251,6 +254,7 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
                                                 {...field}
                                                 label="Segundo Apellido"
                                                 variant="underlined"
+                                                maxLength={30}
                                                 isInvalid={errors.second_lastname ? true : false}
                                             />
                                         )}
@@ -308,6 +312,7 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
                                                 label="Correo"
                                                 variant="underlined"
                                                 type="email"
+                                                maxLength={255}
                                                 isInvalid={errors.email ? true : false}
                                             />
                                         )}
@@ -361,6 +366,7 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
                                                 {...field}
                                                 label="Dirección"
                                                 variant="underlined"
+                                                maxLength={255}
                                                 isInvalid={errors.address ? true : false}
                                             />
                                         )}
@@ -415,6 +421,7 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
                                                         {...field}
                                                         label="Nombre de Contacto de Emergencia"
                                                         variant="underlined"
+                                                        maxLength={60}
                                                         isInvalid={errors.emergency_contact ? true : false}
                                                     />
                                                 )}
