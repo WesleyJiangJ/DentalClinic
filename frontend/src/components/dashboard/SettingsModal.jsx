@@ -102,8 +102,8 @@ export default function SettingsModal({ isOpen, onOpenChange, loadTreatments, pa
                     }
                 }
                 if (change.length > 0) {
-                    await displayValues === 'T' ? putTreatment(param.id, data) : putOdontogramToothCondition(param.id, data);
                     await sweetAlert('¿Estás seguro?', `¿Deseas modificar ${change.join(', ')}?`, 'warning', 'success', 'Actualizado');
+                    displayValues === 'T' ? await putTreatment(param.id, data) : await putOdontogramToothCondition(param.id, data);
                 }
                 else {
                     sweetToast('warning', 'No se realizaron modificaciones');
@@ -164,6 +164,7 @@ export default function SettingsModal({ isOpen, onOpenChange, loadTreatments, pa
                                             label={displayValues === 'T' ? "Nombre" : "Nombre de la condición"}
                                             variant="underlined"
                                             autoFocus
+                                            maxLength={64}
                                             isInvalid={displayValues === 'T' ? (errors.name ? true : false) : (errors.condition_name ? true : false)}
                                         />
                                     )}
@@ -177,6 +178,7 @@ export default function SettingsModal({ isOpen, onOpenChange, loadTreatments, pa
                                             {...field}
                                             label={displayValues === 'T' ? "Descripción" : "Color"}
                                             variant="underlined"
+                                            maxLength={displayValues === 'T' ? 128 : 7}
                                             isInvalid={displayValues === 'T' ? (errors.description ? true : false) : (errors.color ? true : false)}
                                         />
                                     )}
@@ -185,16 +187,19 @@ export default function SettingsModal({ isOpen, onOpenChange, loadTreatments, pa
                                     <Controller
                                         name="price"
                                         control={control}
-                                        rules={{ required: true }}
+                                        rules={{
+                                            required: true,
+                                            pattern: { value: /^\d*\.?\d*$/ }
+                                        }}
                                         render={({ field }) => (
                                             <Input
                                                 {...field}
-                                                type="number"
                                                 placeholder="0.00"
                                                 errorMessage={" "}
                                                 label="Precio"
                                                 variant="underlined"
                                                 startContent={'C$'}
+                                                maxLength={10}
                                                 isInvalid={errors.price ? true : false}
                                             />
                                         )}
