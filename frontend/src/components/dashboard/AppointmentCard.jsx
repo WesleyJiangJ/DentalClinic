@@ -29,8 +29,8 @@ export default function AppointmentCard({ id, reason, patient, personal, date, o
                     radius='sm'>
                     <CardHeader>
                         <div className="flex flex-col">
-                            <h1 className='text-xl font-bold'>{reason}</h1>
-                            <p className='text-md font-thin'>{observation}</p>
+                            <h1 className='text-xl font-bold truncate max-w-xs'>{reason}</h1>
+                            <p className='text-md font-thin truncate max-w-xs'>{observation}</p>
                         </div>
                     </CardHeader>
                     <CardBody>
