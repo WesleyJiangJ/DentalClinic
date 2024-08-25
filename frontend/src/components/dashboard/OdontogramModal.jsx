@@ -216,6 +216,7 @@ export default function OdontogramModal({ isOpen, onOpenChange, param, tooth, ha
                                                                     size="md"
                                                                     radius="sm"
                                                                     minRows={7}
+                                                                    maxLength={256}
                                                                     className="w-full mb-2"
                                                                     placeholder="Escribe aquí . . . "
                                                                 />
