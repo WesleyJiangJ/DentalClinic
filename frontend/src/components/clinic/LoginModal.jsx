@@ -15,8 +15,7 @@ export default function LoginModal({ isOpen, onOpenChange }) {
                 onOpenChange={onOpenChange}
                 placement="top-center"
                 size="2xl"
-                radius="sm"
-            >
+                radius="sm">
                 <ModalContent>
                     {(onClose) => (
                         <>
@@ -61,7 +60,7 @@ export default function LoginModal({ isOpen, onOpenChange }) {
                                 <div className="hidden lg:inline">
                                     <img
                                         className="w-full"
-                                        src="https://picsum.photos/300/400"
+                                        src="../images/Login.webp"
                                         alt="Login Image" />
                                 </div>
                             </div>
