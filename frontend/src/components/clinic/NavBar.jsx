@@ -5,7 +5,7 @@ import LoginModal from "./LoginModal";
 
 export default function NavBar() {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-    const { isOpen, onOpen, onOpenChange } = useDisclosure(); // Modal
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const menuItems = [
         "Inicio",
@@ -18,9 +18,9 @@ export default function NavBar() {
     return (
         <Navbar
             isBordered
+            isBlurred={false}
             isMenuOpen={isMenuOpen}
-            onMenuOpenChange={setIsMenuOpen}
-        >
+            onMenuOpenChange={setIsMenuOpen}>
             <NavbarContent className="sm:hidden" justify="start">
                 <NavbarMenuToggle aria-label={isMenuOpen ? "Close menu" : "Open menu"} />
             </NavbarContent>
@@ -76,7 +76,6 @@ export default function NavBar() {
                     </Link>
                 </NavbarItem>
             </NavbarContent>
-
             <NavbarContent justify="end">
                 <NavbarItem>
                     <Button
@@ -87,21 +86,16 @@ export default function NavBar() {
                     </Button>
                 </NavbarItem>
             </NavbarContent>
-
             <NavbarMenu>
                 {menuItems.map((item, index) => (
                     <NavbarMenuItem key={`${item}-${index}`}>
                         <Link
                             className="w-full cursor-pointer"
-                            // color={
-                            //     index === 2 ? "warning" : index === menuItems.length - 1 ? "danger" : "foreground"
-                            // }
                             color="foreground"
                             to={item}
                             smooth={true}
                             duration={500}
-                            size="lg"
-                        >
+                            size="lg">
                             {item}
                         </Link>
                     </NavbarMenuItem>
