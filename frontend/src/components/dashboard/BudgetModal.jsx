@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useForm, useFieldArray, Controller } from "react-hook-form"
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Select, SelectItem, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Textarea } from "@nextui-org/react";
 import { TrashIcon } from "@heroicons/react/24/solid";
-import { getAllPatients, getAllPersonal, getAllTreatment, getSpecificBudget, postBudget, postPayment, putBudget } from "../../api/apiFunctions";
+import { getAllPatients, getAllPersonal, getAllTreatment, getSpecificBudget, postBudget, postPayment, patchBudget } from "../../api/apiFunctions";
 import { sweetToast, sweetAlert } from "./Alerts";
 
 export default function BudgetModal({ isOpen, onOpenChange, param, updateTable, modifyURL }) {
@@ -13,7 +13,7 @@ export default function BudgetModal({ isOpen, onOpenChange, param, updateTable, 
     const [personalData, setPersonalData] = React.useState([]);
     const [treatmentData, setTreatmentData] = React.useState([]);
     const [total, setTotal] = React.useState(0);
-    const { control, handleSubmit, formState: { errors }, reset, getValues, setValue } = useForm({
+    const { control, handleSubmit, formState: { errors }, reset, getValues, setValue, setError, clearErrors } = useForm({
         defaultValues: {
             id_patient: '',
             name: '',
@@ -41,7 +41,7 @@ export default function BudgetModal({ isOpen, onOpenChange, param, updateTable, 
     const onSubmit = async (data) => {
         try {
             if (param.id) {
-                await putBudget(param.id, data);
+                await patchBudget(param.id, data);
                 sweetToast('success', `${data.name.charAt(0).toUpperCase() + data.name.slice(1)} fue modificado`);
             }
             else {
@@ -78,6 +78,17 @@ export default function BudgetModal({ isOpen, onOpenChange, param, updateTable, 
             setValue('total', totalCost);
             setTotal(totalCost);
         }
+        getValues().detailFields.forEach((item, index) => {
+            if (item['personal_data']?.status === false) {
+                // If the doctor is not available, set an empty value to their Select value
+                setValue(`detailFields[${index}].id_personal`, '');
+                // Set the error to that field
+                setError(`detailFields[${index}].id_personal`, {
+                    type: 'manual',
+                    message: 'El médico seleccionado ha sido dado de baja',
+                });
+            }
+        });
     }
 
     const handleTreatmentAPI = (index, value) => {
@@ -129,9 +140,7 @@ export default function BudgetModal({ isOpen, onOpenChange, param, updateTable, 
 
     const cancelBudget = async () => {
         await sweetAlert("¿Deseas eliminar el presupuesto?", "", "warning", "success", "El presupuesto fue eliminado");
-        const defaultValues = getValues();
-        defaultValues.status = false;
-        await putBudget(param.id, defaultValues)
+        await patchBudget(param.id, { status: false })
             .then(() => {
                 updateTable();
                 restore();
@@ -142,27 +151,29 @@ export default function BudgetModal({ isOpen, onOpenChange, param, updateTable, 
     }
 
     const createPaymentControl = async () => {
-        await sweetAlert("¿Deseas crear el control de pago?", "Al continuar, no podrás realizar cambios", "warning", "success", "El control de pagos ha sido creado");
-        const data = {
-            id_budget: param.id,
-        }
-        const defaultValues = getValues();
-        defaultValues.status = false;
-        await postPayment(data)
-            .then(async () => {
-                await putBudget(param.id, defaultValues)
-                    .then(() => {
-                        updateTable();
-                        restore();
+        getValues(`detailFields`).forEach(async (item) => {
+            if (item['personal_data'].status) {
+                await sweetAlert("¿Deseas crear el control de pago?", "Al continuar, no podrás realizar cambios", "warning", "success", "El control de pagos ha sido creado");
+                const data = {
+                    id_budget: param.id,
+                }
+                await postPayment(data)
+                    .then(async () => {
+                        await patchBudget(param.id, { status: false })
+                            .then(() => {
+                                updateTable();
+                                restore();
+                                navigate('/dashboard/payment');
+                            })
+                            .catch((error) => {
+                                console.error('Error: ', error);
+                            })
                     })
                     .catch((error) => {
                         console.error('Error: ', error);
                     })
-                navigate('/dashboard/payment');
-            })
-            .catch((error) => {
-                console.error('Error: ', error);
-            })
+            }
+        })
     }
 
     const restore = () => {
@@ -243,6 +254,7 @@ export default function BudgetModal({ isOpen, onOpenChange, param, updateTable, 
                                                         {...field}
                                                         label="Nombre del Presupuesto"
                                                         variant="underlined"
+                                                        maxLength={64}
                                                         isInvalid={errors.name ? true : false}
                                                     />
                                                 )}
@@ -259,6 +271,7 @@ export default function BudgetModal({ isOpen, onOpenChange, param, updateTable, 
                                                         variant="underlined"
                                                         minRows={2}
                                                         maxRows={4}
+                                                        maxLength={256}
                                                         isInvalid={errors.description ? true : false}
                                                     />
                                                 )}
@@ -330,7 +343,10 @@ export default function BudgetModal({ isOpen, onOpenChange, param, updateTable, 
                                                             <Controller
                                                                 name={`detailFields[${index}].quantity`}
                                                                 control={control}
-                                                                rules={{ required: true }}
+                                                                rules={{
+                                                                    required: true,
+                                                                    pattern: { value: /^\d+$/ }
+                                                                }}
                                                                 render={({ field }) => (
                                                                     <Input
                                                                         {...field}
@@ -378,7 +394,9 @@ export default function BudgetModal({ isOpen, onOpenChange, param, updateTable, 
                                                                         variant="underlined"
                                                                         key={`${field.name}-${field.value}`}
                                                                         disallowEmptySelection
+                                                                        errorMessage={errors?.detailFields?.[index]?.id_personal?.message}
                                                                         defaultSelectedKeys={String(field.value)}
+                                                                        onSelectionChange={() => clearErrors(`detailFields[${index}].id_personal`)}
                                                                         isInvalid={errors?.detailFields?.[index]?.id_personal ? true : false}>
                                                                         {personalData.map((personal) => (
                                                                             <SelectItem key={personal.id} value={personal.id} textValue={personal.first_name + ' ' + personal.middle_name + ' ' + personal.first_lastname + ' ' + personal.second_lastname}>
