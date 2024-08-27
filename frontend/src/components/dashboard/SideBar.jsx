@@ -65,6 +65,11 @@ export default function SideBar({ collapsed }) {
                         Personal
                     </MenuItem>
                     <MenuItem
+                        icon={<DocumentTextIcon className="h-5 w-5" />}
+                        component={<NavLink to="reports" style={getActiveStyles} />}>
+                        Reportes
+                    </MenuItem>
+                    <MenuItem
                         icon={<CogIcon className="h-5 w-5" />}
                         component={<NavLink to="settings" style={getActiveStyles} />}>
                         Ajustes
