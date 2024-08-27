@@ -150,8 +150,8 @@ export const getAllBudgetByPatient = (id) => {
     return budgetAPI.get(`?id_patient=${id}`)
 }
 
-export const putBudget = (id, data) => {
-    return budgetAPI.put(`/${id}/`, data)
+export const patchBudget = (id, data) => {
+    return budgetAPI.patch(`/${id}/`, data)
 }
 
 export const postBudget = (data) => {
