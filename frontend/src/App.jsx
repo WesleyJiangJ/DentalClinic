@@ -14,6 +14,7 @@ import Personal from './components/dashboard/Personal.jsx';
 import Settings from './components/dashboard/Settings.jsx';
 import SettingsModal from './components/dashboard/SettingsModal.jsx';
 import Odontogram from './components/dashboard/Odontogram.jsx';
+import Reports from './components/dashboard/Reports.jsx';
 
 function App() {
   const dashboardData = {
@@ -24,6 +25,7 @@ function App() {
       budget: "Presupuestos",
       payment: "Pagos",
       personal: "Personal",
+      reports: "Reportes",
       settings: "Ajustes",
     },
   };
@@ -47,6 +49,7 @@ function App() {
             </Route>
             <Route path='personal/*' element={<Personal />} />
             <Route path='personal/detail/:id' element={<Detail value={"Personal"} />} />
+            <Route path='reports/' element={<Reports />} />
             <Route path='settings/*' element={<Settings />}>
               <Route path='modal/:id' element={<SettingsModal />} />
             </Route>
