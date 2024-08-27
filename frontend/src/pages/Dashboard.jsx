@@ -31,6 +31,8 @@ export default function Dashboard() {
                     return titles.payment;
                 case 'personal':
                     return titles.personal;
+                case 'reports':
+                    return titles.reports;
                 case 'settings':
                     return titles.settings;
                 default:
