@@ -52,6 +52,10 @@ const notesAPI = axios.create({
     baseURL: 'http://localhost:8000/notes/'
 })
 
+const emailAPI = axios.create({
+    baseURL: 'http://localhost:8000/send-email/'
+})
+
 // Patient
 export const getAllPatients = () => {
     return patientAPI.get('/')
@@ -250,4 +254,13 @@ export const getNote = (model, id, noteID) => {
 
 export const deleteNote = (id) => {
     return notesAPI.delete(`/${id}/`);
+}
+
+// Email
+export const postEmail = (data) => {
+    return emailAPI.post('/', data, {
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+    });
 }
