@@ -27,6 +27,7 @@ urlpatterns = [
     path("", include(router.urls)),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("docs/", include_docs_urls(title="API")),
+    path("send-email/", views.send_contact_email, name="send_contact_email"),
 ]
 
 urlpatterns += router.urls
