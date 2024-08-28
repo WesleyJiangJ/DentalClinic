@@ -1,30 +1,107 @@
+import React from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { Input, Textarea, Image, Button } from "@nextui-org/react";
+import { postEmail } from '../../api/apiFunctions';
+import { sweetToast} from '../dashboard/Alerts'
 
 export default function ContactUs() {
+    const [loading, setLoading] = React.useState(false);
+    const { control, handleSubmit, formState: { errors }, reset } = useForm({
+        defaultValues: {
+            name: '',
+            lastname: '',
+            email: '',
+            message: '',
+        }
+    });
+
+    const onSubmit = async (data) => {
+        setLoading(true);
+        await postEmail(data)
+            .then((response) => {
+                reset();
+                sweetToast(response.data.status, response.data.message);
+                setLoading(false);
+            })
+    }
     return (
         <>
-            <h1 className='text-2xl lg:text-6xl font-semibold text-center py-10'>Contáctanos</h1>
+            <h1 className='text-2xl md:text-6xl font-semibold text-center py-10'>Contáctanos</h1>
             <div className="grid grid-cols-1 lg:grid-cols-2">
-                    <div className="flex flex-col items-center justify-center w-full gap-4 lg:gap-4 px-1" id="hola">
-                        <Input type="text" label="Nombres" />
-                        <Input type="text" label="Apellidos" />
-                        <Input type="email" label="Email" />
-                        <Textarea
-                            label="Mensaje"
-                            placeholder="Dínos te gustaría saber aquí . . . "
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <div className="flex flex-col items-center justify-center w-full gap-4">
+                        <Controller
+                            name="name"
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field }) => (
+                                <Input
+                                    {...field}
+                                    type="text"
+                                    radius="sm"
+                                    label="Nombres"
+                                    isInvalid={errors.name ? true : false}
+                                />
+                            )}
+                        />
+                        <Controller
+                            name="lastname"
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field }) => (
+                                <Input
+                                    {...field}
+                                    type="text"
+                                    radius="sm"
+                                    label="Apellidos"
+                                    isInvalid={errors.lastname ? true : false}
+                                />
+                            )}
+                        />
+                        <Controller
+                            name="email"
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field }) => (
+                                <Input
+                                    {...field}
+                                    type="email"
+                                    radius="sm"
+                                    label="Email"
+                                    isInvalid={errors.email ? true : false}
+                                />
+                            )}
+                        />
+                        <Controller
+                            name="message"
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field }) => (
+                                <Textarea
+                                    {...field}
+                                    radius="sm"
+                                    label="Mensaje"
+                                    placeholder="Dínos te gustaría saber . . . "
+                                    isInvalid={errors.message ? true : false}
+                                />
+                            )}
                         />
                         <Button
                             radius="sm"
                             size="lg"
-                            color="primary">
+                            color="primary"
+                            fullWidth
+                            isLoading={loading}
+                            type='submit'>
                             Enviar
                         </Button>
                     </div>
-                <div className="hidden sm:grid place-content-center px-2">
+                </form>
+                <div className="hidden sm:flex items-center justify-center w-full h-full px-2">
                     <Image
-                        alt="NextUI hero Image"
-                        src="https://images.unsplash.com/photo-1623650430273-dbd48d9986c0?q=80&w=3087&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                        className="object-cover object-center w-full h-[650px]"
+                        alt="Image"
+                        src="../images/ContactUs.jpeg"
+                        className="object-cover object-center w-full"
                     />
                 </div>
             </div>
