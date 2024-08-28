@@ -2,6 +2,9 @@ from django.contrib.auth.models import Group, User
 import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions, viewsets
+from django.core.mail import send_mail
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from api.serializers import *
 from api.models import *
 
@@ -128,3 +131,19 @@ class NotesViewSet(viewsets.ModelViewSet):
         "object_id": ["exact"],
         "id": ["exact"],
     }
+
+
+@csrf_exempt
+def send_contact_email(request):
+    if request.method == "POST":
+        name = request.POST.get("name")
+        lastname = request.POST.get("lastname")
+        email = request.POST.get("email")
+        message = request.POST.get("message")
+
+        subject = f"Nuevo mensaje de {name} {lastname}"
+        body = f"Nombre: {name} {lastname}\nCorreo: {email}\n\nMensaje:\n{message}"
+        send_mail(subject, body, email, ["cdiespecializada@gmail.com"])
+
+        return JsonResponse({"status": "success", "message": "Mensaje enviado"})
+    return JsonResponse({"status": "fail", "message": "Error."}, status=405)
