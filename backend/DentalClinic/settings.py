@@ -15,13 +15,22 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+ENV_FILE = os.path.join(BASE_DIR, "DentalClinic", ".env")
+
+# Read variables from .env
+env_file = os.path.join(os.path.dirname(__file__), ".env")
+with open(env_file) as f:
+    for line in f:
+        if line.strip():
+            key, value = line.strip().split("=", 1)
+            os.environ[key.strip()] = value.strip().strip('"')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-tikk#ky+v%8i)&(9!&er5$^5-ivk^kr&2+)8rmky4u+g4u$iu!"
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
