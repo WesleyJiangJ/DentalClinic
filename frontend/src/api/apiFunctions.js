@@ -1,5 +1,9 @@
 import axios from 'axios'
 
+const userAPI = axios.create({
+    baseURL: 'http://localhost:8000/users/'
+})
+
 const patientAPI = axios.create({
     baseURL: 'http://localhost:8000/patient/'
 })
@@ -55,6 +59,15 @@ const notesAPI = axios.create({
 const emailAPI = axios.create({
     baseURL: 'http://localhost:8000/send-email/'
 })
+
+// User
+export const getUser = (email) => {
+    return userAPI.get(`?email=${email}`);
+}
+
+export const patchUser = (id, data) => {
+    return userAPI.patch(`/${id}/`, data);
+}
 
 // Patient
 export const getAllPatients = () => {
