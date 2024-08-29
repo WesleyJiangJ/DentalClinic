@@ -1,5 +1,6 @@
 # Root
 .DS_Store
+.env
 
 # Backend
 db.sqlite3
