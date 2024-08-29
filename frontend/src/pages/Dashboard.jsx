@@ -7,11 +7,16 @@ import { Outlet, useLocation } from 'react-router-dom';
 export default function Dashboard() {
     const location = useLocation();
     const [isToggled, setToggled] = React.useState(true);
+    const [name, setName] = React.useState('');
     const { titles } = React.useContext(DashboardContext);
 
     const toggleButton = () => {
         setToggled(!isToggled);
     };
+
+    React.useEffect(() => {
+        setName(localStorage.getItem('name'));
+    }, [name]);
 
     // Function to get the title according to the url
     const getTitle = () => {
@@ -58,7 +63,7 @@ export default function Dashboard() {
                             <p className='flex items-center justify-center'>{getTitle()}</p>
                         </div>
                         <div className="mx-4 grow">
-                            <p className='flex items-center justify-end'>Profile</p>
+                        <p className='flex items-center justify-end'>{name}</p>
                         </div>
                     </div>
 
