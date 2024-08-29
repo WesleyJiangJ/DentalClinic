@@ -2,7 +2,7 @@ import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form"
 import { sweetAlert, sweetToast } from './Alerts'
-import { postPatient, putPatient, getSpecificPatient, postPersonal, putPersonal, getSpecificPersonal } from "../../api/apiFunctions";
+import { postPatient, putPatient, getSpecificPatient, postPersonal, putPersonal, getSpecificPersonal, getUser, patchUser } from "../../api/apiFunctions";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Select, SelectItem, DatePicker } from "@nextui-org/react";
 import { today, parseDate } from "@internationalized/date";
 
@@ -67,22 +67,23 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
     ]
 
     React.useEffect(() => {
-        async function loadData() {
-            if (param.id) {
-                if (value === "Paciente") {
-                    const res = (await getSpecificPatient(param.id)).data;
-                    reset({ ...res, birthdate: parseDate((res.birthdate)) });
-                    setPrevData({ ...res, birthdate: parseDate((res.birthdate)).toString() });
-                }
-                else if (value === "Personal") {
-                    const res = (await getSpecificPersonal(param.id)).data;
-                    reset({ ...res, birthdate: parseDate((res.birthdate)) });
-                    setPrevData({ ...res, birthdate: parseDate((res.birthdate)).toString() });
-                }
-            }
-        }
         loadData();
     }, []);
+
+    const loadData = async () => {
+        if (param.id) {
+            if (value === "Paciente") {
+                const res = (await getSpecificPatient(param.id)).data;
+                reset({ ...res, birthdate: parseDate((res.birthdate)) });
+                setPrevData({ ...res, birthdate: parseDate((res.birthdate)).toString() });
+            }
+            else if (value === "Personal") {
+                const res = (await getSpecificPersonal(param.id)).data;
+                reset({ ...res, birthdate: parseDate((res.birthdate)) });
+                setPrevData({ ...res, birthdate: parseDate((res.birthdate)).toString() });
+            }
+        }
+    }
 
     const onSubmit = async (data) => {
         try {
@@ -127,16 +128,28 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
                     if (changes.size > 0) {
                         await sweetAlert("¿Confirmar cambios?", `¿Deseas modificar ${Array.from(changes).join(', ')}?`, "warning", "success", "Datos Actualizados");
                         if (value === "Paciente") {
-                            await putPatient(param.id, data);
-                            updateData();
-                            onOpenChange(false);
-                            reset();
+                            await putPatient(param.id, data)
+                                .then(async () => {
+                                    const res = (await getUser(prevData['email'])).data;
+                                    if (changes.has('correo')) await patchUser(res[0].id, { username: data.email, email: data.email })
+                                    else if (changes.has('nombre')) await patchUser(res[0].id, { first_name: data.first_name, last_name: data.first_lastname })
+                                    loadData();
+                                    updateData();
+                                    onOpenChange(false);
+                                    reset();
+                                })
                         }
                         else if (value === "Personal") {
-                            await putPersonal(param.id, data);
-                            updateData();
-                            onOpenChange(false);
-                            reset();
+                            await putPersonal(param.id, data)
+                                .then(async () => {
+                                    const res = (await getUser(prevData['email'])).data;
+                                    if (changes.has('correo')) await patchUser(res[0].id, { username: data.email, email: data.email })
+                                    else if (changes.has('nombre')) await patchUser(res[0].id, { first_name: data.first_name, last_name: data.first_lastname })
+                                    loadData();
+                                    updateData();
+                                    onOpenChange(false);
+                                    reset();
+                                })
                         }
                     }
                     else {
