@@ -1,6 +1,16 @@
 from django.contrib.auth.models import Group, User
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
 from api.models import *
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token["groups"] = list(user.groups.values_list("name", flat=True))
+        token["name"] = user.first_name + " " + user.last_name
+        return token
 
 
 class UserSerializer(serializers.ModelSerializer):
