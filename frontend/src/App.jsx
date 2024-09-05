@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
-import DashboardContext from './components/dashboard/DashboardContext.js';
+import { UserProvider } from './contexts/UserContext.jsx'
+import DashboardContext from './contexts/DashboardContext.js';
 import Clinic from './pages/Clinic.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Board from './components/dashboard/Board.jsx';
@@ -31,31 +32,33 @@ function App() {
   };
   return (
     <>
-      <DashboardContext.Provider value={dashboardData}>
-        <Routes>
-          <Route path='/' element={<Clinic />} />
-          <Route path='/dashboard/' element={<Dashboard />}>
-            <Route path='' element={<Board />} />
-            <Route path='patient/*' element={<Patient />} />
-            <Route path='patient/detail/:id' element={<Detail value={"Paciente"} />} />
-            <Route path='patient/odontogram/:id' element={<Odontogram />} />
-            <Route path='appointment/*' element={<Appointment />} />
-            <Route path='appointment/:slug/:id' element={<Appointment />} />
-            <Route path='budget/*' element={<Budget />}>
-              <Route path='detail/:id' element={<BudgetModal />} />
+      <UserProvider>
+        <DashboardContext.Provider value={dashboardData}>
+          <Routes>
+            <Route path='/' element={<Clinic />} />
+            <Route path='/dashboard/' element={<Dashboard />}>
+              <Route path='' element={<Board />} />
+              <Route path='patient/*' element={<Patient />} />
+              <Route path='patient/detail/:id' element={<Detail value={"Paciente"} />} />
+              <Route path='patient/odontogram/:id' element={<Odontogram />} />
+              <Route path='appointment/*' element={<Appointment />} />
+              <Route path='appointment/:slug/:id' element={<Appointment />} />
+              <Route path='budget/*' element={<Budget />}>
+                <Route path='detail/:id' element={<BudgetModal />} />
+              </Route>
+              <Route path='payment/*' element={<Payment />}>
+                <Route path='detail/:id' element={<PaymentModal />} />
+              </Route>
+              <Route path='personal/*' element={<Personal />} />
+              <Route path='personal/detail/:id' element={<Detail value={"Personal"} />} />
+              <Route path='reports/' element={<Reports />} />
+              <Route path='settings/*' element={<Settings />}>
+                <Route path='modal/:id' element={<SettingsModal />} />
+              </Route>
             </Route>
-            <Route path='payment/*' element={<Payment />}>
-              <Route path='detail/:id' element={<PaymentModal />} />
-            </Route>
-            <Route path='personal/*' element={<Personal />} />
-            <Route path='personal/detail/:id' element={<Detail value={"Personal"} />} />
-            <Route path='reports/' element={<Reports />} />
-            <Route path='settings/*' element={<Settings />}>
-              <Route path='modal/:id' element={<SettingsModal />} />
-            </Route>
-          </Route>
-        </Routes>
-      </DashboardContext.Provider>
+          </Routes>
+        </DashboardContext.Provider>
+      </UserProvider>
     </>
   );
 }
