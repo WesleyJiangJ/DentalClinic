@@ -1,7 +1,10 @@
+import re
 from django.db import models
-from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+from django.contrib.auth.models import User, Group
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 GENDER = [
     ("F", "Femenino"),
@@ -115,71 +118,45 @@ class Personal(models.Model):
         )
 
 
-class UserManager(BaseUserManager):
-    def create_user(self, email, password=None):
-        """
-        Creates and saves a User with the given email, date of
-        birth and password.
-        """
-        if not email:
-            raise ValueError("Users must have an email address")
+@receiver(post_save, sender=Personal)
+@receiver(post_save, sender=Patient)
+def create_user_with_permissions(sender, instance, created, **kwargs):
+    if created:
+        first_name = instance.first_name.lower()
+        last_name = instance.first_lastname.lower()
+        # Replace spaces with underscores and remove other special characters
+        pswd = f"{first_name}{last_name}"
+        # Remove non-alphanumeric characters
+        pswd = re.sub(r"\W+", "", pswd)
 
-        user = self.model(
-            email=self.normalize_email(email),
+        # Create a user with username, email and password
+        user = User.objects.create_user(
+            username=instance.email,
+            email=instance.email,
+            password=pswd,
+            first_name=instance.first_name,
+            last_name=instance.first_lastname,
         )
 
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
+        # Check and create groups if it doesn't exist
+        doctor_group, created = Group.objects.get_or_create(name="DoctorGroup")
+        personal_group, created = Group.objects.get_or_create(name="PersonalGroup")
+        patient_group, created = Group.objects.get_or_create(name="PatientGroup")
 
-    def create_superuser(self, email, password=None):
-        """
-        Creates and saves a superuser with the given email, date of
-        birth and password.
-        """
-        user = self.create_user(
-            email,
-            password=password,
-        )
-        user.is_admin = True
-        user.save(using=self._db)
-        return user
-
-
-class User(AbstractBaseUser):
-    email = models.EmailField(
-        verbose_name="email address",
-        max_length=255,
-        unique=True,
-    )
-    idPatient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True)
-    idPersonal = models.ForeignKey(Personal, on_delete=models.CASCADE, null=True)
-    is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=False)
-
-    objects = UserManager()
-
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
-
-    def __str__(self):
-        return self.email
-
-    def has_perm(self, perm, obj=None):
-        "Does the user have a specific permission?"
-        # Simplest possible answer: Yes, always
-        return True
-
-    def has_module_perms(self, app_label):
-        "Does the user have permissions to view the app `app_label`?"
-        # Simplest possible answer: Yes, always
-        return True
-
-    @property
-    def is_staff(self):
-        "Is the user a member of staff?"
-        # Simplest possible answer: All admins are staff
-        return self.is_admin
+        # Assign model-specific permissions
+        if sender == Personal:
+            role = instance.role
+            if role == 2:
+                group = doctor_group
+            elif role == 3:
+                group = personal_group
+            user.groups.add(group)
+            user.user_permissions.add()
+        elif sender == Patient:
+            group = patient_group
+            user.groups.add(group)
+            user.user_permissions.add()
+        user.save()
 
 
 # Medical History
