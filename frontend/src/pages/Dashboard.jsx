@@ -1,5 +1,5 @@
 import React from 'react'
-import DashboardContext from '../components/dashboard/DashboardContext.js';
+import DashboardContext from '../contexts/DashboardContext.js';
 import SideBar from '../components/dashboard/SideBar.jsx';
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Outlet, useLocation } from 'react-router-dom';
