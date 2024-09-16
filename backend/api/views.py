@@ -1,7 +1,8 @@
 from django.contrib.auth.models import Group, User
 import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import permissions, viewsets
+from rest_framework import viewsets
+from rest_framework_simplejwt.views import TokenObtainPairView
 from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -9,33 +10,30 @@ from api.serializers import *
 from api.models import *
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    """API endpoint that allows users to be viewed or edited."""
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
+
+class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
-    # queryset = User.objects.all().order_by("-date_joined")
     serializer_class = UserSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["email"]
 
 
 class GroupViewSet(viewsets.ModelViewSet):
-    """API endpoint that allows groups to be viewed or edited."""
-
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class PatientViewSet(viewsets.ModelViewSet):
     queryset = Patient.objects.all()
     serializer_class = PatientSerializer
-    # permission_classes = [permissions.IsAuthenticated]
 
 
 class PersonalViewSet(viewsets.ModelViewSet):
     queryset = Personal.objects.all()
     serializer_class = PersonalSerializer
-    # permission_classes = [permissions.IsAuthenticated]
 
 
 class MedicalHistoryViewSet(viewsets.ModelViewSet):
@@ -48,7 +46,6 @@ class MedicalHistoryViewSet(viewsets.ModelViewSet):
 class AppointmentViewSet(viewsets.ModelViewSet):
     queryset = Appointment.objects.all()
     serializer_class = AppointmentSerializer
-    # permission_classes = [permissions.IsAuthenticated]
 
 
 class Appointments(viewsets.ReadOnlyModelViewSet):

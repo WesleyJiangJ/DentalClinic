@@ -1,60 +1,71 @@
 import axios from 'axios'
 
-const patientAPI = axios.create({
-    baseURL: 'http://localhost:8000/patient/'
-})
+const createAPIInstance = (baseURL) => {
+    const apiInstance = axios.create({
+        baseURL: baseURL,
+    });
 
-const medicalHistoryAPI = axios.create({
-    baseURL: 'http://localhost:8000/medicalhistory/'
-})
+    apiInstance.interceptors.request.use(async (config) => {
+        const accessToken = localStorage.getItem('access_token');
+        if (accessToken) {
+            config.headers.Authorization = `Bearer ${accessToken}`;
+        }
+        return config;
+    }, (error) => {
+        return Promise.reject(error);
+    });
 
-const personalAPI = axios.create({
-    baseURL: 'http://localhost:8000/personal/'
-})
+    apiInstance.interceptors.response.use((response) => {
+        return response;
+    }, async (error) => {
+        const originalRequest = error.config;
+        if (error.response.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+            const refreshToken = localStorage.getItem('refresh_token');
+            try {
+                const response = await axios.post('http://localhost:8000/api/token/refresh/', {
+                    refresh: refreshToken,
+                });
+                localStorage.setItem('access_token', response.data.access);
+                axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
+                return apiInstance(originalRequest);
+            } catch (refreshError) {
+                console.error('Error refreshing token:', refreshError);
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
+                // Go to Login page
+                window.location.href = '/';
+            }
+        }
+        return Promise.reject(error);
+    });
+    return apiInstance;
+};
 
-const appointmentAPI = axios.create({
-    baseURL: 'http://localhost:8000/appointment/'
-})
+const userAPI = createAPIInstance('http://localhost:8000/users/');
+const patientAPI = createAPIInstance('http://localhost:8000/patient/');
+const medicalHistoryAPI = createAPIInstance('http://localhost:8000/medicalhistory/');
+const personalAPI = createAPIInstance('http://localhost:8000/personal/');
+const appointmentAPI = createAPIInstance('http://localhost:8000/appointment/');
+const appointmentsAPI = createAPIInstance('http://localhost:8000/appointments/');
+const treatmentAPI = createAPIInstance('http://localhost:8000/treatment/');
+const budgetAPI = createAPIInstance('http://localhost:8000/budget/');
+const paymentAPI = createAPIInstance('http://localhost:8000/payment/');
+const paymentControlAPI = createAPIInstance('http://localhost:8000/paymentcontrol/');
+const odontogramAPI = createAPIInstance('http://localhost:8000/odontogram/');
+const odontogramTeethAPI = createAPIInstance('http://localhost:8000/odontogramteeth/');
+const odontogramToothConditionAPI = createAPIInstance('http://localhost:8000/odontogramtoothcondition/');
+const notesAPI = createAPIInstance('http://localhost:8000/notes/');
+const emailAPI = createAPIInstance('http://localhost:8000/send-email/');
 
-const appointmentsAPI = axios.create({
-    baseURL: 'http://localhost:8000/appointments/'
-})
+// User
+export const getUser = (email) => {
+    return userAPI.get(`?email=${email}`);
+}
 
-const treatmentAPI = axios.create({
-    baseURL: 'http://localhost:8000/treatment/'
-})
-
-const budgetAPI = axios.create({
-    baseURL: 'http://localhost:8000/budget/'
-})
-
-const paymentAPI = axios.create({
-    baseURL: 'http://localhost:8000/payment/'
-})
-
-const paymentControlAPI = axios.create({
-    baseURL: 'http://localhost:8000/paymentcontrol/'
-})
-
-const odontogramAPI = axios.create({
-    baseURL: 'http://localhost:8000/odontogram/'
-})
-
-const odontogramTeethAPI = axios.create({
-    baseURL: 'http://localhost:8000/odontogramteeth/'
-})
-
-const odontogramToothConditionAPI = axios.create({
-    baseURL: 'http://localhost:8000/odontogramtoothcondition/'
-})
-
-const notesAPI = axios.create({
-    baseURL: 'http://localhost:8000/notes/'
-})
-
-const emailAPI = axios.create({
-    baseURL: 'http://localhost:8000/send-email/'
-})
+export const patchUser = (id, data) => {
+    return userAPI.patch(`/${id}/`, data);
+}
 
 // Patient
 export const getAllPatients = () => {

@@ -1,6 +1,6 @@
 import React from "react";
 import { sweetAlert, sweetToast } from './Alerts'
-import { getSpecificPatient, putPatient, getSpecificPersonal, putPersonal, getAllAppointmentsByUser, getAllBudgetByPatient, getAllPaymentsByPatient, getOdontogram, getNotes, getMedicalHistory } from "../../api/apiFunctions";
+import { getSpecificPatient, putPatient, getSpecificPersonal, putPersonal, getAllAppointmentsByUser, getAllBudgetByPatient, getAllPaymentsByPatient, getOdontogram, getNotes, getMedicalHistory, patchUser, getUser } from "../../api/apiFunctions";
 import { useParams, useNavigate } from 'react-router-dom';
 import { Avatar, Button, Tabs, Tab, Card, CardHeader, CardBody, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Badge, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, useDisclosure } from "@nextui-org/react";
 import { CheckCircleIcon, MinusCircleIcon, PencilSquareIcon } from "@heroicons/react/24/solid"
@@ -107,16 +107,20 @@ export default function Detail({ value }) {
             value === "Paciente"
                 ?
                 putPatient(id, user)
-                    .then(() => {
+                    .then(async () => {
                         loadData();
+                        const res = (await getUser(user.email)).data;
+                        await patchUser(res[0].id, { is_active: user.status })
                     })
                     .catch((error) => {
                         console.error('Error:', error);
                     })
                 :
                 putPersonal(id, user)
-                    .then(() => {
+                    .then(async () => {
                         loadData();
+                        const res = (await getUser(user.email)).data;
+                        await patchUser(res[0].id, { is_active: user.status })
                     })
                     .catch((error) => {
                         console.error('Error:', error);
@@ -590,8 +594,12 @@ export default function Detail({ value }) {
                 </div>
             </div>
             <UserModal isOpen={isUserModalOpen} onOpenChange={onUserModalOpenChange} updateData={loadData} value={value} />
-            <NewOdontogramModal isOpen={isOdontogramModalOpen} onOpenChange={onOdontogramModalOpenChange} id_patient={id} navigate={navigate} />
-            <MedicalHistory isOpen={isMedicalModalOpen} onOpenChange={onMedicalModalOpenChange} id_patient={id} reloadData={loadData}/>
+            {value === 'Paciente' &&
+                <>
+                    <NewOdontogramModal isOpen={isOdontogramModalOpen} onOpenChange={onOdontogramModalOpenChange} id_patient={id} navigate={navigate} />
+                    <MedicalHistory isOpen={isMedicalModalOpen} onOpenChange={onMedicalModalOpenChange} id_patient={id} reloadData={loadData} />
+                </>
+            }
         </>
     );
 }

@@ -41,7 +41,9 @@ export default function Board() {
         setTotalPaid(total);
         const uniqueYears = [...new Set(appointment.map(appointment => new Date(appointment.datetime).getFullYear()))];
         setYears(uniqueYears);
-        setSelectedYear(Math.max(...uniqueYears));
+        if (uniqueYears.length !== 0) {
+            setSelectedYear(Math.max(...uniqueYears));
+        }
     }
 
     const handleDate = (e) => {
@@ -86,6 +88,7 @@ export default function Board() {
                         label='Filtrar por año'
                         selectedKeys={[String(selectedYear)]}
                         disallowEmptySelection
+                        className={`${years.length === 0 ? 'hidden' : ''}`}
                         onChange={(e) => setSelectedYear(e.target.value)}>
                         {years.map((year) => (
                             <SelectItem key={year} value={year} textValue={year}>

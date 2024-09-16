@@ -158,7 +158,7 @@ export default function Appointment() {
                         }
                     />
                 </div>
-                <div className='flex flex-col w-full md:w-1/3 h-full overflow-scroll'>
+                <div className={`${filteredAppointments.filter(info => info.status === 1).length > 0 ? 'flex' : 'hidden'} flex-col w-full md:w-1/3 h-full overflow-scroll`}>
                     {filteredAppointments
                         .filter(info => info.status === 1)
                         .sort((a, b) => new Date(a.datetime) - new Date(b.datetime))
