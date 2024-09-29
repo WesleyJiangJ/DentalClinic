@@ -1,7 +1,7 @@
 import { Button, DateRangePicker, Select, SelectItem, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@nextui-org/react";
 import { getAllPayment, getAllPaymentControl } from "../../../api/apiFunctions";
 import { useEffect, useState } from "react";
-import { CogIcon } from "@heroicons/react/24/solid";
+import { ArrowDownTrayIcon } from "@heroicons/react/24/solid";
 import { parseDate } from "@internationalized/date";
 import { generateExcel } from "./Excel";
 import clsx from 'clsx';
@@ -169,7 +169,7 @@ export const Reports = () => {
 
                     <Button onClick={() => generateExcel(columnsExcel, allPayments)} className={clsx("text-lg w-full h-[55px] bg-[#008f39] text-white font-bold", selectedReport === "treatments" ? "md:w-1/2" : "md:w-1/3")}>
                         Descargar
-                        <CogIcon className="size-5 text-white" />
+                        <ArrowDownTrayIcon className="w-5 h-5" />
                     </Button>
                 </div>
                 <div>

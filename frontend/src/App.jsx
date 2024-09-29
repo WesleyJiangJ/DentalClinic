@@ -15,7 +15,7 @@ import Personal from './components/dashboard/Personal.jsx';
 import Settings from './components/dashboard/Settings.jsx';
 import SettingsModal from './components/dashboard/SettingsModal.jsx';
 import Odontogram from './components/dashboard/Odontogram.jsx';
-import {Reports}  from './components/dashboard/reports/Reports.jsx';
+import { Reports } from './components/dashboard/reports/Reports.jsx';
 
 function App() {
   const dashboardData = {
