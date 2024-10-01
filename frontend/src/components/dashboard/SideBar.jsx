@@ -4,7 +4,7 @@ import { sweetAlert } from './Alerts.js';
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
 import { HomeIcon, UserIcon, CalendarDaysIcon, BanknotesIcon, UserGroupIcon, CogIcon, ArrowLeftStartOnRectangleIcon, CreditCardIcon, DocumentTextIcon } from "@heroicons/react/24/solid";
 
-export default function SideBar({ collapsed }) {
+export default function SideBar({ collapsed, userGroup }) {
     const navigate = useNavigate();
     const menuItemStyles = {
         button: {
@@ -14,7 +14,6 @@ export default function SideBar({ collapsed }) {
             },
         }
     }
-
     const getActiveStyles = ({ isActive }) => ({
         backgroundColor: isActive ? '#1E1E1E' : '',
         color: isActive ? 'white' : '',
