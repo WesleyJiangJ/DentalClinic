@@ -1,5 +1,7 @@
 import axios from 'axios'
 
+const apiURL = import.meta.env.VITE_API_URL;
+
 const createAPIInstance = (baseURL) => {
     const apiInstance = axios.create({
         baseURL: baseURL,
@@ -23,7 +25,7 @@ const createAPIInstance = (baseURL) => {
             originalRequest._retry = true;
             const refreshToken = localStorage.getItem('refresh_token');
             try {
-                const response = await axios.post('http://localhost:8000/api/token/refresh/', {
+                const response = await axios.post(`${apiURL}/api/token/refresh/`, {
                     refresh: refreshToken,
                 });
                 localStorage.setItem('access_token', response.data.access);
@@ -42,21 +44,21 @@ const createAPIInstance = (baseURL) => {
     return apiInstance;
 };
 
-const userAPI = createAPIInstance('http://localhost:8000/users/');
-const patientAPI = createAPIInstance('http://localhost:8000/patient/');
-const medicalHistoryAPI = createAPIInstance('http://localhost:8000/medicalhistory/');
-const personalAPI = createAPIInstance('http://localhost:8000/personal/');
-const appointmentAPI = createAPIInstance('http://localhost:8000/appointment/');
-const appointmentsAPI = createAPIInstance('http://localhost:8000/appointments/');
-const treatmentAPI = createAPIInstance('http://localhost:8000/treatment/');
-const budgetAPI = createAPIInstance('http://localhost:8000/budget/');
-const paymentAPI = createAPIInstance('http://localhost:8000/payment/');
-const paymentControlAPI = createAPIInstance('http://localhost:8000/paymentcontrol/');
-const odontogramAPI = createAPIInstance('http://localhost:8000/odontogram/');
-const odontogramTeethAPI = createAPIInstance('http://localhost:8000/odontogramteeth/');
-const odontogramToothConditionAPI = createAPIInstance('http://localhost:8000/odontogramtoothcondition/');
-const notesAPI = createAPIInstance('http://localhost:8000/notes/');
-const emailAPI = createAPIInstance('http://localhost:8000/send-email/');
+const userAPI = createAPIInstance(`${apiURL}/users/`);
+const patientAPI = createAPIInstance(`${apiURL}/patient/`);
+const medicalHistoryAPI = createAPIInstance(`${apiURL}/medicalhistory/`);
+const personalAPI = createAPIInstance(`${apiURL}/personal/`);
+const appointmentAPI = createAPIInstance(`${apiURL}/appointment/`);
+const appointmentsAPI = createAPIInstance(`${apiURL}/appointments/`);
+const treatmentAPI = createAPIInstance(`${apiURL}/treatment/`);
+const budgetAPI = createAPIInstance(`${apiURL}/budget/`);
+const paymentAPI = createAPIInstance(`${apiURL}/payment/`);
+const paymentControlAPI = createAPIInstance(`${apiURL}/paymentcontrol/`);
+const odontogramAPI = createAPIInstance(`${apiURL}/odontogram/`);
+const odontogramTeethAPI = createAPIInstance(`${apiURL}/odontogramteeth/`);
+const odontogramToothConditionAPI = createAPIInstance(`${apiURL}/odontogramtoothcondition/`);
+const notesAPI = createAPIInstance(`${apiURL}/notes/`);
+const emailAPI = createAPIInstance(`${apiURL}/send-email/`);
 
 // User
 export const getUser = (email) => {
