@@ -1,14 +1,17 @@
 import React from 'react'
 import DashboardContext from '../contexts/DashboardContext.js';
+import { useUserGroup } from '../hooks/useUserGroup.jsx'
 import SideBar from '../components/dashboard/SideBar.jsx';
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Outlet, useLocation } from 'react-router-dom';
+import { Spinner } from '@nextui-org/react';
 
 export default function Dashboard() {
     const location = useLocation();
     const [isToggled, setToggled] = React.useState(true);
     const [name, setName] = React.useState('');
     const { titles } = React.useContext(DashboardContext);
+    const { isLoading, userGroup } = useUserGroup();
 
     const toggleButton = () => {
         setToggled(!isToggled);
@@ -48,30 +51,35 @@ export default function Dashboard() {
     };
     return (
         <>
-            <div className='flex h-[100vh]'>
-                <SideBar collapsed={isToggled} />
-                <div className="flex flex-col w-full">
-                    <div className='hidden md:flex flex-row h-16 items-center bg-[rgb(249,249,249)]'>
-                        <div className='mx-4 grow hidden md:flex'>
-                            <button
-                                className='flex items-center'
-                                onClick={toggleButton}>
-                                {isToggled ? <Bars3Icon className="h-8 w-8 stroke-2" /> : <XMarkIcon className="h-8 w-8 stroke-2" />}
-                            </button>
+            {isLoading ? (
+                <div className="flex items-center justify-center w-full h-full">
+                    <Spinner size="lg" />
+                </div>
+            ) : (
+                <div className='flex h-[100vh]'>
+                    <SideBar collapsed={isToggled} userGroup={userGroup[0]} />
+                    <div className="flex flex-col w-full">
+                        <div className='hidden md:flex flex-row h-16 items-center bg-[rgb(249,249,249)]'>
+                            <div className='mx-4 grow hidden md:flex'>
+                                <button
+                                    className='flex items-center'
+                                    onClick={toggleButton}>
+                                    {isToggled ? <Bars3Icon className="h-8 w-8 stroke-2" /> : <XMarkIcon className="h-8 w-8 stroke-2" />}
+                                </button>
+                            </div>
+                            <div className="grow">
+                                <p className='flex items-center justify-center'>{getTitle()}</p>
+                            </div>
+                            <div className="mx-4 grow">
+                                <p className='flex items-center justify-end'>{name}</p>
+                            </div>
                         </div>
-                        <div className="grow">
-                            <p className='flex items-center justify-center'>{getTitle()}</p>
+                        <div className='h-full p-2 overflow-auto'>
+                            <Outlet />
                         </div>
-                        <div className="mx-4 grow">
-                        <p className='flex items-center justify-end'>{name}</p>
-                        </div>
-                    </div>
-
-                    <div className='h-full p-2 overflow-auto'>
-                        <Outlet />
                     </div>
                 </div>
-            </div>
+            )}
         </>
     );
 }
