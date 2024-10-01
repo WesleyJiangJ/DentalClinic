@@ -1,6 +1,5 @@
 import React from 'react';
 import axios from 'axios';
-import { useUser } from '../../contexts/UserContext';
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
@@ -9,7 +8,6 @@ import { UserIcon, LockClosedIcon, EyeIcon, EyeSlashIcon } from "@heroicons/reac
 
 export default function LoginModal({ isOpen, onOpenChange }) {
     const navigate = useNavigate();
-    const { setUserGroup } = useUser();
     const [isVisiblePassword, setIsVisiblePassword] = React.useState(false);
     const toggleVisibility = () => setIsVisiblePassword(!isVisiblePassword);
     const { control, handleSubmit, formState: { errors }, reset, setError } = useForm({
@@ -31,7 +29,6 @@ export default function LoginModal({ isOpen, onOpenChange }) {
             // Decode Token
             const decodedToken = jwtDecode(response.data.access);
             localStorage.setItem('name', decodedToken.name);
-            setUserGroup(decodedToken.groups);
             reset();
         } catch (error) {
             reset();
