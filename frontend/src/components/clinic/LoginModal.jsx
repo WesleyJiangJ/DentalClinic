@@ -7,6 +7,7 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input
 import { UserIcon, LockClosedIcon, EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"
 
 export default function LoginModal({ isOpen, onOpenChange }) {
+    const apiURL = import.meta.env.VITE_API_URL;
     const navigate = useNavigate();
     const [isVisiblePassword, setIsVisiblePassword] = React.useState(false);
     const toggleVisibility = () => setIsVisiblePassword(!isVisiblePassword);
@@ -19,7 +20,7 @@ export default function LoginModal({ isOpen, onOpenChange }) {
 
     const onSubmit = async (data) => {
         try {
-            const response = await axios.post('http://localhost:8000/api/token/', {
+            const response = await axios.post(`${apiURL}/api/token/`, {
                 username: data.username,
                 password: data.password,
             });
