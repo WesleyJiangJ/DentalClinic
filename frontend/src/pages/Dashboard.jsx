@@ -11,7 +11,7 @@ export default function Dashboard() {
     const [isToggled, setToggled] = React.useState(true);
     const [name, setName] = React.useState('');
     const { titles } = React.useContext(DashboardContext);
-    const { isLoading, userGroup } = useUserGroup();
+    const { isLoading, userGroup, userID } = useUserGroup();
 
     const toggleButton = () => {
         setToggled(!isToggled);
@@ -57,7 +57,7 @@ export default function Dashboard() {
                 </div>
             ) : (
                 <div className='flex h-[100vh]'>
-                    <SideBar collapsed={isToggled} userGroup={userGroup[0]} />
+                    <SideBar collapsed={isToggled} userGroup={userGroup[0]} userID={userID} />
                     <div className="flex flex-col w-full">
                         <div className='hidden md:flex flex-row h-16 items-center bg-[rgb(249,249,249)]'>
                             <div className='mx-4 grow hidden md:flex'>
