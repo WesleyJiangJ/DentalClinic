@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardHeader, CardBody } from '@nextui-org/react'
 
-export default function BudPayCard({ name, description, total, treatmentQuantity }) {
+export default function BudPayCard({ name, description, total, pending, treatmentQuantity }) {
     return (
         <>
             <div className='m-2'>
@@ -18,6 +18,7 @@ export default function BudPayCard({ name, description, total, treatmentQuantity
                     {total !== undefined &&
                         <CardBody>
                             <p>{total}</p>
+                            <p>{pending}</p>
                             <p>{treatmentQuantity}</p>
                         </CardBody>
                     }
