@@ -62,6 +62,7 @@ APPOINTMENTSTATUS = [
 
 # People
 class Patient(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
     first_name = models.CharField(max_length=30)
     middle_name = models.CharField(max_length=30)
     first_lastname = models.CharField(max_length=30)
@@ -153,6 +154,9 @@ def create_user_with_permissions(sender, instance, created, **kwargs):
             user.groups.add(group)
             user.user_permissions.add()
         elif sender == Patient:
+            patient = Patient.objects.get(email=instance.email)
+            patient.user = user
+            patient.save()
             group = patient_group
             user.groups.add(group)
             user.user_permissions.add()
@@ -224,6 +228,7 @@ class Budget_Detail(models.Model):
 
 class Payment(models.Model):
     id_budget = models.ForeignKey(Budget, on_delete=models.CASCADE, blank=True)
+    paid = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     status = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -231,6 +236,7 @@ class Payment(models.Model):
 class PaymentControl(models.Model):
     id_payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
     paid = models.DecimalField(max_digits=10, decimal_places=2)
+    note = models.TextField(max_length=256, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
