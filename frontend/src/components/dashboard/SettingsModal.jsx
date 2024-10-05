@@ -110,7 +110,7 @@ export default function SettingsModal({ isOpen, onOpenChange, loadTreatments, pa
                 }
             }
             else {
-                await displayValues === 'T' ? postTreatment(data) : postOdontogramToothCondition(data);
+                displayValues === 'T' ? await postTreatment(data) : await postOdontogramToothCondition(data);
                 sweetToast("success", `Se agregó ${displayValues === 'T' ? data.name : data.condition_name} a la lista de ${displayValues === 'T' ? 'tratamientos' : 'condiciones dentales'}`);
             }
             loadTreatments();
