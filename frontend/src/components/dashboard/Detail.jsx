@@ -2,6 +2,7 @@ import React from "react";
 import { sweetAlert, sweetToast } from './Alerts'
 import { getSpecificPatient, putPatient, getSpecificPersonal, putPersonal, getAllAppointmentsByUser, getAllBudgetByPatient, getAllPaymentsByPatient, getOdontogram, getNotes, getMedicalHistory, patchUser, getUser } from "../../api/apiFunctions";
 import { useParams, useNavigate } from 'react-router-dom';
+import { useUserGroup } from '../../hooks/useUserGroup';
 import { Avatar, Button, Tabs, Tab, Card, CardHeader, CardBody, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Badge, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, useDisclosure } from "@nextui-org/react";
 import { CheckCircleIcon, MinusCircleIcon, PencilSquareIcon } from "@heroicons/react/24/solid"
 import UserModal from "./UserModal"
@@ -13,6 +14,7 @@ import MedicalHistory from "./MedicalHistory";
 
 export default function Detail({ value }) {
     const navigate = useNavigate();
+    const { userGroup } = useUserGroup();
     const { isOpen: isUserModalOpen, onOpen: onUserModalOpen, onOpenChange: onUserModalOpenChange } = useDisclosure();
     const { isOpen: isOdontogramModalOpen, onOpen: onOdontogramModalOpen, onOpenChange: onOdontogramModalOpenChange } = useDisclosure();
     const { isOpen: isMedicalModalOpen, onOpen: onMedicalModalOpen, onOpenChange: onMedicalModalOpenChange } = useDisclosure();
@@ -79,7 +81,11 @@ export default function Detail({ value }) {
                 getOdontogram('', id),
                 getNotes('patient', id),
                 getMedicalHistory(id)
-            ]);
+            ]).catch((error) => {
+                if (error.response.status === 404 && error.response.data.detail === 'Not found.') {
+                    navigate('/denied');
+                }
+            });
 
             setUser(patientResponse.data);
             setAppoitmentsPending(appointmentsResponse.data);
@@ -175,17 +181,19 @@ export default function Detail({ value }) {
                                         className="w-60 h-60 text-large m-auto cursor-pointer -z-0"
                                     />
                                 </DropdownTrigger>
-                                <DropdownMenu aria-label="Actions">
-                                    <DropdownItem key="edit" startContent={<PencilSquareIcon className="w-4 h-4" />} onPress={onUserModalOpen}>Modificar</DropdownItem>
-                                    <DropdownItem
-                                        key="status"
-                                        className={user.status === true ? 'text-danger' : 'text-success'}
-                                        color={user.status === true ? 'danger' : 'success'}
-                                        startContent={user.status === true ? <MinusCircleIcon className="w-5 h-5" /> : <CheckCircleIcon className="w-5 h-5" />}
-                                        onPress={changeStatus}>
-                                        {user.status === true ? 'Dar de baja' : 'Dar de alta'}
-                                    </DropdownItem>
-                                </DropdownMenu>
+                                {userGroup.includes('PersonalGroup') &&
+                                    <DropdownMenu aria-label="Actions">
+                                        <DropdownItem key="edit" startContent={<PencilSquareIcon className="w-4 h-4" />} onPress={onUserModalOpen}>Modificar</DropdownItem>
+                                        <DropdownItem
+                                            key="status"
+                                            className={user.status === true ? 'text-danger' : 'text-success'}
+                                            color={user.status === true ? 'danger' : 'success'}
+                                            startContent={user.status === true ? <MinusCircleIcon className="w-5 h-5" /> : <CheckCircleIcon className="w-5 h-5" />}
+                                            onPress={changeStatus}>
+                                            {user.status === true ? 'Dar de baja' : 'Dar de alta'}
+                                        </DropdownItem>
+                                    </DropdownMenu>
+                                }
                             </Dropdown>
                             <Badge content="" size="lg" color={user.status === true ? "success" : "danger"}>
                                 <h1 className="text-2xl font-bold m-auto">
@@ -193,18 +201,20 @@ export default function Detail({ value }) {
                                 </h1>
                             </Badge>
                             <small className="text-base m-auto mb-5">{user.email}</small>
-                            <Button
-                                color="primary"
-                                radius="sm"
-                                size="lg"
-                                startContent={
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-whatsapp" viewBox="0 0 16 16">
-                                        <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232" />
-                                    </svg>
-                                }
-                                onClick={() => window.open("https://wa.me/" + `${user.phone_number}`, "_blank")}>
-                                Enviar Mensaje
-                            </Button>
+                            {userGroup.includes('PersonalGroup') &&
+                                <Button
+                                    color="primary"
+                                    radius="sm"
+                                    size="lg"
+                                    startContent={
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-whatsapp" viewBox="0 0 16 16">
+                                            <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232" />
+                                        </svg>
+                                    }
+                                    onClick={() => window.open("https://wa.me/" + `${user.phone_number}`, "_blank")}>
+                                    Enviar Mensaje
+                                </Button>
+                            }
                         </Card>
                         <Card
                             shadow="none"
@@ -244,18 +254,21 @@ export default function Detail({ value }) {
                                 }
                             </CardBody>
                         </Card>
-                        <Card
-                            shadow="none"
-                            radius="sm"
-                            className="w-full md:w-1/2">
-                            <Notes backgroundColor={'bg-card'} from={value === 'Paciente' ? 'PT' : 'PS'} loadData={loadData} notes={notes} />
-                        </Card>
+                        {userGroup.includes('PersonalGroup') &&
+                            <Card
+                                shadow="none"
+                                radius="sm"
+                                className="w-full md:w-1/2">
+                                <Notes backgroundColor={'bg-card'} from={value === 'Paciente' ? 'PT' : 'PS'} loadData={loadData} notes={notes} />
+                            </Card>
+                        }
                     </div>
                     <div className="flex flex-col md:flex-row gap-2 h-[54%]">
                         <Card
                             shadow="none"
                             radius="sm"
-                            className="w-full md:w-2/3 h-full bg-card"
+                            // className="w-full md:w-2/3 h-full bg-card"
+                            className="w-full h-full bg-card"
                             fullWidth>
                             <CardBody>
                                 <Tabs
@@ -451,6 +464,7 @@ export default function Detail({ value }) {
                                                                             name={payment.budget_data.name}
                                                                             description={payment.budget_data.description}
                                                                             total={'Total C$' + parseFloat(payment.budget_data.total).toLocaleString()}
+                                                                            pending={'Pendiente C$' + parseFloat(payment.budget_data.total - payment.paid).toLocaleString()}
                                                                         />
                                                                     </div>
                                                                 ))
@@ -499,97 +513,103 @@ export default function Detail({ value }) {
                                             </Tab>
                                         </Tabs>
                                     </Tab>
-                                    <Tab key="odontogram" title="Odontograma" className={value !== 'Paciente' && 'hidden'}>
-                                        <Card
-                                            radius="sm"
-                                            shadow="none"
-                                            className="h-full">
-                                            <CardBody>
-                                                <Button color="primary" radius="sm" size="lg" onClick={onOdontogramModalOpen}>Crear Odontograma</Button>
-                                                <div className='flex flex-nowrap flex-col md:flex-wrap md:flex-row w-full h-full overflow-scroll'>
-                                                    {odontogram
-                                                        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-                                                        .map((odontogram) => (
-                                                            <div className="cursor-pointer w-full md:w-1/2" key={odontogram.id} onClick={() => navigate(`/dashboard/patient/odontogram/${odontogram.id}`)}>
-                                                                <BudPayCard
-                                                                    name={odontogram.name}
-                                                                />
-                                                            </div>
-                                                        ))
-                                                    }
-                                                    {odontogram.length === 0 && (
-                                                        <Card radius="sm" shadow="none" fullWidth>
-                                                            <CardBody className="flex items-center justify-center h-full">
-                                                                No se encontraron odontogramas
-                                                            </CardBody>
-                                                        </Card>
-                                                    )}
-                                                </div>
-                                            </CardBody>
-                                        </Card>
-                                    </Tab>
-                                    <Tab key="medicalHistory" title="Historial Médico" className={value !== 'Paciente' && 'hidden'}>
-                                        <Card
-                                            radius="sm"
-                                            shadow="none"
-                                            className="h-full">
-                                            <CardBody>
-                                                <Button color="primary" radius="sm" size="lg" className={medicalHistory.length !== 0 && 'hidden'} onClick={onMedicalModalOpen}>Crear Historial Médico</Button>
-                                                <div className='flex flex-nowrap flex-col md:flex-wrap md:flex-row w-full h-full overflow-scroll'>
-                                                    {medicalHistory
-                                                        .map((medicalHistory) => (
-                                                            <div className="cursor-pointer w-full" key={medicalHistory.id} onClick={onMedicalModalOpen}>
-                                                                <BudPayCard
-                                                                    name={"Ver Historial Médico"}
-                                                                />
-                                                            </div>
-                                                        ))
-                                                    }
-                                                    {medicalHistory.length === 0 && (
-                                                        <Card radius="sm" shadow="none" fullWidth>
-                                                            <CardBody className="flex items-center justify-center h-full">
-                                                                No se ha creado el historial médico
-                                                            </CardBody>
-                                                        </Card>
-                                                    )}
-                                                </div>
-                                            </CardBody>
-                                        </Card>
-                                    </Tab>
+                                    {userGroup.includes('PersonalGroup') &&
+                                        <Tab key="odontogram" title="Odontograma" className={value !== 'Paciente' && 'hidden'}>
+                                            <Card
+                                                radius="sm"
+                                                shadow="none"
+                                                className="h-full">
+                                                <CardBody>
+                                                    <Button color="primary" radius="sm" size="lg" onClick={onOdontogramModalOpen}>Crear Odontograma</Button>
+                                                    <div className='flex flex-nowrap flex-col md:flex-wrap md:flex-row w-full h-full overflow-scroll'>
+                                                        {odontogram
+                                                            .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+                                                            .map((odontogram) => (
+                                                                <div className="cursor-pointer w-full md:w-1/2" key={odontogram.id} onClick={() => navigate(`/dashboard/patient/odontogram/${odontogram.id}`)}>
+                                                                    <BudPayCard
+                                                                        name={odontogram.name}
+                                                                    />
+                                                                </div>
+                                                            ))
+                                                        }
+                                                        {odontogram.length === 0 && (
+                                                            <Card radius="sm" shadow="none" fullWidth>
+                                                                <CardBody className="flex items-center justify-center h-full">
+                                                                    No se encontraron odontogramas
+                                                                </CardBody>
+                                                            </Card>
+                                                        )}
+                                                    </div>
+                                                </CardBody>
+                                            </Card>
+                                        </Tab>
+                                    }
+                                    {userGroup.includes('PersonalGroup') &&
+                                        <Tab key="medicalHistory" title="Historial Médico" className={value !== 'Paciente' && 'hidden'}>
+                                            <Card
+                                                radius="sm"
+                                                shadow="none"
+                                                className="h-full">
+                                                <CardBody>
+                                                    <Button color="primary" radius="sm" size="lg" className={medicalHistory.length !== 0 && 'hidden'} onClick={onMedicalModalOpen}>Crear Historial Médico</Button>
+                                                    <div className='flex flex-nowrap flex-col md:flex-wrap md:flex-row w-full h-full overflow-scroll'>
+                                                        {medicalHistory
+                                                            .map((medicalHistory) => (
+                                                                <div className="cursor-pointer w-full" key={medicalHistory.id} onClick={onMedicalModalOpen}>
+                                                                    <BudPayCard
+                                                                        name={"Ver Historial Médico"}
+                                                                    />
+                                                                </div>
+                                                            ))
+                                                        }
+                                                        {medicalHistory.length === 0 && (
+                                                            <Card radius="sm" shadow="none" fullWidth>
+                                                                <CardBody className="flex items-center justify-center h-full">
+                                                                    No se ha creado el historial médico
+                                                                </CardBody>
+                                                            </Card>
+                                                        )}
+                                                    </div>
+                                                </CardBody>
+                                            </Card>
+                                        </Tab>
+                                    }
                                 </Tabs>
                             </CardBody>
                         </Card>
 
-                        <Card
-                            shadow="none"
-                            radius="sm"
-                            className="w-full md:w-2/6 h-full bg-card">
-                            <CardBody>
-                                <p className="font-bold text-large">Archivos</p>
-                                <Input
-                                    type="file"
-                                    radius="sm"
-                                    className="mb-2"
-                                />
-                                <Table
-                                    hideHeader
-                                    aria-label="Files Table"
-                                    radius="sm"
-                                    shadow="none"
-                                    className="h-[7rem]">
-                                    <TableHeader>
-                                        <TableColumn>Name</TableColumn>
-                                        <TableColumn>Actions</TableColumn>
-                                    </TableHeader>
-                                    <TableBody>
-                                        <TableRow key="1">
-                                            <TableCell>File 1</TableCell>
-                                            <TableCell>Ver</TableCell>
-                                        </TableRow>
-                                    </TableBody>
-                                </Table>
-                            </CardBody>
-                        </Card>
+                        {userGroup.includes('PersonalGroup') &&
+                            <Card
+                                shadow="none"
+                                radius="sm"
+                                className="w-full md:w-2/6 h-full bg-card">
+                                <CardBody>
+                                    <p className="font-bold text-large">Archivos</p>
+                                    <Input
+                                        type="file"
+                                        radius="sm"
+                                        className="mb-2"
+                                    />
+                                    <Table
+                                        hideHeader
+                                        aria-label="Files Table"
+                                        radius="sm"
+                                        shadow="none"
+                                        className="h-[7rem]">
+                                        <TableHeader>
+                                            <TableColumn>Name</TableColumn>
+                                            <TableColumn>Actions</TableColumn>
+                                        </TableHeader>
+                                        <TableBody>
+                                            <TableRow key="1">
+                                                <TableCell>File 1</TableCell>
+                                                <TableCell>Ver</TableCell>
+                                            </TableRow>
+                                        </TableBody>
+                                    </Table>
+                                </CardBody>
+                            </Card>
+                        }
                     </div>
                 </div>
             </div>
