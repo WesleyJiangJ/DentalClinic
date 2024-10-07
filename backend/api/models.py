@@ -140,17 +140,12 @@ def create_user_with_permissions(sender, instance, created, **kwargs):
         )
 
         # Check and create groups if it doesn't exist
-        doctor_group, created = Group.objects.get_or_create(name="DoctorGroup")
         personal_group, created = Group.objects.get_or_create(name="PersonalGroup")
         patient_group, created = Group.objects.get_or_create(name="PatientGroup")
 
         # Assign model-specific permissions
         if sender == Personal:
-            role = instance.role
-            if role == 2:
-                group = doctor_group
-            elif role == 3:
-                group = personal_group
+            group = personal_group
             user.groups.add(group)
             user.user_permissions.add()
         elif sender == Patient:
