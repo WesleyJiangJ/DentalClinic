@@ -30,10 +30,28 @@ class PatientViewSet(viewsets.ModelViewSet):
     queryset = Patient.objects.all()
     serializer_class = PatientSerializer
 
+    def get_queryset(self):
+        user = self.request.user
+        # If the user is a clinic staff, it return all patients
+        if user.groups.filter(name="PersonalGroup").exists():
+            return Patient.objects.all()
+        # If the user is a patient, it return only their information
+        if user.groups.filter(name="PatientGroup").exists():
+            return Patient.objects.filter(user=user)
+        # If not is a doctor or a patient, it return an empty queryset
+        return Patient.objects.none()
+
 
 class PersonalViewSet(viewsets.ModelViewSet):
     queryset = Personal.objects.all()
     serializer_class = PersonalSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        # If the user is a clinic staff, it return all personal
+        if user.groups.filter(name="PersonalGroup").exists():
+            return Personal.objects.all()
+        return Personal.objects.none()
 
 
 class MedicalHistoryViewSet(viewsets.ModelViewSet):
@@ -42,10 +60,29 @@ class MedicalHistoryViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["id_patient"]
 
+    def get_queryset(self):
+        user = self.request.user
+        # If the user is a clinic staff, it return all medical history
+        if user.groups.filter(name="PersonalGroup").exists():
+            return MedicalHistory.objects.all()
+        return MedicalHistory.objects.none()
+
 
 class AppointmentViewSet(viewsets.ModelViewSet):
     queryset = Appointment.objects.all()
     serializer_class = AppointmentSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        # If the user is a clinic staff, it return all appointments
+        if user.groups.filter(name="PersonalGroup").exists():
+            return Appointment.objects.all()
+        # If the user is a patient, it return only their information
+        if user.groups.filter(name="PatientGroup").exists():
+            patient = Patient.objects.get(user=user)
+            return Appointment.objects.filter(id_patient=patient.pk)
+        # If not is a doctor or a patient, it return an empty queryset
+        return Appointment.objects.none()
 
 
 class Appointments(viewsets.ReadOnlyModelViewSet):
@@ -105,6 +142,12 @@ class OdontogramViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["id", "id_patient"]
 
+    def get_queryset(self):
+        user = self.request.user
+        if user.groups.filter(name="PersonalGroup").exists():
+            return Odontogram.objects.all()
+        return Odontogram.objects.none()
+
 
 class OdontogramTeethViewSet(viewsets.ModelViewSet):
     queryset = OdontogramTeeth.objects.all()
@@ -128,6 +171,12 @@ class NotesViewSet(viewsets.ModelViewSet):
         "object_id": ["exact"],
         "id": ["exact"],
     }
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.groups.filter(name="PersonalGroup").exists():
+            return Notes.objects.all()
+        return Notes.objects.none()
 
 
 @csrf_exempt
