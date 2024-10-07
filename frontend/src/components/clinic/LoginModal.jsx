@@ -26,11 +26,16 @@ export default function LoginModal({ isOpen, onOpenChange }) {
             });
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
-            navigate('/dashboard');
             // Decode Token
             const decodedToken = jwtDecode(response.data.access);
             localStorage.setItem('name', decodedToken.name);
             reset();
+            if (decodedToken.groups.includes('PersonalGroup')) {
+                navigate('/dashboard');
+            }
+            else {
+                navigate(`/dashboard/patient/detail/${decodedToken.id}`);
+            }
         } catch (error) {
             reset();
             setError('username');
