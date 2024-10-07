@@ -10,6 +10,11 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         token["groups"] = list(user.groups.values_list("name", flat=True))
         token["name"] = user.first_name + " " + user.last_name
+        token["email"] = user.email
+        if "PersonalGroup" in token["groups"]:
+            token["id"] = Personal.objects.get(email=user.email).pk
+        elif "PatientGroup" in token["groups"]:
+            token["id"] = Patient.objects.get(email=user.email).pk
         return token
 
 
@@ -100,9 +105,7 @@ class BudgetSerializer(serializers.ModelSerializer):
         instance.total = validated_data.get("total", instance.total)
         instance.status = validated_data.get("status", instance.status)
         instance.save()
-
         detail_data = validated_data.pop("detailFields", [])
-        Budget_Detail.objects.filter(id_budget=instance).delete()
 
         for detail in detail_data:
             Budget_Detail.objects.create(id_budget=instance, **detail)
