@@ -1,13 +1,14 @@
 import React from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { getAllTreatment, getAllOdontogramToothCondition } from "../../api/apiFunctions";
-import { Button, Tabs, Tab, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, useDisclosure } from "@nextui-org/react";
+import { Button, Tabs, Tab, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Spinner, useDisclosure } from "@nextui-org/react";
 import SettingsModal from "./SettingsModal";
 
 export default function Settings() {
     const navigate = useNavigate();
     const param = useParams();
     const location = useLocation();
+    const [isLoading, setIsLoading] = React.useState(true);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [treatment, setTreatment] = React.useState([]);
     const [toothCondition, setToothCondition] = React.useState([]);
@@ -22,6 +23,7 @@ export default function Settings() {
         const tooth = (await getAllOdontogramToothCondition()).data;
         setTreatment(treatment);
         setToothCondition(tooth);
+        setIsLoading(false);
     }
 
     const modifyURL = () => {
@@ -31,40 +33,46 @@ export default function Settings() {
     }
     return (
         <>
-            <Tabs
-                aria-label="Options"
-                color="primary"
-                radius="sm"
-                fullWidth>
-                <Tab key="treatments" title="Tratamientos">
-                    <Tables
-                        isOpen={isOpen}
-                        onOpen={onOpen}
-                        columns={[{ name: "Tratamiento", uid: "firstColumn" }, { name: "Precio", uid: "secondColumn" }]}
-                        data={treatment}
-                        navigate={navigate}
-                        onOpenChange={onOpenChange}
-                        displayValues='T'
-                        loadTreatments={loadTreatments}
-                        param={param}
-                        modifyURL={modifyURL}
-                    />
-                </Tab>
-                <Tab key="odontogram" title="Odontograma">
-                    <Tables
-                        isOpen={isOpen}
-                        onOpen={onOpen}
-                        columns={[{ name: "Condición", uid: "firstColumn" }, { name: "Color", uid: "secondColumn" }]}
-                        data={toothCondition}
-                        navigate={navigate}
-                        onOpenChange={onOpenChange}
-                        displayValues='OD'
-                        loadTreatments={loadTreatments}
-                        param={param}
-                        modifyURL={modifyURL}
-                    />
-                </Tab>
-            </Tabs>
+            {isLoading ? (
+                <div className="flex items-center justify-center w-full h-full">
+                    <Spinner size='lg' />
+                </div>
+            ) : (
+                <Tabs
+                    aria-label="Options"
+                    color="primary"
+                    radius="sm"
+                    fullWidth>
+                    <Tab key="treatments" title="Tratamientos">
+                        <Tables
+                            isOpen={isOpen}
+                            onOpen={onOpen}
+                            columns={[{ name: "Tratamiento", uid: "firstColumn" }, { name: "Precio", uid: "secondColumn" }]}
+                            data={treatment}
+                            navigate={navigate}
+                            onOpenChange={onOpenChange}
+                            displayValues='T'
+                            loadTreatments={loadTreatments}
+                            param={param}
+                            modifyURL={modifyURL}
+                        />
+                    </Tab>
+                    <Tab key="odontogram" title="Odontograma">
+                        <Tables
+                            isOpen={isOpen}
+                            onOpen={onOpen}
+                            columns={[{ name: "Condición", uid: "firstColumn" }, { name: "Color", uid: "secondColumn" }]}
+                            data={toothCondition}
+                            navigate={navigate}
+                            onOpenChange={onOpenChange}
+                            displayValues='OD'
+                            loadTreatments={loadTreatments}
+                            param={param}
+                            modifyURL={modifyURL}
+                        />
+                    </Tab>
+                </Tabs>
+            )}
         </>
     )
 }

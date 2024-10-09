@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardHeader, CardBody, CardFooter, Button, DateRangePicker, Select, SelectItem } from '@nextui-org/react';
+import { Card, CardHeader, CardBody, CardFooter, Button, DateRangePicker, Select, SelectItem, Spinner } from '@nextui-org/react';
 import { BuildingStorefrontIcon, MapPinIcon, PhoneIcon, ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import { getAllAppointments, getAllPatients, getAllPersonal, getPaymentControlFiltered } from '../../api/apiFunctions';
 import { getLocalTimeZone, today } from "@internationalized/date";
@@ -8,6 +8,7 @@ import Chart from './Chart';
 
 export default function Board() {
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = React.useState(true);
     const [patient, setPatient] = React.useState(0);
     const [doctor, setDoctor] = React.useState(0);
     const [todayAppointment, setTodayAppointment] = React.useState(0);
@@ -44,6 +45,7 @@ export default function Board() {
         if (uniqueYears.length !== 0) {
             setSelectedYear(Math.max(...uniqueYears));
         }
+        setIsLoading(false);
     }
 
     const handleDate = (e) => {
@@ -79,148 +81,156 @@ export default function Board() {
     }
 
     return (
-        <div className='flex flex-col gap-2 h-full'>
-            <div className="flex flex-col md:flex-row gap-2">
-                <div className='w-full md:w-2/3'>
-                    <Select
-                        fullWidth
-                        radius='sm'
-                        label='Filtrar por año'
-                        selectedKeys={[String(selectedYear)]}
-                        disallowEmptySelection
-                        className={`${years.length === 0 ? 'hidden' : ''}`}
-                        onChange={(e) => setSelectedYear(e.target.value)}>
-                        {years.map((year) => (
-                            <SelectItem key={year} value={year} textValue={year}>
-                                {year}
-                            </SelectItem>
-                        ))}
-                    </Select>
-                    <Chart data={filteredData} />
+        <>
+            {isLoading ? (
+                <div className="flex items-center justify-center w-full h-full">
+                    <Spinner size='lg' />
                 </div>
-                <div className='flex flex-col gap-2 w-full md:w-1/3'>
-                    <div className="flex flex-row gap-2 h-full">
-                        <Card
-                            fullWidth
-                            radius='sm'>
-                            <CardHeader>
-                                <h2 className='font-semibold text-medium'>Citas de Hoy</h2>
-                            </CardHeader>
-                            <CardBody className='flex items-center justify-center'>
-                                <p className='text-8xl'>{todayAppointment}</p>
-                            </CardBody>
-                        </Card>
-                        <Card
-                            fullWidth
-                            radius='sm'>
-                            <CardHeader>
-                                <h2 className='font-semibold text-medium'>Citas Pendientes</h2>
-                            </CardHeader>
-                            <CardBody className='flex items-center justify-center'>
-                                <p className='text-8xl'>{appointment}</p>
-                            </CardBody>
-                            <CardFooter
-                                className='bg-primary'>
-                                <Button
-                                    radius='sm'
+            ) : (
+                <div className='flex flex-col gap-2 h-full'>
+                    <div className="flex flex-col md:flex-row gap-2">
+                        <div className='w-full md:w-2/3'>
+                            <Select
+                                fullWidth
+                                radius='sm'
+                                label='Filtrar por año'
+                                selectedKeys={[String(selectedYear)]}
+                                disallowEmptySelection
+                                className={`${years.length === 0 ? 'hidden' : ''}`}
+                                onChange={(e) => setSelectedYear(e.target.value)}>
+                                {years.map((year) => (
+                                    <SelectItem key={year} value={year} textValue={year}>
+                                        {year}
+                                    </SelectItem>
+                                ))}
+                            </Select>
+                            <Chart data={filteredData} />
+                        </div>
+                        <div className='flex flex-col gap-2 w-full md:w-1/3'>
+                            <div className="flex flex-row gap-2 h-full">
+                                <Card
                                     fullWidth
-                                    color='primary'
-                                    onClick={() => navigate('appointment')}>
-                                    <ChevronDoubleRightIcon className='w-5 h-5' />
-                                </Button>
-                            </CardFooter>
-                        </Card>
+                                    radius='sm'>
+                                    <CardHeader>
+                                        <h2 className='font-semibold text-medium'>Citas de Hoy</h2>
+                                    </CardHeader>
+                                    <CardBody className='flex items-center justify-center'>
+                                        <p className='text-8xl'>{todayAppointment}</p>
+                                    </CardBody>
+                                </Card>
+                                <Card
+                                    fullWidth
+                                    radius='sm'>
+                                    <CardHeader>
+                                        <h2 className='font-semibold text-medium'>Citas Pendientes</h2>
+                                    </CardHeader>
+                                    <CardBody className='flex items-center justify-center'>
+                                        <p className='text-8xl'>{appointment}</p>
+                                    </CardBody>
+                                    <CardFooter
+                                        className='bg-primary'>
+                                        <Button
+                                            radius='sm'
+                                            fullWidth
+                                            color='primary'
+                                            onClick={() => navigate('appointment')}>
+                                            <ChevronDoubleRightIcon className='w-5 h-5' />
+                                        </Button>
+                                    </CardFooter>
+                                </Card>
+                            </div>
+                            <div className="flex flex-row gap-2 h-full">
+                                <Card
+                                    fullWidth
+                                    radius='sm'>
+                                    <CardHeader>
+                                        <h2 className='font-semibold text-medium'>Información de la Clínica</h2>
+                                    </CardHeader>
+                                    <CardBody className='justify-evenly'>
+                                        <div className="flex flex-row gap-2 items-center">
+                                            <BuildingStorefrontIcon className='w-5 h-5' />
+                                            <p>Clínica Dental</p>
+                                        </div>
+                                        <div className="flex flex-row gap-2 items-center">
+                                            <PhoneIcon className='w-5 h-5' />
+                                            <p>+505 8781 2379</p>
+                                        </div>
+                                        <div className="flex flex-row gap-2 items-center">
+                                            <MapPinIcon className='w-5 h-5' />
+                                            <p>Calle Sonrisas, Narnia</p>
+                                        </div>
+                                    </CardBody>
+                                </Card>
+                            </div>
+                        </div>
                     </div>
-                    <div className="flex flex-row gap-2 h-full">
-                        <Card
-                            fullWidth
-                            radius='sm'>
-                            <CardHeader>
-                                <h2 className='font-semibold text-medium'>Información de la Clínica</h2>
-                            </CardHeader>
-                            <CardBody className='justify-evenly'>
-                                <div className="flex flex-row gap-2 items-center">
-                                    <BuildingStorefrontIcon className='w-5 h-5' />
-                                    <p>Clínica Dental</p>
-                                </div>
-                                <div className="flex flex-row gap-2 items-center">
-                                    <PhoneIcon className='w-5 h-5' />
-                                    <p>+505 8781 2379</p>
-                                </div>
-                                <div className="flex flex-row gap-2 items-center">
-                                    <MapPinIcon className='w-5 h-5' />
-                                    <p>Calle Sonrisas, Narnia</p>
-                                </div>
-                            </CardBody>
-                        </Card>
+                    <div className='flex flex-col md:flex-row h-full gap-2'>
+                        <div className="flex flex-row gap-2 w-full md:w-1/2">
+                            <Card
+                                fullWidth
+                                radius='sm'>
+                                <CardHeader>
+                                    <h2 className='font-semibold text-medium'>Pacientes</h2>
+                                </CardHeader>
+                                <CardBody className='flex items-center justify-center'>
+                                    <p className='text-8xl'>{patient}</p>
+                                </CardBody>
+                                <CardFooter
+                                    className='bg-primary'>
+                                    <Button
+                                        radius='sm'
+                                        fullWidth
+                                        color='primary'
+                                        onClick={() => navigate('patient')}>
+                                        <ChevronDoubleRightIcon className='w-5 h-5' />
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                            <Card
+                                fullWidth
+                                radius='sm'>
+                                <CardHeader>
+                                    <h2 className='font-semibold text-medium'>Médicos</h2>
+                                </CardHeader>
+                                <CardBody className='flex items-center justify-center'>
+                                    <p className='text-8xl'>{doctor}</p>
+                                </CardBody>
+                                <CardFooter
+                                    className='bg-primary'>
+                                    <Button
+                                        radius='sm'
+                                        fullWidth
+                                        color='primary'
+                                        onClick={() => navigate('personal')}>
+                                        <ChevronDoubleRightIcon className='w-5 h-5' />
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        </div>
+                        <div className="flex flex-row gap-2 w-full md:w-1/2">
+                            <Card
+                                fullWidth
+                                radius='sm'>
+                                <CardHeader className="flex flex-row gap-2 justify-between items-center">
+                                    <h2 className='font-semibold text-medium'>Ingresos</h2>
+                                    <DateRangePicker
+                                        aria-labelledby='Date Range'
+                                        className='w-1/2'
+                                        radius='sm'
+                                        visibleMonths={2}
+                                        label='Rango'
+                                        maxValue={today(getLocalTimeZone()).add({ days: 1 })}
+                                        onChange={handleDate}
+                                    />
+                                </CardHeader>
+                                <CardBody className='flex items-center justify-center'>
+                                    <p className='text-8xl'>C${totalPaid.toLocaleString()}</p>
+                                </CardBody>
+                            </Card>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div className='flex flex-col md:flex-row h-full gap-2'>
-                <div className="flex flex-row gap-2 w-full md:w-1/2">
-                    <Card
-                        fullWidth
-                        radius='sm'>
-                        <CardHeader>
-                            <h2 className='font-semibold text-medium'>Pacientes</h2>
-                        </CardHeader>
-                        <CardBody className='flex items-center justify-center'>
-                            <p className='text-8xl'>{patient}</p>
-                        </CardBody>
-                        <CardFooter
-                            className='bg-primary'>
-                            <Button
-                                radius='sm'
-                                fullWidth
-                                color='primary'
-                                onClick={() => navigate('patient')}>
-                                <ChevronDoubleRightIcon className='w-5 h-5' />
-                            </Button>
-                        </CardFooter>
-                    </Card>
-                    <Card
-                        fullWidth
-                        radius='sm'>
-                        <CardHeader>
-                            <h2 className='font-semibold text-medium'>Médicos</h2>
-                        </CardHeader>
-                        <CardBody className='flex items-center justify-center'>
-                            <p className='text-8xl'>{doctor}</p>
-                        </CardBody>
-                        <CardFooter
-                            className='bg-primary'>
-                            <Button
-                                radius='sm'
-                                fullWidth
-                                color='primary'
-                                onClick={() => navigate('personal')}>
-                                <ChevronDoubleRightIcon className='w-5 h-5' />
-                            </Button>
-                        </CardFooter>
-                    </Card>
-                </div>
-                <div className="flex flex-row gap-2 w-full md:w-1/2">
-                    <Card
-                        fullWidth
-                        radius='sm'>
-                        <CardHeader className="flex flex-row gap-2 justify-between items-center">
-                            <h2 className='font-semibold text-medium'>Ingresos</h2>
-                            <DateRangePicker
-                                aria-labelledby='Date Range'
-                                className='w-1/2'
-                                radius='sm'
-                                visibleMonths={2}
-                                label='Rango'
-                                maxValue={today(getLocalTimeZone()).add({ days: 1 })}
-                                onChange={handleDate}
-                            />
-                        </CardHeader>
-                        <CardBody className='flex items-center justify-center'>
-                            <p className='text-8xl'>C${totalPaid.toLocaleString()}</p>
-                        </CardBody>
-                    </Card>
-                </div>
-            </div>
-        </div>
+            )}
+        </>
     );
 }
