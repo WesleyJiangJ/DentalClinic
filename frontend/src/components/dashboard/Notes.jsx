@@ -14,7 +14,7 @@ export default function Notes({ backgroundColor, from, loadData, notes }) {
             name: '',
             content: '',
             object_id: parseInt(param.id),
-            content_type: (from === 'PT' ? 6 : from === 'PS' ? 7 : 16)
+            content_type: (from === 'PT' ? 10 : from === 'PS' ? 12 : 15) // Content Type: Patient = 10, Personal = 12 & Odontogram Teeth = 15
         }
     });
 
@@ -52,7 +52,7 @@ export default function Notes({ backgroundColor, from, loadData, notes }) {
                                             await deleteNote(noteID)
                                                 .then(() => {
                                                     loadData();
-                                                    reset({ name: '', content: '', object_id: parseInt(param.id), content_type: (from === 'PT' ? 6 : from === 'PS' ? 7 : 16) });
+                                                    reset({ name: '', content: '', object_id: parseInt(param.id), content_type: (from === 'PT' ? 10 : from === 'PS' ? 12 : 15) });
                                                     setNoteID('');
                                                 })
                                                 .catch((error) => {
@@ -68,7 +68,7 @@ export default function Notes({ backgroundColor, from, loadData, notes }) {
                                         radius="sm"
                                         size="sm"
                                         onClick={() => {
-                                            reset({ name: '', content: '', object_id: parseInt(param.id), content_type: (from === 'PT' ? 6 : from === 'PS' ? 7 : 16) });
+                                            reset({ name: '', content: '', object_id: parseInt(param.id), content_type: (from === 'PT' ? 10 : from === 'PS' ? 12 : 15) });
                                             setNoteID('');
                                         }}>
                                         <ArrowPathIcon className="w-5 h-5" />
