@@ -59,6 +59,7 @@ const odontogramTeethAPI = createAPIInstance(`${apiURL}/odontogramteeth/`);
 const odontogramToothConditionAPI = createAPIInstance(`${apiURL}/odontogramtoothcondition/`);
 const notesAPI = createAPIInstance(`${apiURL}/notes/`);
 const emailAPI = createAPIInstance(`${apiURL}/send-email/`);
+const fileAPI = createAPIInstance(`${apiURL}/files/`);
 
 // User
 export const getUser = (email) => {
@@ -276,4 +277,17 @@ export const postEmail = (data) => {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
     });
+}
+
+// Files
+export const postFile = (data) => {
+    return fileAPI.post('/', data);
+}
+
+export const getFiles = (model, id) => {
+    return fileAPI.get(`?content_type__app_label=api&content_type__model=${model}&object_id=${id}`);
+}
+
+export const deleteFile = (id) => {
+    return fileAPI.delete(`/${id}/`);
 }
