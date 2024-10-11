@@ -164,3 +164,9 @@ class NotesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notes
         fields = "__all__"
+
+
+class FilesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Files
+        fields = "__all__"
