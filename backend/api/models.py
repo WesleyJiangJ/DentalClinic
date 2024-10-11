@@ -271,3 +271,14 @@ class Notes(models.Model):
 
     def __str__(self):
         return f"{self.name}"
+
+
+class Files(models.Model):
+    file_url = models.URLField(max_length=200)
+    name = models.CharField(max_length=64, blank=False)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
+
+    def __str__(self):
+        return f"{self.name}"
