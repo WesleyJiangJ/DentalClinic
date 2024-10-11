@@ -1,21 +1,24 @@
 import React from "react";
 import { sweetAlert, sweetToast } from './Alerts'
-import { getSpecificPatient, putPatient, getSpecificPersonal, putPersonal, getAllAppointmentsByUser, getAllBudgetByPatient, getAllPaymentsByPatient, getOdontogram, getNotes, getMedicalHistory, patchUser, getUser } from "../../api/apiFunctions";
+import { getSpecificPatient, putPatient, getSpecificPersonal, putPersonal, getAllAppointmentsByUser, getAllBudgetByPatient, getAllPaymentsByPatient, getOdontogram, getNotes, getMedicalHistory, patchUser, getUser, getFiles, deleteFile } from "../../api/apiFunctions";
 import { useParams, useNavigate } from 'react-router-dom';
 import { useUserGroup } from '../../hooks/useUserGroup';
-import { Button, Tabs, Tab, Card, CardHeader, CardBody, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Badge, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Spinner, useDisclosure } from "@nextui-org/react";
-import { CheckCircleIcon, MinusCircleIcon, PencilSquareIcon } from "@heroicons/react/24/solid"
+import { Button, Tabs, Tab, Card, CardHeader, CardBody, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Badge, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Spinner, useDisclosure } from "@nextui-org/react";
+import { CheckCircleIcon, MinusCircleIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/solid"
+import { ref, deleteObject } from "firebase/storage";
+import { storage } from "../../firebase";
 import UserModal from "./UserModal"
 import AppointmentCard from "./AppointmentCard";
 import BudPayCard from "./BudPayCard";
 import NewOdontogramModal from "./NewOdontogramModal";
 import Notes from "./Notes";
 import MedicalHistory from "./MedicalHistory";
+import FileUpload from '../../FileUpload';
 
 export default function Detail({ value }) {
     const navigate = useNavigate();
     const { userGroup } = useUserGroup();
-    const [ isLoading, setIsLoading ] = React.useState(true);
+    const [isLoading, setIsLoading] = React.useState(true);
     const { isOpen: isUserModalOpen, onOpen: onUserModalOpen, onOpenChange: onUserModalOpenChange } = useDisclosure();
     const { isOpen: isOdontogramModalOpen, onOpen: onOdontogramModalOpen, onOpenChange: onOdontogramModalOpenChange } = useDisclosure();
     const { isOpen: isMedicalModalOpen, onOpen: onMedicalModalOpen, onOpenChange: onMedicalModalOpenChange } = useDisclosure();
@@ -26,6 +29,7 @@ export default function Detail({ value }) {
     const [odontogram, setOdontogram] = React.useState([]);
     const [notes, setNotes] = React.useState([]);
     const [medicalHistory, setMedicalHistory] = React.useState([]);
+    const [files, setFiles] = React.useState([]);
     const { id } = useParams();
     const departamentosNicaragua = {
         BO: "Boaco",
@@ -74,14 +78,15 @@ export default function Detail({ value }) {
 
     const loadData = async () => {
         if (value === "Paciente") {
-            const [patientResponse, appointmentsResponse, budgetResponse, paymentsResponse, odontogramResponse, notesResponse, medicalHistoryResponse] = await Promise.all([
+            const [patientResponse, appointmentsResponse, budgetResponse, paymentsResponse, odontogramResponse, notesResponse, medicalHistoryResponse, filesResponse] = await Promise.all([
                 getSpecificPatient(id),
                 getAllAppointmentsByUser(id, ''),
                 getAllBudgetByPatient(id),
                 getAllPaymentsByPatient(id),
                 getOdontogram('', id),
                 getNotes('patient', id),
-                getMedicalHistory(id)
+                getMedicalHistory(id),
+                getFiles('patient', id)
             ]).catch((error) => {
                 if (error.response.status === 404 && error.response.data.detail === 'Not found.') {
                     navigate('/denied');
@@ -95,11 +100,13 @@ export default function Detail({ value }) {
             setOdontogram(odontogramResponse.data);
             setNotes(notesResponse.data);
             setMedicalHistory(medicalHistoryResponse.data);
+            setFiles(filesResponse.data);
         }
         else if (value === "Personal") {
             setUser((await getSpecificPersonal(id)).data);
             setAppoitmentsPending((await getAllAppointmentsByUser('', id)).data);
             setNotes((await getNotes('personal', id)).data);
+            setFiles((await getFiles('personal', id)).data);
         }
         setIsLoading(false);
     }
@@ -595,26 +602,56 @@ export default function Detail({ value }) {
                                     className="w-full md:w-2/6 h-full bg-card">
                                     <CardBody>
                                         <p className="font-bold text-large">Archivos</p>
-                                        <Input
-                                            type="file"
-                                            radius="sm"
-                                            className="mb-2"
-                                        />
+                                        <FileUpload from={value === 'Paciente' ? 'PT' : 'PS'} object_id={id} loadData={loadData} />
                                         <Table
                                             hideHeader
-                                            aria-label="Files Table"
+                                            aria-label="Notes Table"
                                             radius="sm"
                                             shadow="none"
-                                            className="h-[7rem]">
+                                            className="h-full"
+                                            selectionMode="single">
                                             <TableHeader>
-                                                <TableColumn>Name</TableColumn>
-                                                <TableColumn>Actions</TableColumn>
+                                                <TableColumn></TableColumn>
                                             </TableHeader>
-                                            <TableBody>
-                                                <TableRow key="1">
-                                                    <TableCell>File 1</TableCell>
-                                                    <TableCell>Ver</TableCell>
-                                                </TableRow>
+                                            <TableBody emptyContent={"No se encontraron archivos"}>
+                                                {files.map((file) =>
+                                                    <TableRow key={file.id} className="cursor-pointer">
+                                                        {() =>
+                                                            <TableCell>
+                                                                <div className="flex flex-col" onClick={() => window.open(file.file_url, "_blank")}>
+                                                                    <div className="flex flex-row justify-between items-center">
+                                                                        <p className="text-bold text-sm capitalize truncate max-w-xs">{file.name}</p>
+                                                                        <Button
+                                                                            isIconOnly
+                                                                            radius="sm"
+                                                                            variant="light"
+                                                                            color="danger"
+                                                                            onClick={async () => {
+                                                                                await sweetAlert('¿Desea continuar?', `${file.name} será eliminado`, 'question', 'success', `${file.name} fue eliminado`);
+                                                                                // Get the path where the file was saved
+                                                                                const decodedUrl = decodeURIComponent(file.file_url);
+                                                                                const fullPath = decodedUrl.split('/o/')[1].split('?')[0];
+                                                                                const fileRef = ref(storage, fullPath);
+
+                                                                                deleteObject(fileRef)
+                                                                                    .then(async () => {
+                                                                                        await deleteFile(file.id)
+                                                                                            .then(() => {
+                                                                                                loadData();
+                                                                                            })
+                                                                                    })
+                                                                                    .catch((error) => {
+                                                                                        console.error("Error deleting file: ", error);
+                                                                                    });
+                                                                            }}>
+                                                                            <TrashIcon className="w-5 h-5" />
+                                                                        </Button>
+                                                                    </div>
+                                                                </div>
+                                                            </TableCell>
+                                                        }
+                                                    </TableRow>
+                                                )}
                                             </TableBody>
                                         </Table>
                                     </CardBody>
