@@ -2,10 +2,12 @@ from django.contrib.auth.models import Group, User
 import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
+from rest_framework.decorators import api_view
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from firebase_admin import storage
 from api.serializers import *
 from api.models import *
 
@@ -193,3 +195,27 @@ def send_contact_email(request):
 
         return JsonResponse({"status": "success", "message": "Mensaje enviado"})
     return JsonResponse({"status": "fail", "message": "Error."}, status=405)
+
+
+@api_view(["POST"])
+def upload_file(request):
+    file_obj = request.FILES["file"]
+    bucket = storage.bucket()
+    blob = bucket.blob(file_obj.name)
+    blob.upload_from_file(file_obj.file)
+    blob.make_public()
+    file_url = blob.public_url
+
+    return JsonResponse({"file_url": file_url}, status=201)
+
+
+class FilesViewSet(viewsets.ModelViewSet):
+    queryset = Files.objects.all()
+    serializer_class = FilesSerializer
+
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = {
+        "content_type__app_label": ["exact"],
+        "content_type__model": ["exact"],
+        "object_id": ["exact"],
+    }
