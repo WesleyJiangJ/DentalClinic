@@ -13,7 +13,7 @@ import BudPayCard from "./BudPayCard";
 import NewOdontogramModal from "./NewOdontogramModal";
 import Notes from "./Notes";
 import MedicalHistory from "./MedicalHistory";
-import FileUpload from '../../FileUpload';
+import FileUpload from './FileUpload';
 
 export default function Detail({ value }) {
     const navigate = useNavigate();
