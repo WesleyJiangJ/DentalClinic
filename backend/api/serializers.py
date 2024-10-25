@@ -11,7 +11,9 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token["groups"] = list(user.groups.values_list("name", flat=True))
         token["name"] = user.first_name + " " + user.last_name
         token["email"] = user.email
-        if "PersonalGroup" in token["groups"]:
+        if user.is_superuser:
+            pass
+        elif "PersonalGroup" in token["groups"]:
             token["id"] = Personal.objects.get(email=user.email).pk
         elif "PatientGroup" in token["groups"]:
             token["id"] = Patient.objects.get(email=user.email).pk
