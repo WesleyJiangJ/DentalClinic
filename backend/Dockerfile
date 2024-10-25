@@ -2,6 +2,10 @@ FROM python:3.9.6
 
 WORKDIR /app
 
+COPY wait-for-it.sh /usr/local/bin/wait-for-it
+
+RUN chmod +x /usr/local/bin/wait-for-it
+
 COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
