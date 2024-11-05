@@ -14,6 +14,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load Environment Variables
 load_dotenv()
 
+# Check if the backup directory exists and create it if not
+backup_dir = BASE_DIR / "backup"
+if not os.path.exists(backup_dir):
+    os.makedirs(backup_dir)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -41,6 +45,7 @@ INSTALLED_APPS = [
     "django_filters",
     "corsheaders",
     "coreapi",
+    "dbbackup",
     "api",
 ]
 
@@ -92,6 +97,8 @@ DATABASES = {
     }
 }
 
+DBBACKUP_STORAGE = "django.core.files.storage.FileSystemStorage"
+DBBACKUP_STORAGE_OPTIONS = {"location": backup_dir}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
