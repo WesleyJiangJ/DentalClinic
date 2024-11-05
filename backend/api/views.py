@@ -258,7 +258,11 @@ class DatabaseBackupView(APIView):
                 response["Content-Disposition"] = (
                     f"attachment; filename={backup_files[0]}"
                 )
-                return response
+
+            # Remove the file after sending it as response
+            os.remove(backup_file_path)
+
+            return response
 
         except subprocess.CalledProcessError:
             return JsonResponse(
