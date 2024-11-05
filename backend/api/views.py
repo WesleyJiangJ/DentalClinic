@@ -1,11 +1,17 @@
+import os
+import subprocess
 from django.contrib.auth.models import Group, User
 import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
+from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser
 from rest_framework_simplejwt.views import TokenObtainPairView
+from django.conf import settings
 from django.core.mail import send_mail
-from django.http import JsonResponse
+from django.core.files.storage import default_storage
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from firebase_admin import storage
 from api.serializers import *
@@ -219,3 +225,89 @@ class FilesViewSet(viewsets.ModelViewSet):
         "content_type__model": ["exact"],
         "object_id": ["exact"],
     }
+
+
+class DatabaseBackupView(APIView):
+    def get(self, request):
+        try:
+            # Path where the backup will be temporarily stored
+            backup_dir = settings.DBBACKUP_STORAGE_OPTIONS["location"]
+
+            # Create the backup
+            subprocess.run(["python", "manage.py", "dbbackup"], check=True)
+
+            # Find the most recent backup file
+            backup_files = sorted(
+                [f for f in os.listdir(backup_dir) if f.endswith(".dump")],
+                key=lambda f: os.path.getmtime(os.path.join(backup_dir, f)),
+                reverse=True,
+            )
+            if not backup_files:
+                return JsonResponse(
+                    {"error": "No backup files were found."}, status=404
+                )
+
+            # Select the most recent file
+            backup_file_path = os.path.join(backup_dir, backup_files[0])
+
+            # Open the file and send it as response
+            with open(backup_file_path, "rb") as backup_file:
+                response = HttpResponse(
+                    backup_file.read(), content_type="application/octet-stream"
+                )
+                response["Content-Disposition"] = (
+                    f"attachment; filename={backup_files[0]}"
+                )
+                return response
+
+        except subprocess.CalledProcessError:
+            return JsonResponse(
+                {"error": "There was a problem creating the backup."}, status=500
+            )
+
+
+class DatabaseRestoreView(APIView):
+    parser_classes = [MultiPartParser]
+
+    def post(self, request):
+        if "file" not in request.FILES:
+            return JsonResponse(
+                {"error": "No se proporcionó ningún archivo de backup."}, status=400
+            )
+
+        # Temporarily save the uploaded file
+        backup_file = request.FILES["file"]
+        temp_file_path = os.path.join(
+            settings.DBBACKUP_STORAGE_OPTIONS["location"], backup_file.name
+        )
+
+        with default_storage.open(temp_file_path, "wb+") as destination:
+            for chunk in backup_file.chunks():
+                destination.write(chunk)
+
+        try:
+            # Restore the database
+            subprocess.run(
+                [
+                    "python",
+                    "manage.py",
+                    "dbrestore",
+                    "--input-filename",
+                    temp_file_path,
+                    "--noinput",
+                ],
+                check=True,
+            )
+            return JsonResponse(
+                {"success": "The database was successfully restored."}, status=200
+            )
+
+        except subprocess.CalledProcessError:
+            return JsonResponse(
+                {"error": "There was a problem restoring the database."}, status=500
+            )
+
+        finally:
+            # Delete the temporary file after restore
+            if os.path.exists(temp_file_path):
+                os.remove(temp_file_path)
