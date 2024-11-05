@@ -36,6 +36,12 @@ urlpatterns = [
     ),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("upload/", views.upload_file, name="upload_file"),
+    path(
+        "export-database/", views.DatabaseBackupView.as_view(), name="export_database"
+    ),
+    path(
+        "import-database/", views.DatabaseRestoreView.as_view(), name="import_database"
+    ),
 ]
 
 urlpatterns += router.urls
