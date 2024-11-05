@@ -1,8 +1,10 @@
 import React from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { getAllTreatment, getAllOdontogramToothCondition } from "../../api/apiFunctions";
+import { getAllTreatment, getAllOdontogramToothCondition, exportDatabase, importDatabase } from "../../api/apiFunctions";
 import { Button, Tabs, Tab, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Spinner, useDisclosure } from "@nextui-org/react";
+import { PlusIcon, ArrowUpTrayIcon } from "@heroicons/react/24/solid";
 import SettingsModal from "./SettingsModal";
+import { sweetAlert, sweetToast } from "./Alerts";
 
 export default function Settings() {
     const navigate = useNavigate();
@@ -12,6 +14,7 @@ export default function Settings() {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [treatment, setTreatment] = React.useState([]);
     const [toothCondition, setToothCondition] = React.useState([]);
+    const [file, setFile] = React.useState(null);
 
     React.useEffect(() => {
         loadTreatments();
@@ -31,6 +34,18 @@ export default function Settings() {
         const newPath = currentPath.split(`/modal/${param.id}`).filter((segment) => segment !== param.id && segment !== param.slug).join('');
         navigate(newPath);
     }
+
+    const handleImport = async () => {
+        if (file) {
+            await importDatabase(file)
+                .then(() => {
+                    loadTreatments();
+                });
+        } else {
+            sweetToast('error', 'Por favor selecciona un archivo de respaldo');
+        }
+    };
+
     return (
         <>
             {isLoading ? (
@@ -70,6 +85,48 @@ export default function Settings() {
                             param={param}
                             modifyURL={modifyURL}
                         />
+                    </Tab>
+                    <Tab key="database" title="Base de Datos">
+                        <div>
+                            <h1 className="my-2">Exportar</h1>
+                            <Button
+                                color="primary"
+                                size="lg"
+                                radius="sm"
+                                fullWidth
+                                endContent={<ArrowUpTrayIcon className="w-5 h-5" />}
+                                onClick={async () => {
+                                    await sweetAlert('¿Deseas exportar la base de datos?', '', 'question', 'success', 'Los datos se han exportado correctamente');
+                                    setIsLoading(true);
+                                    exportDatabase().then(() => setIsLoading(false)).finally(() => setIsLoading(false));
+                                }}>
+                                Exportar base de datos
+                            </Button>
+                        </div>
+                        <div>
+                            <h1 className="my-2">Importar</h1>
+                            <div className="flex flex-row gap-2">
+                                <input
+                                    className="w-full bg-sidebar rounded-sm"
+                                    type="file"
+                                    onChange={(e) => {
+                                        setFile(e.target.files[0]);
+                                    }}
+                                />
+                                <Button
+                                    color="primary"
+                                    size='lg'
+                                    radius="sm"
+                                    isIconOnly
+                                    onClick={async () => {
+                                        await sweetAlert('¿Deseas restaurar la base de datos?', '', 'question', 'success', 'Los datos se han importado correctamente');
+                                        setIsLoading(true);
+                                        handleImport().then(() => setIsLoading(false));
+                                    }}>
+                                    <PlusIcon className="w-5 h-5" />
+                                </Button>
+                            </div>
+                        </div>
                     </Tab>
                 </Tabs>
             )}
