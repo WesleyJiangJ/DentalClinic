@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { sweetToast } from '../components/dashboard/Alerts';
 
 const apiURL = import.meta.env.VITE_API_URL;
 
@@ -60,6 +61,8 @@ const odontogramToothConditionAPI = createAPIInstance(`${apiURL}/odontogramtooth
 const notesAPI = createAPIInstance(`${apiURL}/notes/`);
 const emailAPI = createAPIInstance(`${apiURL}/send-email/`);
 const fileAPI = createAPIInstance(`${apiURL}/files/`);
+const exportAPI = createAPIInstance(`${apiURL}/export-database/`)
+const importAPI = createAPIInstance(`${apiURL}/import-database/`)
 
 // User
 export const getUser = (email) => {
@@ -291,3 +294,35 @@ export const getFiles = (model, id) => {
 export const deleteFile = (id) => {
     return fileAPI.delete(`/${id}/`);
 }
+
+// Export Database
+export const exportDatabase = async () => {
+    try {
+        const response = await exportAPI.get('/', { responseType: 'blob' });
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `backup_${new Date().toDateString()}.dump`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+    } catch (error) {
+        sweetToast('error', 'Ha ocurrido un error');
+    }
+}
+
+// Import Database
+export const importDatabase = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+        await importAPI.post('/', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }).catch((error) => console.log(error));
+    } catch (error) {
+        sweetToast('error', 'Ha ocurrido un error');
+    }
+};
