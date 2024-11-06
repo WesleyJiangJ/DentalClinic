@@ -62,6 +62,7 @@ APPOINTMENTSTATUS = [
 
 # People
 class Patient(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
     first_name = models.CharField(max_length=30)
     middle_name = models.CharField(max_length=30)
     first_lastname = models.CharField(max_length=30)
@@ -139,20 +140,18 @@ def create_user_with_permissions(sender, instance, created, **kwargs):
         )
 
         # Check and create groups if it doesn't exist
-        doctor_group, created = Group.objects.get_or_create(name="DoctorGroup")
         personal_group, created = Group.objects.get_or_create(name="PersonalGroup")
         patient_group, created = Group.objects.get_or_create(name="PatientGroup")
 
         # Assign model-specific permissions
         if sender == Personal:
-            role = instance.role
-            if role == 2:
-                group = doctor_group
-            elif role == 3:
-                group = personal_group
+            group = personal_group
             user.groups.add(group)
             user.user_permissions.add()
         elif sender == Patient:
+            patient = Patient.objects.get(email=instance.email)
+            patient.user = user
+            patient.save()
             group = patient_group
             user.groups.add(group)
             user.user_permissions.add()
@@ -224,6 +223,7 @@ class Budget_Detail(models.Model):
 
 class Payment(models.Model):
     id_budget = models.ForeignKey(Budget, on_delete=models.CASCADE, blank=True)
+    paid = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     status = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -231,6 +231,7 @@ class Payment(models.Model):
 class PaymentControl(models.Model):
     id_payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
     paid = models.DecimalField(max_digits=10, decimal_places=2)
+    note = models.TextField(max_length=256, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
@@ -264,6 +265,17 @@ class Notes(models.Model):
     content = models.TextField(max_length=256)
     created_at = models.DateTimeField(auto_now_add=True)
     # Fields for Polymorphic Relationship
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class Files(models.Model):
+    file_url = models.URLField(max_length=200)
+    name = models.CharField(max_length=64, blank=False)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")

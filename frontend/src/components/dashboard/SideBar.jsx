@@ -4,7 +4,7 @@ import { sweetAlert } from './Alerts.js';
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
 import { HomeIcon, UserIcon, CalendarDaysIcon, BanknotesIcon, UserGroupIcon, CogIcon, ArrowLeftStartOnRectangleIcon, CreditCardIcon, DocumentTextIcon } from "@heroicons/react/24/solid";
 
-export default function SideBar({ collapsed, userGroup }) {
+export default function SideBar({ collapsed, userGroup, userID }) {
     const navigate = useNavigate();
     const menuItemStyles = {
         button: {
@@ -31,50 +31,62 @@ export default function SideBar({ collapsed, userGroup }) {
                     </svg>
                 </div>
                 <Menu menuItemStyles={menuItemStyles}>
-                    <MenuItem
-                        icon={<HomeIcon className="h-5 w-5" />}
-                        component={<NavLink to="" end style={getActiveStyles} />}>
-                        Dashboard
-                    </MenuItem>
+                    {userGroup.includes('PersonalGroup') &&
+                        <MenuItem
+                            icon={<HomeIcon className="h-5 w-5" />}
+                            component={<NavLink to="" end style={getActiveStyles} />}>
+                            Dashboard
+                        </MenuItem>
+                    }
                     <MenuItem
                         icon={<UserIcon className="h-5 w-5" />}
-                        component={<NavLink to="patient" style={getActiveStyles} />}>
+                        component={
+                            <NavLink to={userGroup.includes('PersonalGroup') ? 'patient' : `patient/detail/${userID}`} style={getActiveStyles} />
+                        }>
                         Pacientes
                     </MenuItem>
-                    <MenuItem
-                        icon={<CalendarDaysIcon className="h-5 w-5" />}
-                        component={<NavLink to="appointment" style={getActiveStyles} />}>
-                        Citas
-                    </MenuItem>
-                    <SubMenu label="Pagos" icon={<BanknotesIcon className="h-5 w-5" />}>
-                        <MenuItem
-                            icon={<CreditCardIcon className="h-5 w-5" />}
-                            component={<NavLink to="budget" style={getActiveStyles} />}>
-                            Presupuestos
-                        </MenuItem>
-                        <MenuItem
-                            icon={<DocumentTextIcon className="h-5 w-5" />}
-                            component={<NavLink to="payment" style={getActiveStyles} />}>
-                            Pagos
-                        </MenuItem>
-                    </SubMenu>
+                    {userGroup.includes('PersonalGroup') &&
+                        <>
+                            <MenuItem
+                                icon={<CalendarDaysIcon className="h-5 w-5" />}
+                                component={<NavLink to="appointment" style={getActiveStyles} />}>
+                                Citas
+                            </MenuItem>
+                            <SubMenu label="Pagos" icon={<BanknotesIcon className="h-5 w-5" />}>
+                                <MenuItem
+                                    icon={<CreditCardIcon className="h-5 w-5" />}
+                                    component={<NavLink to="budget" style={getActiveStyles} />}>
+                                    Presupuestos
+                                </MenuItem>
+                                <MenuItem
+                                    icon={<DocumentTextIcon className="h-5 w-5" />}
+                                    component={<NavLink to="payment" style={getActiveStyles} />}>
+                                    Pagos
+                                </MenuItem>
+                            </SubMenu>
+                        </>
+                    }
                 </Menu>
                 <Menu menuItemStyles={menuItemStyles}>
-                    <MenuItem
-                        icon={<UserGroupIcon className="h-5 w-5" />}
-                        component={<NavLink to="personal" style={getActiveStyles} />}>
-                        Personal
-                    </MenuItem>
-                    <MenuItem
-                        icon={<DocumentTextIcon className="h-5 w-5" />}
-                        component={<NavLink to="reports" style={getActiveStyles} />}>
-                        Reportes
-                    </MenuItem>
-                    <MenuItem
-                        icon={<CogIcon className="h-5 w-5" />}
-                        component={<NavLink to="settings" style={getActiveStyles} />}>
-                        Ajustes
-                    </MenuItem>
+                    {userGroup.includes('PersonalGroup') &&
+                        <>
+                            <MenuItem
+                                icon={<UserGroupIcon className="h-5 w-5" />}
+                                component={<NavLink to="personal" style={getActiveStyles} />}>
+                                Personal
+                            </MenuItem>
+                            <MenuItem
+                                icon={<DocumentTextIcon className="h-5 w-5" />}
+                                component={<NavLink to="reports" style={getActiveStyles} />}>
+                                Reportes
+                            </MenuItem>
+                            <MenuItem
+                                icon={<CogIcon className="h-5 w-5" />}
+                                component={<NavLink to="settings" style={getActiveStyles} />}>
+                                Ajustes
+                            </MenuItem>
+                        </>
+                    }
                     <MenuItem
                         icon={<ArrowLeftStartOnRectangleIcon className="h-5 w-5" />}
                         onClick={async () => {

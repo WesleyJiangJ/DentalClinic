@@ -43,11 +43,12 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable,
             else {
                 if (calc === parseFloat(data.totalDebt)) {
                     await postPaymentControl(data);
-                    await putPayment(param.id, { status: false });
+                    await putPayment(param.id, { status: false, paid: calc });
                     sweetToast('success', `Se ha finalizado el pago del tratamiento`);
                 }
                 else {
                     await postPaymentControl(data);
+                    await putPayment(param.id, { paid: calc });
                     sweetToast('success', `Se abonaron C$${data.paid}`);
                 }
                 loadData();
@@ -64,7 +65,7 @@ export default function PaymentModal({ isOpen, onOpenChange, param, updateTable,
                 setPaymentStatus(res.status);
                 const resPaymentControl = (await getAllPaymentControl()).data
                     .filter(payment => payment.id_payment === parseInt(param.id))
-                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));                 
+                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
                 const treatmentData = res.budget_data.detailFields.map(field => ({
                     name: field.treatment_data.name,
                     cost: field.cost,

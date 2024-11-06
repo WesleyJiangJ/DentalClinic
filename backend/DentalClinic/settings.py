@@ -14,6 +14,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load Environment Variables
 load_dotenv()
 
+# Check if the backup directory exists and create it if not
+backup_dir = BASE_DIR / "backup"
+if not os.path.exists(backup_dir):
+    os.makedirs(backup_dir)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -41,6 +45,7 @@ INSTALLED_APPS = [
     "django_filters",
     "corsheaders",
     "coreapi",
+    "dbbackup",
     "api",
 ]
 
@@ -82,11 +87,18 @@ WSGI_APPLICATION = "DentalClinic.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": os.getenv("MYSQL_DATABASE"),
+        "USER": os.getenv("MYSQL_USER"),
+        "PASSWORD": os.getenv("MYSQL_PASSWORD"),
+        "HOST": os.getenv("MYSQL_HOST"),
+        "PORT": os.getenv("MYSQL_PORT"),
+        "OPTIONS": {"connect_timeout": 60},
     }
 }
 
+DBBACKUP_STORAGE = "django.core.files.storage.FileSystemStorage"
+DBBACKUP_STORAGE_OPTIONS = {"location": backup_dir}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

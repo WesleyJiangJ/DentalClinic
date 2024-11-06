@@ -4,6 +4,7 @@
 
 # Backend
 db.sqlite3
+backup
 migrations
 __pycache__
 

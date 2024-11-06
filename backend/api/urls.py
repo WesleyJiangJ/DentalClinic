@@ -20,6 +20,7 @@ router.register(r"odontogram", views.OdontogramViewSet)
 router.register(r"odontogramteeth", views.OdontogramTeethViewSet)
 router.register(r"odontogramtoothcondition", views.OdontogramToothConditionViewSet)
 router.register(r"notes", views.NotesViewSet)
+router.register(r"files", views.FilesViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
@@ -34,6 +35,13 @@ urlpatterns = [
         name="token_obtain_pair",
     ),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("upload/", views.upload_file, name="upload_file"),
+    path(
+        "export-database/", views.DatabaseBackupView.as_view(), name="export_database"
+    ),
+    path(
+        "import-database/", views.DatabaseRestoreView.as_view(), name="import_database"
+    ),
 ]
 
 urlpatterns += router.urls

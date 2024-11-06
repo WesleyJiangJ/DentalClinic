@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate, useParams } from 'react-router-dom'
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Button, DropdownTrigger, Dropdown, DropdownMenu, DropdownItem, Chip, Pagination, Select, SelectItem, useDisclosure } from "@nextui-org/react";
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Button, DropdownTrigger, Dropdown, DropdownMenu, DropdownItem, Chip, Pagination, Select, SelectItem, Spinner, useDisclosure } from "@nextui-org/react";
 import { PlusIcon, ChevronDownIcon } from '@heroicons/react/24/solid'
 import UserModal from "./UserModal.jsx";
 import BudgetModal from "./BudgetModal.jsx";
@@ -13,6 +13,7 @@ function capitalize(str) {
 export default function Tables({ value, showStatusDropdown, showColumnsDropdown, showAddButton, typeOfData, axiosResponse, fetchData, INITIAL_VISIBLE_COLUMNS, columns, statusColorMap, statusOptions, cellValues, sortedItem }) {
     const param = useParams();
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = React.useState(true);
     const [axiosData, setAxiosData] = React.useState([])
     const [filterValue, setFilterValue] = React.useState("");
     const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
@@ -42,6 +43,7 @@ export default function Tables({ value, showStatusDropdown, showColumnsDropdown,
 
     const loadData = async () => {
         setAxiosData(axiosResponse);
+        setIsLoading(false);
     };
 
     const updateTable = () => {
@@ -256,55 +258,63 @@ export default function Tables({ value, showStatusDropdown, showColumnsDropdown,
 
     return (
         <>
-            <Table
-                shadow="none"
-                radius="sm"
-                aria-label="Table"
-                isHeaderSticky
-                bottomContent={bottomContent}
-                bottomContentPlacement="outside"
-                classNames={{ wrapper: "h-[66vh]" }}
-                selectedKeys={selectedKeys}
-                sortDescriptor={sortDescriptor}
-                topContent={topContent}
-                topContentPlacement="outside"
-                onSelectionChange={setSelectedKeys}
-                onSortChange={setSortDescriptor}
-                selectionMode="single"
-                onRowAction={(key) => {
-                    navigate(`detail/${key}`);
-                    onOpenChange(true);
-                }}>
-                <TableHeader columns={headerColumns}>
-                    {(column) => (
-                        <TableColumn
-                            key={column.uid}
-                            allowsSorting={column.sortable}>
-                            {column.name}
-                        </TableColumn>
-                    )}
-                </TableHeader>
-                <TableBody emptyContent={"No hubieron resultados"} items={sortedItems}>
-                    {(item) => (
-                        <TableRow key={item.id}>
-                            {(columnKey) =>
-                                <TableCell className="cursor-pointer">
-                                    {renderCell(item, columnKey)}
-                                </TableCell>
-                            }
-                        </TableRow>
-                    )}
-                </TableBody>
-            </Table>
-            {typeOfData === "Usuarios" &&
-                <UserModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} value={value} />
-            }
-            {typeOfData === "Presupuestos" &&
-                <BudgetModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} modifyURL={modifyURL} param={param} />
-            }
-            {typeOfData === "Pagos" &&
-                <PaymentModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} modifyURL={modifyURL} param={param} />
-            }
+            {isLoading ? (
+                <div className="flex items-center justify-center w-full h-full">
+                    <Spinner size='lg' />
+                </div>
+            ) : (
+                <>
+                    <Table
+                        shadow="none"
+                        radius="sm"
+                        aria-label="Table"
+                        isHeaderSticky
+                        bottomContent={bottomContent}
+                        bottomContentPlacement="outside"
+                        classNames={{ wrapper: "h-[66vh]" }}
+                        selectedKeys={selectedKeys}
+                        sortDescriptor={sortDescriptor}
+                        topContent={topContent}
+                        topContentPlacement="outside"
+                        onSelectionChange={setSelectedKeys}
+                        onSortChange={setSortDescriptor}
+                        selectionMode="single"
+                        onRowAction={(key) => {
+                            navigate(`detail/${key}`);
+                            onOpenChange(true);
+                        }}>
+                        <TableHeader columns={headerColumns}>
+                            {(column) => (
+                                <TableColumn
+                                    key={column.uid}
+                                    allowsSorting={column.sortable}>
+                                    {column.name}
+                                </TableColumn>
+                            )}
+                        </TableHeader>
+                        <TableBody emptyContent={"No hubieron resultados"} items={sortedItems}>
+                            {(item) => (
+                                <TableRow key={item.id}>
+                                    {(columnKey) =>
+                                        <TableCell className="cursor-pointer">
+                                            {renderCell(item, columnKey)}
+                                        </TableCell>
+                                    }
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                    {typeOfData === "Usuarios" &&
+                        <UserModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} value={value} />
+                    }
+                    {typeOfData === "Presupuestos" &&
+                        <BudgetModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} modifyURL={modifyURL} param={param} />
+                    }
+                    {typeOfData === "Pagos" &&
+                        <PaymentModal isOpen={isOpen} onOpenChange={onOpenChange} updateTable={updateTable} modifyURL={modifyURL} param={param} />
+                    }
+                </>
+            )}
         </>
     );
 }

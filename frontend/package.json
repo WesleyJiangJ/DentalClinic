@@ -22,6 +22,7 @@
     "axios": "^1.6.7",
     "braces": "^3.0.3",
     "chart.js": "^4.4.4",
+    "firebase": "^10.14.0",
     "framer-motion": "^11.0.3",
     "jwt-decode": "^4.0.0",
     "postcss": "^8.4.38",

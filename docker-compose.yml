@@ -8,6 +8,18 @@ services:
       - ./backend:/app
     ports:
       - "8000:8000"
+    depends_on:
+      - db
+    command: >
+      wait-for-it db:3306 -- python manage.py runserver 0.0.0.0:8000
+
+    environment:
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_PORT: ${MYSQL_PORT}
+      MYSQL_DB: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
   frontend:
     container_name: react_frontend
     build:
@@ -18,3 +30,21 @@ services:
       - /app/node_modules
     ports:
       - "5173:5173"
+
+  db:
+    container_name: mysql_db
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./my.cnf:/etc/mysql/conf.d/my.cnf
+
+volumes:
+  db_data:
