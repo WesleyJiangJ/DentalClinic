@@ -11,6 +11,7 @@ export default function LoginModal({ isOpen, onOpenChange }) {
     const navigate = useNavigate();
     const [isVisiblePassword, setIsVisiblePassword] = React.useState(false);
     const toggleVisibility = () => setIsVisiblePassword(!isVisiblePassword);
+    const [isLoading, setIsLoading] = React.useState(false);
     const { control, handleSubmit, formState: { errors }, reset, setError } = useForm({
         defaultValues: {
             username: '',
@@ -20,10 +21,12 @@ export default function LoginModal({ isOpen, onOpenChange }) {
 
     const onSubmit = async (data) => {
         try {
+            setIsLoading(true);
             const response = await axios.post(`${apiURL}/api/token/`, {
                 username: data.username,
                 password: data.password,
             });
+            setIsLoading(false);
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
             // Decode Token
@@ -40,6 +43,7 @@ export default function LoginModal({ isOpen, onOpenChange }) {
             reset();
             setError('username');
             setError('password', { message: error.response.data.detail });
+            setIsLoading(false);
         }
     };
 
@@ -120,6 +124,7 @@ export default function LoginModal({ isOpen, onOpenChange }) {
                                             radius="sm"
                                             fullWidth
                                             size='md'
+                                            isLoading={isLoading}
                                             type='submit'>
                                             Iniciar Sesión
                                         </Button>
