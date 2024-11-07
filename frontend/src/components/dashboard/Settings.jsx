@@ -12,6 +12,7 @@ export default function Settings() {
     const location = useLocation();
     const [isLoading, setIsLoading] = React.useState(true);
     const [isLoadingExport, setIsLoadingExport] = React.useState(false);
+    const [isLoadingImport, setIsLoadingImport] = React.useState(false);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [treatment, setTreatment] = React.useState([]);
     const [toothCondition, setToothCondition] = React.useState([]);
@@ -98,9 +99,14 @@ export default function Settings() {
                                 isLoading={isLoadingExport}
                                 endContent={<ArrowUpTrayIcon className="w-5 h-5" />}
                                 onClick={async () => {
-                                    await sweetAlert('¿Deseas exportar la base de datos?', '', 'question', 'success', 'Los datos se han exportado correctamente');
+                                    await sweetAlert('¿Deseas exportar la base de datos?', '', 'question', 'info', 'Espere un momento...');
                                     setIsLoadingExport(true);
-                                    exportDatabase().then(() => setIsLoadingExport(false)).finally(() => setIsLoadingExport(false));
+                                    exportDatabase()
+                                        .then(() => {
+                                            setIsLoadingExport(false);
+                                            sweetToast('success', 'Los base de datos ha sido exportada satisfactoriamente');
+                                        })
+                                        .finally(() => setIsLoadingExport(false));
                                 }}>
                                 Exportar base de datos
                             </Button>
@@ -120,10 +126,14 @@ export default function Settings() {
                                     size='lg'
                                     radius="sm"
                                     isIconOnly
+                                    isLoading={isLoadingImport}
                                     onClick={async () => {
-                                        await sweetAlert('¿Deseas restaurar la base de datos?', '', 'question', 'success', 'Los datos se han importado correctamente');
-                                        setIsLoading(true);
-                                        handleImport().then(() => setIsLoading(false));
+                                        await sweetAlert('¿Deseas restaurar la base de datos?', '', 'question', 'info', 'Espere un momento...');
+                                        setIsLoadingImport(true);
+                                        handleImport().then(() => {
+                                            setIsLoadingImport(false);
+                                            sweetToast('success', 'Los datos han sido importados satisfactoriamente');
+                                        });
                                     }}>
                                     <PlusIcon className="w-5 h-5" />
                                 </Button>
