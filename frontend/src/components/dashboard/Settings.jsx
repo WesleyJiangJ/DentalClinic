@@ -11,6 +11,7 @@ export default function Settings() {
     const param = useParams();
     const location = useLocation();
     const [isLoading, setIsLoading] = React.useState(true);
+    const [isLoadingExport, setIsLoadingExport] = React.useState(false);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [treatment, setTreatment] = React.useState([]);
     const [toothCondition, setToothCondition] = React.useState([]);
@@ -94,11 +95,12 @@ export default function Settings() {
                                 size="lg"
                                 radius="sm"
                                 fullWidth
+                                isLoading={isLoadingExport}
                                 endContent={<ArrowUpTrayIcon className="w-5 h-5" />}
                                 onClick={async () => {
                                     await sweetAlert('¿Deseas exportar la base de datos?', '', 'question', 'success', 'Los datos se han exportado correctamente');
-                                    setIsLoading(true);
-                                    exportDatabase().then(() => setIsLoading(false)).finally(() => setIsLoading(false));
+                                    setIsLoadingExport(true);
+                                    exportDatabase().then(() => setIsLoadingExport(false)).finally(() => setIsLoadingExport(false));
                                 }}>
                                 Exportar base de datos
                             </Button>
