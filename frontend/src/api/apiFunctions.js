@@ -61,8 +61,9 @@ const odontogramToothConditionAPI = createAPIInstance(`${apiURL}/odontogramtooth
 const notesAPI = createAPIInstance(`${apiURL}/notes/`);
 const emailAPI = createAPIInstance(`${apiURL}/send-email/`);
 const fileAPI = createAPIInstance(`${apiURL}/files/`);
-const exportAPI = createAPIInstance(`${apiURL}/export-database/`)
-const importAPI = createAPIInstance(`${apiURL}/import-database/`)
+const exportAPI = createAPIInstance(`${apiURL}/export-database/`);
+const importAPI = createAPIInstance(`${apiURL}/import-database/`);
+const contentTypeAPI = createAPIInstance(`${apiURL}/content-type/`);
 
 // User
 export const getUser = (email) => {
@@ -293,6 +294,11 @@ export const getFiles = (model, id) => {
 
 export const deleteFile = (id) => {
     return fileAPI.delete(`/${id}/`);
+}
+
+// Content Type
+export const getContentType = (app_label, model_name) => {
+    return contentTypeAPI.get(`${app_label}/${model_name}/`);
 }
 
 // Export Database
