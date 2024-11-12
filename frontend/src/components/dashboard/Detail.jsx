@@ -188,51 +188,60 @@ export default function Detail({ value }) {
                                 shadow="none"
                                 radius="sm"
                                 className="w-full md:w-1/2 p-2 h-full bg-card">
-                                <Dropdown radius="sm">
-                                    <DropdownTrigger>
-                                        <div className="flex justify-center items-center w-full h-full cursor-pointer">
-                                            <div className="flex justify-center items-center w-48 h-48 m-5 bg-gray-300 rounded-full border">
-                                                <p className="text-8xl">
-                                                    {user.first_name ? user.first_name[0] : ''}
-                                                    {user.first_lastname ? user.first_lastname[0] : ''}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </DropdownTrigger>
+                                <CardBody className="justify-evenly">
+                                    <div>
+                                        <Dropdown radius="sm">
+                                            <DropdownTrigger>
+                                                <div className="flex justify-center items-center w-full h-full cursor-pointer">
+                                                    <div className="flex justify-center items-center w-48 h-48 bg-gray-300 rounded-full border">
+                                                        <p className="text-8xl">
+                                                            {user.first_name ? user.first_name[0] : ''}
+                                                            {user.first_lastname ? user.first_lastname[0] : ''}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </DropdownTrigger>
+                                            {userGroup.includes('PersonalGroup') &&
+                                                <DropdownMenu aria-label="Actions">
+                                                    <DropdownItem key="edit" startContent={<PencilSquareIcon className="w-4 h-4" />} onPress={onUserModalOpen}>Modificar</DropdownItem>
+                                                    <DropdownItem
+                                                        key="status"
+                                                        className={user.status === true ? 'text-danger' : 'text-success'}
+                                                        color={user.status === true ? 'danger' : 'success'}
+                                                        startContent={user.status === true ? <MinusCircleIcon className="w-5 h-5" /> : <CheckCircleIcon className="w-5 h-5" />}
+                                                        onPress={changeStatus}>
+                                                        {user.status === true ? 'Dar de baja' : 'Dar de alta'}
+                                                    </DropdownItem>
+                                                </DropdownMenu>
+                                            }
+                                        </Dropdown>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <Badge content="" size="lg" color={user.status === true ? "success" : "danger"}>
+                                            <h1 className="text-2xl font-bold m-auto">
+                                                {user.first_name} {user.first_lastname}
+                                            </h1>
+                                        </Badge>
+                                        <small className="text-base m-auto mb-5">{user.email}</small>
+                                    </div>
                                     {userGroup.includes('PersonalGroup') &&
-                                        <DropdownMenu aria-label="Actions">
-                                            <DropdownItem key="edit" startContent={<PencilSquareIcon className="w-4 h-4" />} onPress={onUserModalOpen}>Modificar</DropdownItem>
-                                            <DropdownItem
-                                                key="status"
-                                                className={user.status === true ? 'text-danger' : 'text-success'}
-                                                color={user.status === true ? 'danger' : 'success'}
-                                                startContent={user.status === true ? <MinusCircleIcon className="w-5 h-5" /> : <CheckCircleIcon className="w-5 h-5" />}
-                                                onPress={changeStatus}>
-                                                {user.status === true ? 'Dar de baja' : 'Dar de alta'}
-                                            </DropdownItem>
-                                        </DropdownMenu>
+                                        <div className="w-full">
+                                            <Button
+                                                color="primary"
+                                                radius="sm"
+                                                size="lg"
+                                                className="w-full"
+                                                startContent={
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-whatsapp" viewBox="0 0 16 16">
+                                                        <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232" />
+                                                    </svg>
+                                                }
+                                                onClick={() => window.open("https://wa.me/505" + `${user.phone_number}`, "_blank")}>
+                                                Enviar Mensaje
+                                            </Button>
+                                        </div>
                                     }
-                                </Dropdown>
-                                <Badge content="" size="lg" color={user.status === true ? "success" : "danger"}>
-                                    <h1 className="text-2xl font-bold m-auto">
-                                        {user.first_name} {user.first_lastname}
-                                    </h1>
-                                </Badge>
-                                <small className="text-base m-auto mb-5">{user.email}</small>
-                                {userGroup.includes('PersonalGroup') &&
-                                    <Button
-                                        color="primary"
-                                        radius="sm"
-                                        size="lg"
-                                        startContent={
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-whatsapp" viewBox="0 0 16 16">
-                                                <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232" />
-                                            </svg>
-                                        }
-                                        onClick={() => window.open("https://wa.me/505" + `${user.phone_number}`, "_blank")}>
-                                        Enviar Mensaje
-                                    </Button>
-                                }
+                                </CardBody>
                             </Card>
                             <Card
                                 shadow="none"
@@ -242,8 +251,7 @@ export default function Detail({ value }) {
                                 <CardHeader>
                                     <p className="font-bold text-large">Información</p>
                                 </CardHeader>
-                                <CardBody
-                                    className="justify-evenly">
+                                <CardBody className="justify-evenly">
                                     <UserInformation
                                         firstLabel={userInformation[0].firstLabel}
                                         secondLabel={userInformation[0].secondLabel}
