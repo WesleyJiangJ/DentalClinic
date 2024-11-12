@@ -127,7 +127,7 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
                         }
                     }
                     if (changes.size > 0) {
-                        await sweetAlert("¿Confirmar cambios?", `¿Deseas modificar ${Array.from(changes).join(', ')}?`, "warning", "success", "Datos Actualizados").finally(() => setIsLoading(true));
+                        await sweetAlert("¿Confirmar cambios?", `¿Deseas modificar ${Array.from(changes).join(', ')}?`, "warning", "info", "Espere un momento...").finally(() => setIsLoading(true));
                         if (value === "Paciente") {
                             await putPatient(param.id, data)
                                 .then(async () => {
@@ -138,7 +138,9 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
                                     updateData();
                                     onOpenChange(false);
                                     reset();
+                                    sweetToast('success', 'Datos actualizados');
                                 })
+                                .catch(() => sweetToast('error', 'Ha ocurrido un error'));
                         }
                         else if (value === "Personal") {
                             await putPersonal(param.id, data)
@@ -150,7 +152,9 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
                                     updateData();
                                     onOpenChange(false);
                                     reset();
+                                    sweetToast('success', 'Datos actualizados');
                                 })
+                                .catch(() => sweetToast('error', 'Ha ocurrido un error'));
                         }
                         setIsLoading(false);
                     }
