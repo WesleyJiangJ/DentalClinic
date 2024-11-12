@@ -9,6 +9,7 @@ import { today, parseDate } from "@internationalized/date";
 export default function UserModal({ isOpen, onOpenChange, updateTable, updateData, value }) {
     const param = useParams();
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = React.useState(false);
     const { control, handleSubmit, formState: { errors }, reset } = useForm({
         defaultValues: {
             first_name: '',
@@ -126,7 +127,7 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
                         }
                     }
                     if (changes.size > 0) {
-                        await sweetAlert("¿Confirmar cambios?", `¿Deseas modificar ${Array.from(changes).join(', ')}?`, "warning", "success", "Datos Actualizados");
+                        await sweetAlert("¿Confirmar cambios?", `¿Deseas modificar ${Array.from(changes).join(', ')}?`, "warning", "success", "Datos Actualizados").finally(() => setIsLoading(true));
                         if (value === "Paciente") {
                             await putPatient(param.id, data)
                                 .then(async () => {
@@ -151,10 +152,12 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
                                     reset();
                                 })
                         }
+                        setIsLoading(false);
                     }
                     else {
                         sweetToast('warning', 'No se realizaron modificaciones');
                         onOpenChange(false);
+                        setIsLoading(false);
                         reset();
                     }
                 } catch (error) {
@@ -162,6 +165,7 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
                 }
             }
             else {
+                setIsLoading(true);
                 if (value === "Paciente") {
                     await postPatient(data)
                         .then((response) => {
@@ -178,8 +182,10 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
                 updateTable();
                 onOpenChange(false);
                 sweetToast("success", `Se ha agregado a ${data.first_name} ${data.first_lastname}`);
+                setIsLoading(false);
             }
         } catch (error) {
+            sweetToast("error", `Ha ocurrido un error`);
             console.error('Error:', error);
         }
     }
@@ -488,10 +494,10 @@ export default function UserModal({ isOpen, onOpenChange, updateTable, updateDat
                                 }
                             </ModalBody>
                             <ModalFooter>
-                                <Button color="danger" variant="light" radius="sm" onPress={onClose}>
+                                <Button color="danger" variant="light" radius="sm" onPress={onClose} isDisabled={isLoading}>
                                     Cerrar
                                 </Button>
-                                <Button color="primary" radius="sm" type="submit">
+                                <Button color="primary" radius="sm" type="submit" isLoading={isLoading}>
                                     {param.id ? "Actualizar" : "Guardar"}
                                 </Button>
                             </ModalFooter>
