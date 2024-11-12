@@ -42,6 +42,11 @@ urlpatterns = [
     path(
         "import-database/", views.DatabaseRestoreView.as_view(), name="import_database"
     ),
+    path(
+        "content-type/<str:app_label>/<str:model_name>/",
+        views.get_content_type,
+        name="get_content_type",
+    ),
 ]
 
 urlpatterns += router.urls
