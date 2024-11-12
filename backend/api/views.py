@@ -1,6 +1,7 @@
 import os
 import subprocess
 from django.contrib.auth.models import Group, User
+from django.contrib.contenttypes.models import ContentType
 import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
@@ -225,6 +226,16 @@ class FilesViewSet(viewsets.ModelViewSet):
         "content_type__model": ["exact"],
         "object_id": ["exact"],
     }
+
+
+def get_content_type(request, app_label, model_name):
+    try:
+        content_type = ContentType.objects.get(
+            app_label=app_label, model=model_name.lower()
+        )
+        return JsonResponse({"content_type_id": content_type.id})
+    except ContentType.DoesNotExist:
+        return JsonResponse({"error": "Model not found"}, status=404)
 
 
 class DatabaseBackupView(APIView):
