@@ -79,7 +79,11 @@ export default function Odontogram() {
 
     return (
         <>
-            <div className='flex flex-col h-full gap-5'>
+            <div className="flex flex-col gap-5 items-center justify-center w-full h-full md:hidden">
+                <h1 className="text-xl font-bold">Visualización no disponible en dispositivos móviles</h1>
+                <p className="text-lg">Para ver el odontograma, accede desde otro dispositivo</p>
+            </div>
+            <div className='hidden md:flex flex-col h-full gap-5'>
                 <div className="h-[60%] overflow-scroll">
                     <div className="flex flex-row gap-5">
                         <div className='flex flex-row'>
@@ -612,7 +616,7 @@ export default function Odontogram() {
                             </CardFooter>
                         </Card>
                     </div>
-                    <Notes backgroundColor={''} from={'OD'} loadData={loadData} notes={notes}/>
+                    <Notes backgroundColor={''} from={'OD'} loadData={loadData} notes={notes} />
                     <Card
                         radius="sm"
                         fullWidth>
