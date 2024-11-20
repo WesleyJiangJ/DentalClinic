@@ -6,7 +6,7 @@ import { parseDate } from "@internationalized/date";
 import { generateExcel } from "./Excel";
 import clsx from 'clsx';
 import { createContext } from "react";
-import { ReportHeader } from "./ReportHeader";
+//import { ReportHeader } from "./ReportHeader";
 
 const columns = [
     {
@@ -200,7 +200,6 @@ export const Reports = () => {
                     </Table>
                 </div>
             </div>
-            <ReportHeader/>
         </ReportsContext.Provider>
     );
 }
