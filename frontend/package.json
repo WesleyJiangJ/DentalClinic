@@ -18,6 +18,7 @@
     "@heroicons/react": "^2.1.1",
     "@material-tailwind/react": "^2.1.9",
     "@nextui-org/react": "^2.3.6",
+    "@react-pdf/renderer": "^4.1.4",
     "autoprefixer": "^10.4.19",
     "axios": "^1.6.7",
     "braces": "^3.0.3",

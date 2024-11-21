@@ -6,7 +6,8 @@ import { parseDate } from "@internationalized/date";
 import { generateExcel } from "./Excel";
 import clsx from 'clsx';
 import { createContext } from "react";
-//import { ReportHeader } from "./ReportHeader";
+import { Pdf } from "./Pdf";
+import {PDFDownloadLink, PDFViewer} from "@react-pdf/renderer"
 
 const columns = [
     {
@@ -120,8 +121,6 @@ export const Reports = () => {
         }
     }
 
-
-
     return (
         <ReportsContext.Provider value={{test}}>
             <div className="flex flex-col w-full gap-y-2">
@@ -198,6 +197,19 @@ export const Reports = () => {
                             ) : null}
                         </TableBody>
                     </Table>
+
+                 
+                    <PDFDownloadLink document={<Pdf />} fileName="rep.pdf">
+                        {({ loading }) => 
+                            loading ? (
+                                <button>Loading Document...</button>
+                            ) : (
+                                <button>Download...</button>
+                            )
+                        }
+                    </PDFDownloadLink>
+  
+
                 </div>
             </div>
         </ReportsContext.Provider>
