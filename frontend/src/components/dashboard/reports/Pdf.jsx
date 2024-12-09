@@ -1,50 +1,136 @@
-import { Document, Text, Page, StyleSheet, Image, View } from '@react-pdf/renderer';
-import GeneralDentistry from "../../../../public/images/GeneralDentistry.jpeg"; // Ensure the path is correct
+import { Document, Text, Page, StyleSheet, Image, View } from "@react-pdf/renderer";
+import GeneralDentistry from "../../../../public/images/GeneralDentistry.jpeg"; // Asegúrate de que la ruta sea correcta
 
 const styles = StyleSheet.create({
     page: {
-        backgroundColor: "#E4E4E4",
-        padding: 20, 
+        padding: 5,
+        height: "100%",
+        display: "flex",
+        justifyContent: "space-between",
+        flexDirection: "column",
+        fontFamily: "Helvetica",
     },
     section: {
         display: "flex",
         flexDirection: "row",
-        margin: 10,
-        padding: 10,
-        flexGrow: 1,
-        alignItems: "center", 
-    },
-    text: {
-        flex: 1,
-        marginRight: 10, 
+        width: "100%",
+        justifyContent: "space-between",
+        height: "15%",
     },
     image: {
-        width: 100, 
-        height: 100, 
+        width: "100%",
+        height: "100%",
+        marginLeft: "auto",
+        marginRight: "auto",
+        marginTop: 10,
+        marginBottom: 10,
+        objectFit: "cover",
+        borderRadius: 50,
+        justifyContent: "center",
+        backgroundColor: "yellow",
     },
     title: {
-        fontSize: 24,
+        width: "50%",
+        display: "column",
+        justifyContent: "center",
+        height: "100%",
+    },
+    table: {
+        display: "table",
+        width: "100%",
+        borderStyle: "solid",
+        borderWidth: 1,
+        borderColor: "#ddd",
+        marginTop: 20,
+        borderRadius: 5,
+        overflow: "hidden",
+    },
+    tableRow: {
+        flexDirection: "row",
+    },
+    tableCol: {
+        flex: 1,
+        borderStyle: "solid",
+        borderWidth: 1,
+        borderColor: "#ddd",
+        padding: 5,
+        backgroundColor: "#f9f9f9",
+    },
+    tableHeaderCol: {
+        flex: 1,
+        backgroundColor: "#4CAF50",
+        color: "#fff",
+        fontWeight: "bold",
+        borderStyle: "solid",
+        borderWidth: 1,
+        borderColor: "#ddd",
+        padding: 5,
+    },
+    tableCell: {
         textAlign: "center",
-        fontWeight: "bold"
-    }
+        fontSize: 10,
+        color: "#333",
+    },
+    tableHeaderCell: {
+        textAlign: "center",
+        fontSize: 12,
+        fontWeight: "bold",
+    },
 });
 
-export const Pdf = () => {
+const headerMap = {
+    created_at: "Fecha de Creación",
+    description: "Decripción",
+    first_name: "Nombre",
+    first_lastname: "Apellido",
+    totalPaid: "Pagado",
+    totalSlope: "Deuda",
+    total: "Total"
+};
+
+export const Pdf = ({ data }) => {
+    const headers = data && data.length > 0 ? Object.keys(data[0]) : [];
+
     return (
         <Document>
             <Page style={styles.page}>
-                <Text style={styles.title}>Hola Mundo</Text>
                 <View style={styles.section}>
-                    <Text style={styles.text}>
-                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Minus impedit voluptatum cum sapiente quidem doloremque eveniet, ut suscipit, ipsam quae quod vitae itaque ratione voluptate aliquam odit aperiam earum ex!
-                    </Text>
-                    <Image src={GeneralDentistry} style={styles.image} />
+                    <View style={styles.title}>
+                        <Text style={{ textAlign: "center", fontFamily: "Helvetica-Bold" }}>
+                            Clínica Dental Integral
+                        </Text>
+                    </View>
+                    <View style={{ width: "50%", backgroundColor: "#f0e5e4", borderRadius: 5 }}>
+                        <Image src={GeneralDentistry} style={styles.image} />
+                    </View>
                 </View>
-                <View style={{ position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)' }}>
-                    <Text render={({ pageNumber, totalPages }) => `${pageNumber}/${totalPages}`} />
+                <View style={{ width: "100%", height: "100%" }}>
+                    <Text style={{ textAlign: "center" }}>Reporte</Text>
+                    <View style={styles.table}>
+                        {headers.length > 0 && (
+                            <View style={styles.tableRow}>
+                                {headers.map((header, index) => (
+                                    <View style={styles.tableHeaderCol} key={index}>
+                                        <Text style={styles.tableHeaderCell}>
+                                            {headerMap[header] || header}
+                                        </Text>
+                                    </View>
+                                ))}
+                            </View>
+                        )}
+                        {data && data.length > 0 && data.map((row, rowIndex) => (
+                            <View style={styles.tableRow} key={rowIndex}>
+                                {headers.map((header, colIndex) => (
+                                    <View style={styles.tableCol} key={colIndex}>
+                                        <Text style={styles.tableCell}>
+                                            {row[header] !== undefined ? row[header] : "-"}
+                                        </Text>
+                                    </View>
+                                ))}
+                            </View>
+                        ))}
+                    </View>
                 </View>
-
-
             </Page>
         </Document>
     );
