@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     },
     tableHeaderCol: {
         flex: 1,
-        backgroundColor: "#4CAF50",
+        backgroundColor: "#7f7878",
         color: "#fff",
         fontWeight: "bold",
         borderStyle: "solid",
@@ -70,11 +70,13 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontSize: 10,
         color: "#333",
+        fontFamily: "Courier"
     },
     tableHeaderCell: {
         textAlign: "center",
         fontSize: 12,
         fontWeight: "bold",
+        fontFamily: "Courier"
     },
 });
 
@@ -85,10 +87,12 @@ const headerMap = {
     first_lastname: "Apellido",
     totalPaid: "Pagado",
     totalSlope: "Deuda",
-    total: "Total"
+    total: "Total",
+    price: "Precio",
+    name: "Nombre"
 };
 
-export const Pdf = ({ data }) => {
+export const Pdf = ({ data, type }) => {
     const headers = data && data.length > 0 ? Object.keys(data[0]) : [];
 
     return (
@@ -96,16 +100,18 @@ export const Pdf = ({ data }) => {
             <Page style={styles.page}>
                 <View style={styles.section}>
                     <View style={styles.title}>
-                        <Text style={{ textAlign: "center", fontFamily: "Helvetica-Bold" }}>
-                            Clínica Dental Integral
+                        <Text style={{ textAlign: "center", fontFamily: "Courier-Bold", color: "#004aaa" }}>
+                            Clínica Dental Integral Especializada
                         </Text>
                     </View>
-                    <View style={{ width: "50%", backgroundColor: "#f0e5e4", borderRadius: 5 }}>
+                    <View style={{ width: "50%", borderRadius: 5 }}>
                         <Image src={GeneralDentistry} style={styles.image} />
                     </View>
                 </View>
                 <View style={{ width: "100%", height: "100%" }}>
-                    <Text style={{ textAlign: "center" }}>Reporte</Text>
+                    <Text style={{ textAlign: "center", fontFamily: "Courier", fontSize: 12 }}>León - Nicaragua</Text>
+                    <Text style={{ textAlign: "center", fontFamily: "Courier", fontSize: 12, marginBottom: 3 }}>505-76889876</Text>
+                    <Text style={{ textAlign: "center", fontFamily: "Courier" }}>Reporte de {type}</Text>
                     <View style={styles.table}>
                         {headers.length > 0 && (
                             <View style={styles.tableRow}>
