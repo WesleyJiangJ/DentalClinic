@@ -126,7 +126,7 @@ export const Reports = () => {
     return (
         <ReportsContext.Provider value={{ test }}>
             <div className="flex flex-col w-full gap-y-2">
-                <div className="flex flex-rows gap-x-2 flex-wrap md:flex-nowrap gap-y-2">
+                <div className="flex flex-rows gap-2 flex-wrap md:flex-nowrap">
                     <Select
                         label="Seleccione un Reporte"
                         className={clsx(selectedReport === ListReports.Treatment ? "md:w-1/2" : "md:w-1/4")}
@@ -179,43 +179,39 @@ export const Reports = () => {
                     />
                     }
 
-                    <Button onClick={() => { selectedReport === ListReports.Treatment ? generateExcel(columnsExcelTrataments, allTreatment, keysTrataments) : generateExcel(columnsExcelPayments, allPayments, keysPayments) }} className={clsx("text-lg w-full h-[55px] bg-[#008f39] text-white font-bold", selectedReport === ListReports.Treatment ? "md:w-1/2" : "md:w-1/4")}>
+                    <Button onClick={() => { selectedReport === ListReports.Treatment ? generateExcel(columnsExcelTrataments, allTreatment, keysTrataments) : generateExcel(columnsExcelPayments, allPayments, keysPayments) }} className={clsx("text-lg h-[55px] bg-primary w-full text-white font-bold", selectedReport === ListReports.Treatment ? "md:w-1/2" : "md:w-1/4")}>
                         EXCEL
-                        <ArrowDownTrayIcon className="w-5 h-5" />
+                        <ArrowDownTrayIcon className="size-5" />
                     </Button>
 
                     {selectedReport === ListReports.PaymentControl && (
+
                         <PDFDownloadLink
-                            className={clsx("rounded-lg text-lg w-full h-[55px] bg-[#2c79dd] text-white font-bold md:w-1/4 hover:bg-[#2c7ce5]")}
-                            document={allPayments && allPayments?.length > 0 && <Pdf data={allPayments} type="Total de Pagos" />}
+                            className={clsx("rounded-xl text-lg w-full h-[55px] bg-[#2c79dd] text-white font-bold md:w-1/4 hover:bg-[#2c7ce5]")}
+                            document={<Pdf data={allPayments && allPayments?.length ? allPayments : []} type="Total de Pagos" />}
                             fileName="reporte.pdf"
                         >
-                            {({ loading }) =>
-                                loading ? (
-                                    <button>Descargando</button>
-                                ) : (
-                                    <button className="flex flex-row h-full w-full justify-center item-center gap-2 mt-3">
-                                        PDF <ArrowDownTrayIcon className="w-5 h-5 mt-1" />
-                                    </button>
-                                )
-                            }
+                            <div className="flex flex-row size-full justify-center item-center gap-2 mt-3">
+                                PDF <ArrowDownTrayIcon className="size-5 mt-1" />
+                            </div>
                         </PDFDownloadLink>
+
+
                     )} {selectedReport === ListReports.Treatment && (
-                        <PDFDownloadLink
+                        <Button
                             className={clsx("rounded-lg text-lg w-full h-[55px] bg-[#2c79dd] text-white font-bold hover:bg-[#2c7ce5]", selectedReport === ListReports.Treatment ? "md:w-1/2" : "md:w-1/4")}
-                            document={allTreatment && allTreatment?.length > 0 && <Pdf data={allTreatment} type="Tratamientos" />}
-                            fileName="reporte.pdf"
+                            isDisabled={allTreatment && allTreatment?.length === 0}
                         >
-                            {({ loading }) =>
-                                loading ? (
-                                    <button>Descargando</button>
-                                ) : (
-                                    <button className="flex flex-row h-full w-full justify-center item-center gap-2 mt-3">
-                                        PDF <ArrowDownTrayIcon className="w-5 h-5 mt-1" />
-                                    </button>
-                                )
-                            }
-                        </PDFDownloadLink>
+                            <PDFDownloadLink
+                                className={clsx("rounded-lg text-lg w-full h-[55px] bg-[#2c79dd] text-white font-bold hover:bg-[#2c7ce5]", selectedReport === ListReports.Treatment ? "md:w-1/2" : "md:w-1/4")}
+                                document={<Pdf data={allTreatment && allTreatment?.length ? allTreatment : []} type="Tratamientos" />}
+                                fileName="reporte.pdf"
+                            >
+                                <div className="flex flex-row size-full justify-center item-center gap-2 mt-3">
+                                    PDF <ArrowDownTrayIcon className="size-5 mt-1" />
+                                </div>
+                            </PDFDownloadLink>
+                        </Button>
                     )}
                 </div>
                 <div>

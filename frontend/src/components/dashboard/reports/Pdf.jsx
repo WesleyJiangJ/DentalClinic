@@ -1,5 +1,5 @@
 import { Document, Text, Page, StyleSheet, Image, View } from "@react-pdf/renderer";
-import GeneralDentistry from "../../../../public/images/GeneralDentistry.jpeg"; // Asegúrate de que la ruta sea correcta
+import GeneralDentistry from "../../../../public/images/GeneralDentistry.jpeg"; 
 
 const styles = StyleSheet.create({
     page: {
