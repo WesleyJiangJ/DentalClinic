@@ -4,7 +4,14 @@ import { formatCurrency } from "../components/dashboard/reports/Reports";
 
 const useAllPayment = (reportingDates, setIsLoadingReport) => {
     const [allPayments, setAllPayments] = useState([]);
-
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+        const year = date.getUTCFullYear();
+    
+        return `${day}/${month}/${year}`;
+    };
     useEffect(() => {
         if (reportingDates) {
             const fetchPayments = async () => {
@@ -39,7 +46,7 @@ const useAllPayment = (reportingDates, setIsLoadingReport) => {
 
                     const updateFilter = filterDate.map((item) => ({
                         ...item,
-                        created_at: new Date(item.created_at).toLocaleString("en-US"),
+                        created_at: formatDate(item.created_at),
                         totalPaid: formatCurrency(Number(item.totalPaid)),
                         totalSlope: formatCurrency(Number(item.totalSlope)),
                         total: formatCurrency(Number(item.total)),

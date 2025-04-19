@@ -1,12 +1,10 @@
 import { Document, Text, Page, StyleSheet, Image, View } from "@react-pdf/renderer";
-import GeneralDentistry from "../../../../public/images/GeneralDentistry.jpeg"; 
+import GeneralDentistry from "../../../../public/images/GeneralDentistry.jpeg";
 
 const styles = StyleSheet.create({
     page: {
         padding: 5,
-        height: "100%",
         display: "flex",
-        justifyContent: "space-between",
         flexDirection: "column",
         fontFamily: "Helvetica",
     },
@@ -31,9 +29,8 @@ const styles = StyleSheet.create({
     },
     title: {
         width: "50%",
-        display: "column",
+        display: "flex",
         justifyContent: "center",
-        height: "100%",
     },
     table: {
         display: "table",
@@ -70,13 +67,13 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontSize: 10,
         color: "#333",
-        fontFamily: "Courier"
+        fontFamily: "Helvetica"
     },
     tableHeaderCell: {
         textAlign: "center",
         fontSize: 12,
         fontWeight: "bold",
-        fontFamily: "Courier"
+        fontFamily: "Helvetica"
     },
 });
 
@@ -89,7 +86,11 @@ const headerMap = {
     totalSlope: "Deuda",
     total: "Total",
     price: "Precio",
-    name: "Nombre"
+    name: "Nombre",
+    doctor_name: "Doctor",
+    physician_name: "Paciente",
+    reason: "Razón",
+    date: "Fecha"
 };
 
 export const Pdf = ({ data, type }) => {
@@ -100,7 +101,7 @@ export const Pdf = ({ data, type }) => {
             <Page style={styles.page}>
                 <View style={styles.section}>
                     <View style={styles.title}>
-                        <Text style={{ textAlign: "center", fontFamily: "Courier-Bold", color: "#004aaa" }}>
+                        <Text style={{ textAlign: "center", fontFamily: "Helvetica", color: "#004aaa" }}>
                             Clínica Dental Integral Especializada
                         </Text>
                     </View>
@@ -108,10 +109,14 @@ export const Pdf = ({ data, type }) => {
                         <Image src={GeneralDentistry} style={styles.image} />
                     </View>
                 </View>
-                <View style={{ width: "100%", height: "100%" }}>
-                    <Text style={{ textAlign: "center", fontFamily: "Courier", fontSize: 12 }}>León - Nicaragua</Text>
-                    <Text style={{ textAlign: "center", fontFamily: "Courier", fontSize: 12, marginBottom: 3 }}>505-76889876</Text>
-                    <Text style={{ textAlign: "center", fontFamily: "Courier" }}>Reporte de {type}</Text>
+
+                <View style={{ width: "100%", flex: 1 }}>
+                    <Text style={{ textAlign: "center", fontFamily: "Helvetica", fontSize: 12 }}>León - Nicaragua</Text>
+                    <Text style={{ textAlign: "center", fontFamily: "Helvetica", fontSize: 12 }}>505-76889876</Text>
+                    <Text style={{ textAlign: "center", fontFamily: "Helvetica", marginBottom: 5 }}>
+                        Reporte de {type}
+                    </Text>
+
                     <View style={styles.table}>
                         {headers.length > 0 && (
                             <View style={styles.tableRow}>
