@@ -1,5 +1,6 @@
 
-import { downloadExcelFile } from "../utils/helpers/download-excel";
+import { downloadExcelFile } from "../utils/helpers/downloadExcel";
+import { dowloadExcelPaymentReport } from "../utils/helpers/dowloadExcelPaymentReport";
 const useExcelReportGenerator = (allTreatment, medicalAppointments, allPayments) => {
   const downloadReportTrataments = () => {
     const date = new Date();
@@ -32,7 +33,7 @@ const useExcelReportGenerator = (allTreatment, medicalAppointments, allPayments)
       "Abonado": item.totalPaid,
       "Restante": item.totalSlope
     }));
-    downloadExcelFile(excelList, "pagos-" + currentDate);
+    dowloadExcelPaymentReport(excelList, "pagos-" + currentDate);
   }
 
   const downloadReportMedicalAppointments = () => {
