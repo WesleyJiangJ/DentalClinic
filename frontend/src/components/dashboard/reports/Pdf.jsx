@@ -1,5 +1,4 @@
 import { Document, Text, Page, StyleSheet, Image, View } from "@react-pdf/renderer";
-import GeneralDentistry from "../../../../public/images/GeneralDentistry.jpeg";
 
 const styles = StyleSheet.create({
     page: {
@@ -106,7 +105,12 @@ export const Pdf = ({ data, type }) => {
                         </Text>
                     </View>
                     <View style={{ width: "50%", borderRadius: 5 }}>
-                        <Image src={GeneralDentistry} style={styles.image} />
+                        <Image
+                            style={styles.image}
+                            alt="Image"
+                            src="../images/GeneralDentistry.jpeg"
+                            className="object-cover object-center w-full"
+                        />
                     </View>
                 </View>
 
