@@ -107,10 +107,15 @@ export const Pdf = ({ data, type }) => {
                     <View style={{ width: "50%", borderRadius: 5 }}>
                         <Image
                             style={styles.image}
+                            src="/images/GeneralDentistry.jpeg"
+                        />
+
+                        {/* <Image
+                            style={styles.image}
                             alt="Image"
                             src="../images/GeneralDentistry.jpeg"
                             className="object-cover object-center w-full"
-                        />
+                        /> */}
                     </View>
                 </View>
 
